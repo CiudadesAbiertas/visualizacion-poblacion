@@ -1,0 +1,192 @@
+/*
+Copyright 2018 Ayuntamiento de A Coruña, Ayuntamiento de Madrid, Ayuntamiento de Santiago de Compostela, Ayuntamiento de Zaragoza, Entidad Pública Empresarial Red.es
+
+Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+You may not use this work except in compliance with the Licence.
+You may obtain a copy of the Licence at:
+
+https://joinup.ec.europa.eu/software/page/eupl
+
+Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the Licence for the specific language governing permissions and limitations under the Licence.
+*/
+
+
+.chartdivGrafico {
+    width: 100%;
+    height: 210px;
+	font-size: 80%;
+}
+.chartdivGraficoMapa {
+    width: 100%;
+    height: 310px;
+	font-size: 80%;
+}
+.chartdivGraficoCompuesto {
+    width: 100%;
+    height: 280px;
+	font-size: 80%;
+}
+
+.graficoBarras{
+  height: 342px;
+}
+.graficoLinea{
+  height: 350px;
+}
+.graficoTarta{
+  height: 350px;
+}
+.graficoMapa{
+  height: 450px;
+}
+.graficoPiramide{
+  height: 628px;
+}
+.graficoCombinado{
+  height: 410px;
+}
+
+#iconoIndicadores {
+	height: 80px;
+}
+
+.slider.slider-horizontal {
+    width: 600px;
+}
+
+
+.checkbox{
+	margin-left: 15px;
+}
+
+
+.mart10 {
+    margin-top: 15px;
+}
+
+.titPestana {
+    color: #337ab7;
+    font-size: 110%;
+}
+
+.nav-tabs>li.active>a, .nav-tabs>li.active>a:focus, .nav-tabs>li.active>a:hover {
+	border-bottom: 2px solid rgb(0, 106, 160);
+	color: #337ab7;
+	border-top:none;
+	border-left:none;
+	border-right:none;
+	font-weight: bold;
+	font-size: 110%;
+}
+.nav-tabs {
+    border-bottom: none;
+}
+.liPestana {
+	width: 200px;
+}
+.h3, h3 {
+    font-size: 20px;
+}
+
+/* Barra de navegación */
+
+/* 
+.list-group-item {
+	padding: 5px
+}
+
+.lineForm {
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.pagination > .disabled > a, .pagination > .disabled > a:focus, .pagination > .disabled > a:hover, .pagination > .disabled > span, .pagination > .disabled > span:focus, .pagination > .disabled > span:hover {
+    color: #444;
+}
+
+.table-responsive {
+	margin-bottom: 10px;
+}
+
+
+.capaInicio{
+	width: 100%;	
+	margin-top: 10px;
+}
+
+.capaAyuda{	
+	margin-top: 10px;
+}
+
+
+.panel-primary {
+	border-color: #006AA0;
+}
+
+.panel-primary >.panel-heading {
+    color: #fff;
+    background-color: #006AA0;
+    border-color: #006AA0;
+}
+
+.panel-primary > a {
+  color: #006AA0;
+}
+
+.panel-primary > a:hover {
+  color: #006AA0;
+}
+
+.panel-red {
+  border-color: #D92F5F;
+}
+
+.panel-red > .panel-heading {
+  border-color: #D92F5F;
+  color: white;
+  background-color: #D92F5F;
+}
+
+.panel-red > a {
+  color: #D92F5F;
+}
+
+.panel-red > a:hover {
+  color: #D92F5F
+}
+.panel-yellow {
+  border-color: #f0ad4e;
+}
+
+.panel-yellow > .panel-heading {
+  border-color: #f0ad4e;
+  color: white;
+  background-color: #f0ad4e;
+}
+
+.panel-yellow > a {
+  color: #f0ad4e;
+}
+
+.panel-yellow > a:hover {
+  color: #df8a13;
+}
+
+/*Imagenes para desplegar contraer información en datatables*/
+td.details-control {
+		background: url('../images/details_open.png') no-repeat center center;
+		cursor: pointer;
+}
+	
+tr.shown td.details-control {
+	background: url('../images/details_close.png') no-repeat center center;
+}
+
+.fa-3 {
+    color: #000;
+    padding-top: 13px;
+    font-size: 1.3em;
+}
+

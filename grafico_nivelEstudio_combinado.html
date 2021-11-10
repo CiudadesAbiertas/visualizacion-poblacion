@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<!--
+Copyright 2018 Ayuntamiento de A Coruña, Ayuntamiento de Madrid, Ayuntamiento de Santiago de Compostela, Ayuntamiento de Zaragoza, Entidad Pública Empresarial Red.es
+
+This visualization is part of the actions carried out within the "Ciudades Abiertas" project.
+
+Licensed under the EUPL, Version 1.2 or – as soon they will be approved by the European Commission - subsequent versions of the EUPL (the "Licence");
+You may not use this work except in compliance with the Licence.
+You may obtain a copy of the Licence at:
+
+https://joinup.ec.europa.eu/software/page/eupl
+
+Unless required by applicable law or agreed to in writing, software distributed under the Licence is distributed on an "AS IS" basis,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the Licence for the specific language governing permissions and limitations under the Licence.
+-->
+<html lang="es" dir="ltr">
+
+	<head>
+		<!-- Metadatos -->
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="description" content="">
+		<meta name="author" content="">
+		<title>Gráfico de barras</title>
+			
+		<!-- Bootstrap Core CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+        integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous" />
+		
+		<!-- JQUERY UI CSS -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css" integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+		<!-- Custom Fonts -->
+		<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css" rel="stylesheet"
+        type="text/css" />
+		
+		<!-- Hojas de estilos internos -->
+		<link rel="stylesheet" href="../comunV2/dist/css/main.css">
+		<link rel="stylesheet" href="../comunV2/dist/css/ciudadesAbiertas.css">
+		<link rel="stylesheet" href="dist/css/poblacion.css">
+		<link rel="stylesheet" href="dist/css/custom.css">
+				
+		<!--Favicon-->
+		<link rel="shortcut icon" type="image/x-icon" href="../comunV2/dist/images/favicon.ico" >
+
+	</head>
+
+	<body>
+		<div class="modal fade bd-loading-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
+			<div class="modal-dialog modal-sm">
+				<div class="modal-content" style="width: 48px">
+					<span class="fa fa-spinner fa-spin fa-3x"></span>
+				</div>
+			</div>
+		</div>
+		<div class="container-fluid">			
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="panel panel-default" id="panelBarras">
+						<div id="panelBarras" class="panel-heading" role="heading" aria-level="2">
+							<div class="row">
+								<div class="col-md-9 col-xs-9">
+									<em class="fa fa-bar-chart-o fa-fw"></em>
+									<span id="tituloGrafico">Gráfico de barras</span>
+								</div>
+								<div class="col-md-3 col-xs-3">
+									<div class="pull-right">
+										<div class="modal fade" id="myModalIndicadores" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+											<div class="modal-dialog">
+												<div class="modal-content">
+													<div class="modal-header">
+														<button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+														<p class="modal-title" id="myModalLabel" data-i18n="incrustar"></p>
+													</div>
+													<div class="modal-body">
+														<div class="form-group">
+															<p class="embed-content" data-i18n="puede_copiar_pegar_codigo_insercion_cms_blog_soporte_html_crudo"></p>
+															<label class="control-label" for="code" data-i18n="codigo"></label><br/>
+															<textarea id="code" class="form-control" name="code" rows="3" placeholder="">
+																<iframe src="indicadores.html" frameborder="0" scrolling="no" height="130" width="100%"></iframe>
+															</textarea>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="panel-body">
+							<div id="chartdiv" class="chartdivGraficoCompuesto"></div>
+						</div>
+						<div class="panel-footer">
+                            <div class="row">
+                                <div class="col-xs-1 dropup">
+                                    <a class="dropdown-toggle" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="fa fa-download fa-3"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                        <li><a id="descargaCSV" href="#" target="_blank" data-i18n="descarga_csv"></a></li>
+                                        <li><a id="descargaGeoJSON" href="#" target="_blank" data-i18n="descarga_geojson"></a></li>
+                                    </ul>
+                                </div>
+                                
+                                <div class="col-xs-1">
+                                    <a id="mostarDatos" onclick="mostrarDatos()">
+                                        <span class="fa fa-table n fa-3" aria-hidden="true"></span>
+                                    </a>
+                                </div>
+
+                                <div class="col-xs-1">
+                                    <a id="maximizar">
+                                        <span class="fa  fa-arrows-alt fa-3" aria-hidden="true"></span>
+                                    </a>
+                                </div>
+
+                                <div class="col-xs-1 dropup">
+                                    <a class="dropdown-toggle" id="dropdownMenu2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <span class="fa fa-ellipsis-h fa-3"></span>
+                                    </a>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu2">
+                                        <li><a href="#" data-toggle="modal" data-target="#myModalIndicadores" data-i18n="incrustar"></a></li>
+                                        <li><a id="urlAPI" href="#" target="_blank" data-i18n="url_utilizada_api"></a></li>
+                                        <li><a id="urlAPIDoc" href="" target="_blank" data-i18n="documentacion_api"></a></li>
+                                    </ul>
+                                </div>
+                            </div>
+							<div id="datos_tabla" style="display:none;width:100%"></div>
+						</div>	
+						
+					</div>
+			</div>
+		</div>
+
+		<!-- Scripts JavaScript -->
+		<!-- jQuery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+		
+		<!-- Bootstrap Core -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
+		
+		<!-- Amcharts Visualizations-->
+		<script src="https://cdn.amcharts.com/lib/version/4.10.22/core.js"></script>
+        <script src="https://cdn.amcharts.com/lib/version/4.10.22/charts.js"></script>
+        <script src="https://cdn.amcharts.com/lib/version/4.10.22/themes/frozen.js"></script>
+        <script src="https://cdn.amcharts.com/lib/version/4.10.22/themes/animated.js"></script>
+        <script src="https://cdn.amcharts.com/lib/version/4.10.22/lang/es_ES.js"></script>
+		
+		<!-- Normalización de datos -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
+		<script src="vendor/datejs/date-es-ES.js"></script>
+		
+		<!-- Multiidoma -->	
+		<script src="vendor/CLDRPluralRuleParser/CLDRPluralRuleParser.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.messagestore.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.fallbacks.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.language.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.parser.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.emitter.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.i18n/1.0.7/jquery.i18n.emitter.bidi.min.js"></script>
+		
+		<!-- Scripts internos -->
+		<script src="dist/js/constantes.js"></script>
+		<script src="dist/js/general.js"></script>
+		<script src="dist/js/grafico_nivelEstudio_combinado.js"></script>
+		
+		<script>
+			$(document).ready(function() {
+				$('.modal').modal('show');
+				initComun();
+				inicializa();
+			} );
+		</script>
+
+	</body>
+
+</html>

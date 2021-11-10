@@ -1,0 +1,57 @@
+<nav class="navbar navbar-default navbar-static-top margin-bottom0 presentacion fondo_cabecera" aria-label="Barra de navegación">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+         </button>
+    </div>
+    <div class="collapse navbar-collapse" id="myNavbar" role="tablist" aria-label="Pestañas">
+        <ol class="nav navbar-nav">
+            <li id="liIndicadores">
+                <button id="buttonIndicadores" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaIndicadores" class="btn btn-link btn-lg" data-i18n="m_indicadores" onclick="cambioCapa('indicadores')">Indicadores</button>
+            </li>
+            <li id="liEdadSimple">
+                <button id="buttonEdadSimple" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaEdadSimple" class="btn btn-link btn-lg" data-i18n="m_edad_simple"onclick="cambioCapa('edadSimple')">Edad</button>
+            </li>
+            <li id="liEdadQuinquenales">
+                <button id="buttonEdadQuinquenales" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaEdadQuinquenales" class="btn btn-link btn-lg" data-i18n="m_edad_grupos_quinquenales" onclick="cambioCapa('edadQuinquenales')">Edad Grupo Quinquenales</button>
+            </li>
+			<li id="liNacionalidad">
+                <button id="buttonNacionalidad" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaNacionalidad" class="btn btn-link btn-lg" data-i18n="m_nacionalidad" onclick="cambioCapa('nacionalidad')">Nacionalidad</button>
+            </li>
+            <li id="liNivelEstudio">
+                <button id="buttonNivelEstudio" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaNivelEstudio" class="btn btn-link btn-lg" data-i18n="m_nivel_estudio" onclick="cambioCapa('nivelEstudio')">Nivel de estudio</button>
+            </li>
+            <li id="liProcedencia">
+                <button id="buttonProcedencia" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaProcedencia" class="btn btn-link btn-lg" data-i18n="m_procedencia" onclick="cambioCapa('procedencia')">Procedencia</button>
+            </li>
+            <li id="liPaisNacimiento">
+                <button id="buttonPaisNacimiento" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaPaisNacimiento" class="btn btn-link btn-lg" data-i18n="m_pais_nacimiento" onclick="cambioCapa('paisNacimiento')">País Nacimiento</button>
+            </li>
+            <li id="liGlosario">
+                <button id="buttonGlosario" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaAyuda" class="btn btn-link btn-lg" data-i18n="m_ayuda" onclick="cambioCapa('ayuda')">Ayuda</button>
+            </li>
+        </ol>
+        <ol class="nav navbar-nav navbar-right">
+            <li>
+                <button type="button" id="menuIdioma" class="btn btn-link btn-lg dropdown-toggle" data-toggle="dropdown" data-i18n="idioma">Idioma <span class="caret"></span></button>
+                <ul class="dropdown-menu" role="menu">
+                    <li role="presentation">
+                        <a role="menuitem" href="#" data-locale="en" data-i18n="ingles" class="switch-locale">Ingles</a>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" href="#" data-locale="es" data-i18n="espanyol" class="switch-locale">Español</a>
+                    </li>
+                    <li role="presentation">
+                        <a role="menuitem" href="#" data-locale="gl" data-i18n="gallego" class="switch-locale">Gallego</a>
+                    </li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+</nav>
+
+
+
