@@ -8,8 +8,9 @@
 	"poblacion": "[GL]Población",	
 	"m_inicio": "[GL]INICIO",
 	"m_indicadores": "[GL]INDICADORES",
-	"m_edad_simple": "[GL]EDAD",
-	"m_edad_grupos_quinquenales": "[GL]EDAD QUINQUENAL",
+	"m_edad": "[GL]EDAD",
+	"m_edad_simple": "[GL]EDAD INDIVIDUAL",
+	"m_edad_grupos_quinquenales": "[GL]GRUPOS DE EDAD",
 	"m_nivel_estudio": "[GL]NIVEL ESTUDIO",
 	"m_nacionalidad": "[GL]NACIONALIDAD",
 	"m_procedencia": "[GL]PROCEDENCIA",
@@ -20,10 +21,10 @@
 	"espanyol": "[GL]Español",
 	"gallego": "[GL]Gallego",
 	"toggle_navigation": "[GL]Toggle navigation",
-    "que_es": "[GL]Población",
-    "texto_que_es": "[GL]Texto presentación visualización población. Texto presentación visualización población. Texto presentación visualización población. Texto presentación visualización población. Texto presentación visualización población. Texto presentación visualización población. ",
-    "edad_quinquenales_que_es": "[GL]Población por edades quinquenales",
-    "edad_quinquenales_texto_que_es": "[GL]Texto presentación visualización población por edades quinquenales. Texto presentación visualización población por edades quinquenales. Texto presentación visualización población por edades quinquenales. Texto presentación visualización población por edades quinquenales. Texto presentación visualización población. Texto presentación visualización población por edades quinquenales. ",
+    "inicio_que_es": "[GL]Inicio Población",
+    "inicio_texto_que_es": "[GL]Texto presentación inicio visualización población. Texto presentación inicio visualización población. Texto presentación inicio visualización población. Texto presentación inicio visualización población. Texto presentación inicio visualización población.  ",
+    "edad_quinquenales_que_es": "[GL]Población por grupos de edad",
+    "edad_quinquenales_texto_que_es": "[GL]Texto presentación visualización población por grupos de edad.Texto presentación visualización población por grupos de edad. ", 
 	"municipio": "[GL]Municipio",
 	"distrito": "[GL]Distrito",
 	"barrio": "[GL]Barrio",
@@ -64,7 +65,9 @@
 	"poco": "[GL]Poco",
 	"mucho": "[GL]Mucho",
 	"dimension": "[GL]Dimensión",
-	"medida": "[GL]Medida",
+	"dimension1": "[GL]Dimensión 1",
+	"dimension2": "[GL]Dimensión 2",
+	"edad": "[GL]Edad",
 	"mujeres": "[GL]Mujeres",
 	"hombres": "[GL]Hombres",
     "filtros" : "[GL]Filtros",
@@ -82,7 +85,7 @@
     "territorio" : "[GL]Territorio",
     "indicadores" : "[GL]Indicadores",
     "indices" : "[GL]Índices",
-    "porcentajes" : "[GL]Porcentajes"
-    
-
+    "porcentajes" : "[GL]Porcentajes",
+    "modificar_tabla" : "[GL]Modificar tabla",
+    "descargar" : "[GL]DESCARGAR"
 }

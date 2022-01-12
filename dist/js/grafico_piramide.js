@@ -35,6 +35,7 @@ var paramNivelEstudio;
 var paramProcedencia;
 var paramPaisNacimiento;
 var paramNacionalidad;
+var paramGroupBy;
 
 var datosPoblacion = new Array();
 var datosEdad = new Array();
@@ -47,6 +48,7 @@ var agrupador = 'SUM';
 let medida = 'numeroPersonas';
 
 var filtro = '';
+let periodos = [];
 
 //Vble para controlar el tamaño
 let tamanyFijo = $(document).height();
@@ -91,7 +93,13 @@ function inicializaMultidioma() {
             })
             .done(function () {
                 $('html').i18n();
-                inicializaDatos();
+                capturaParametros();
+                periodo = paramPeriodo;
+                if(paramPeriodo=='ultimo') {
+                    dameUltimoPeriodo(paramCubo,periodos);
+                }else {
+                    inicializaDatos();
+                }
             });
     });
 
@@ -106,14 +114,8 @@ function inicializaDatos() {
         console.log('inicializaTablaGraficoPiramide');
     }
 
-    capturaParametros();
     pintaGrafico();
-
-    if (paramPeriodo) {
-        filtro = "&where=(refPeriod='" + paramPeriodo+"')";
-    }
-    
-    
+     
     if (paramEjeY) {
         dimension = paramEjeY;
     }
@@ -140,6 +142,14 @@ function inicializaDatos() {
         addFiltro(paramSexo, 'sex');
     }
     if (paramPeriodo) {
+        if(paramPeriodo=='ultimo') {
+            paramPeriodo = periodos[0];
+            let paramTitulo = $.i18n(paramTituloKey);
+            if (paramPeriodo) {
+                paramTitulo = paramTitulo + ' ' + paramPeriodo;
+            }
+            $('#tituloGrafico').html(decodeURI(paramTitulo));
+        }
         addFiltro(paramPeriodo, 'refPeriod');
     }
 
@@ -188,26 +198,27 @@ function inicializaDatos() {
 
     insertaURLSAPI(urlPoblacionPiramideJson,urlPoblacionPiramideCsv)
 
-    $.getJSON(DSD_URL+'/dimension/'+paramCubo+'/value?'+PARAM_PAGE_API+'=1&'+PARAM_PAGESIZE_API+'=100')
-        .done(function (data) {
-            if (data.records) {
-                let i;
-                for (i = 0; i < data.records.length; i++) {
-                    dimensionEtiquetas[data.records[i].id] = data.records[i].title;
-
-                    if(data.records[i].title == 'De 5 a 9 años') {
-                        dimensionEtiquetas[data.records[i].id] = 'De 05 a 09 años';
-                    }
-                    if(data.records[i].title == 'De 0 a 4 años') {
-                        dimensionEtiquetas[data.records[i].id] = 'De 00 a 04 años';
-                    }
-                }
+    let etiqueta;
+    let etiquetas = [];
+    etiquetas = paramGroupBy.split(',');
+    let d;
+    for(d=0;d<etiquetas.length;d++) {
+        etiqueta = etiquetas[d];
+        if(DIMENSION_CON_ETIQUETA.indexOf(etiqueta)!=-1){
+            if(etiqueta=='sex') {
+                VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
+            }else if(etiqueta=='edadGruposQuinquenales') {
+                VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
+            }else if(etiqueta=='nacionalidad') {
+                VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
+            }else if(etiqueta=='tipoNivelEstudio') {
+                VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
             }
-        })
-        .always(function () {
-            
-            obtieneDatosAPIPobl(urlPoblacionPiramideJson);
-        });
+        }
+    }
+
+    
+    obtieneDatosAPIPobl(urlPoblacionPiramideJson);
 }
 
 /* Método que obtiene los datos de población de la URL que se pasa como parámetros insertandonos el una variable */
@@ -397,6 +408,10 @@ function capturaParametros() {
         paramEdadQuinquenales = getUrlVars()['edadQuinquenales'];
     }
 
+    if (getUrlVars()['edadSimple']) {
+        paramEdad = getUrlVars()['edadSimple'];
+    }
+    
     if (getUrlVars()['sexo']) {
         paramSexo = getUrlVars()['sexo'];
     }
@@ -415,6 +430,10 @@ function capturaParametros() {
     if (getUrlVars()['seccionCensal']) {
         paramSeccionCensal = getUrlVars()['seccionCensal'];
     }
+
+    if (getUrlVars()['groupBy']) {
+        paramGroupBy = getUrlVars()['groupBy'];
+    }
 }
 
 /*
@@ -426,13 +445,15 @@ function pintaGrafico() {
     }
 
     am4core.useTheme(am4themes_frozen);
-    am4core.useTheme(am4themes_animated);
-
+  
     let mainContainer = am4core.create('chartdiv', am4core.Container);
     mainContainer.width = am4core.percent(100);
     mainContainer.height = am4core.percent(100);
     mainContainer.layout = 'horizontal';
 
+    // chart.focusFilter.stroke = am4core.color("#0f0");
+    // chart.focusFilter.strokeWidth = 4;
+    
     let maleChart = mainContainer.createChild(am4charts.XYChart);
     maleChart.width = am4core.percent(50);
     maleChart.paddingRight = 0;

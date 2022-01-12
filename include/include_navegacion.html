@@ -9,29 +9,41 @@
     </div>
     <div class="collapse navbar-collapse" id="myNavbar" role="tablist" aria-label="Pestañas">
         <ol class="nav navbar-nav">
-            <li id="liIndicadores">
-                <button id="buttonIndicadores" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaIndicadores" class="btn btn-link btn-lg" data-i18n="m_indicadores" onclick="cambioCapa('indicadores')">Indicadores</button>
+		    <li id="liInicio" class="nav-item">
+                <button id="buttonInicio" type="button" role="tab"  aria-selected="false" aria-controls="capaInicio" class="btn btn-link btn-lg" data-i18n="m_inicio" onclick="cambioCapa('inicio')">Inicio</button>
             </li>
-            <li id="liEdadSimple">
-                <button id="buttonEdadSimple" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaEdadSimple" class="btn btn-link btn-lg" data-i18n="m_edad_simple"onclick="cambioCapa('edadSimple')">Edad</button>
+			<!--
+            <li id="liEdadSimple" class="nav-item">
+                <button id="buttonEdadSimple" type="button" role="tab"  aria-selected="false" aria-controls="capaEdadSimple" class="btn btn-link btn-lg" data-i18n="m_edad_simple"onclick="cambioCapa('edadSimple')">Edad</button>
             </li>
             <li id="liEdadQuinquenales">
-                <button id="buttonEdadQuinquenales" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaEdadQuinquenales" class="btn btn-link btn-lg" data-i18n="m_edad_grupos_quinquenales" onclick="cambioCapa('edadQuinquenales')">Edad Grupo Quinquenales</button>
+                <button id="buttonEdadQuinquenales" type="button" role="tab"  aria-selected="false" aria-controls="capaEdadQuinquenales" class="btn btn-link btn-lg" data-i18n="m_edad_grupos_quinquenales" onclick="cambioCapa('edadQuinquenales')">Edad Grupo Quinquenales</button>
             </li>
+			-->
+            <li id="liEdadGrupo" class="dropdown">
+					<button id="buttonEdad" type="button" class="btn btn-link btn-lg dropdown-toggle" data-toggle="dropdown" data-i18n="m_edad" aria-selected="false" aria-controls="edad" ></button>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">            
+					<button id="buttonEdadSimple" type="button" role="tab"  aria-selected="false" aria-controls="capaEdadSimple" class="btn btn-link btn-lg" data-i18n="m_edad_simple" onclick="cambioCapa('edadSimple')"></button>
+					<button id="buttonEdadQuinquenales" type="button" role="tab"  aria-selected="false" aria-controls="capaEdadQuinquenales" class="btn btn-link btn-lg" data-i18n="m_edad_grupos_quinquenales" onclick="cambioCapa('edadQuinquenales')"></button>
+				</div>
+            </li>			
 			<li id="liNacionalidad">
-                <button id="buttonNacionalidad" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaNacionalidad" class="btn btn-link btn-lg" data-i18n="m_nacionalidad" onclick="cambioCapa('nacionalidad')">Nacionalidad</button>
+                <button id="buttonNacionalidad" type="button" role="tab"  aria-selected="false" aria-controls="capaNacionalidad" class="btn btn-link btn-lg" data-i18n="m_nacionalidad" onclick="cambioCapa('nacionalidad')">Nacionalidad</button>
             </li>
             <li id="liNivelEstudio">
-                <button id="buttonNivelEstudio" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaNivelEstudio" class="btn btn-link btn-lg" data-i18n="m_nivel_estudio" onclick="cambioCapa('nivelEstudio')">Nivel de estudio</button>
+                <button id="buttonNivelEstudio" type="button" role="tab"  aria-selected="false" aria-controls="capaNivelEstudio" class="btn btn-link btn-lg" data-i18n="m_nivel_estudio" onclick="cambioCapa('nivelEstudio')">Nivel de estudio</button>
             </li>
             <li id="liProcedencia">
-                <button id="buttonProcedencia" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaProcedencia" class="btn btn-link btn-lg" data-i18n="m_procedencia" onclick="cambioCapa('procedencia')">Procedencia</button>
+                <button id="buttonProcedencia" type="button" role="tab"  aria-selected="false" aria-controls="capaProcedencia" class="btn btn-link btn-lg" data-i18n="m_procedencia" onclick="cambioCapa('procedencia')">Procedencia</button>
             </li>
             <li id="liPaisNacimiento">
-                <button id="buttonPaisNacimiento" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaPaisNacimiento" class="btn btn-link btn-lg" data-i18n="m_pais_nacimiento" onclick="cambioCapa('paisNacimiento')">País Nacimiento</button>
+                <button id="buttonPaisNacimiento" type="button" role="tab"  aria-selected="false" aria-controls="capaPaisNacimiento" class="btn btn-link btn-lg" data-i18n="m_pais_nacimiento" onclick="cambioCapa('paisNacimiento')">País Nacimiento</button>
+            </li>
+			<li id="liIndicadores" class="nav-item">
+                <button id="buttonIndicadores" type="button" role="tab"  aria-selected="false" aria-controls="capaIndicadores" class="btn btn-link btn-lg" data-i18n="m_indicadores" onclick="cambioCapa('indicadores')">Indicadores</button>
             </li>
             <li id="liGlosario">
-                <button id="buttonGlosario" type="button" role="tab" aria-level="1" aria-selected="false" aria-controls="capaAyuda" class="btn btn-link btn-lg" data-i18n="m_ayuda" onclick="cambioCapa('ayuda')">Ayuda</button>
+                <button id="buttonAyuda" type="button" role="tab"  aria-selected="false" aria-controls="capaAyuda" class="btn btn-link btn-lg" data-i18n="m_ayuda" onclick="cambioCapa('ayuda')">Ayuda</button>
             </li>
         </ol>
         <ol class="nav navbar-nav navbar-right">

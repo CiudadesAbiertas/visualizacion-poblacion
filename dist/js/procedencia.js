@@ -13,7 +13,36 @@ Unless required by applicable law or agreed to in writing, software distributed 
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the Licence for the specific language governing permissions and limitations under the Licence.
 */
-
+var urlIndicador1 = '';
+var filtro = '';
+let paramCubo = 'procedencia';
+let arrayPaisProcedencia = [];
+let arrayProvinciaProcedencia = [];
+let arrayMunicipioProcedencia = [];
+let arrayNivelEstudio = [];
+let arrayPeriodo = [];
+let arrayEdadesQuinquenales = [];
+let arrayMunicipio = [];
+let arrayDistrito = [];
+let arrayDistrito2 = [];
+let arrayBarrio = [];
+let arraySeccionCensal = [];
+let urlAjax = '';
+let arrayIframesMapas = [
+    'iframeGraficoMapa',
+    'iframeGraficoMapa2'
+];
+let arrayIframes = [
+    'iframeGraficoMapa',
+    'iframeGraficoMapa2',
+    'iframeGraficoBarras',
+    'iframeGraficoBarras2',
+    'iframeGraficoBarras3',
+    'iframeGraficoLinea',
+    'iframetablaDatosGenerica',
+    'iframeComparadorTerritorio',
+    'iframeComparadorTerritorio2'
+];
 /*
 	Método para aplicar filtros en el cubo de datos procedencia
 */
@@ -21,26 +50,11 @@ function aplicaFiltro(territorio) {
     if (LOG_DEBUG_COMUN) {
         console.log('[aplicaFiltro]');
     }
-    let arrayIframesMapas = [
-        'iframeGraficoMapa',
-        'iframeGraficoMapa2'
-    ];
+    
     //Cambiamos el parametro territorio par que los mapas se pinten correctamente
     if(territorio) {
         aplicaFiltroTerritorio(territorio,arrayIframesMapas);
     }
-    /* Se configura los iframes a los que les afecta los filtros */
-    let arrayIframes = [
-        'iframeGraficoMapa',
-        'iframeGraficoMapa2',
-        'iframeGraficoBarras',
-        'iframeGraficoBarras2',
-        'iframeGraficoBarras3',
-        'iframeGraficoLinea',
-        'iframetablaDatosGenerica',
-        'iframeComparadorTerritorio',
-        'iframeComparadorTerritorio2'
-    ];
 
     $('#criterioTerritorio').html('');
     $('#criterioPaisPro').html('');
@@ -78,17 +92,50 @@ function aplicaFiltro(territorio) {
         seleccionTerritorio(territorio);
     }
 
-    aplicaFiltroElement('selectPaisProcedenciaPro','paisProcedencia',arrayIframes,'checkbox');
-    aplicaFiltroElement('selectProvinciaProcedenciaPro','provinciaProcedencia',arrayIframes,'checkbox');
-    aplicaFiltroElement('selectMunicipioProcedenciaPro','municipioProcedencia',arrayIframes),'checkbox';
-    aplicaFiltroElement('selectNivelEstudioPro', 'nivelEstudios', arrayIframes),'checkbox';
-	aplicaFiltroElement('selectEdadQuinquenalesPro','edadQuinquenales',arrayIframes,'checkbox');
-    aplicaFiltroElement('selectPeriodoPro', 'periodo', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectMunicipioPro', 'municipio', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectDistritoPro', 'distrito', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectBarrioPro', 'barrio', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectSeccionCensalPro','seccionCensalId',arrayIframes,'checkbox');
+    filtro = '';
+    let filtroAux = '';
+    filtroAux = aplicaFiltroElement('selectPaisProcedenciaPro','paisProcedencia',arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'paisProcedencia');
+    }
+    filtroAux = aplicaFiltroElement('selectProvinciaProcedenciaPro','provinciaProcedencia',arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'provinciaProcedencia');
+    }
+    filtroAux = aplicaFiltroElement('selectMunicipioProcedenciaPro','municipioProcedencia',arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'municipioProcedencia');
+    }
+    filtroAux = aplicaFiltroElement('selectNivelEstudioPro', 'nivelEstudio', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'tipoNivelEstudio');
+    }
+	filtroAux = aplicaFiltroElement('selectEdadQuinquenalesPro','edadQuinquenales',arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'edadGruposQuinquenales');
+    }
+    filtroAux = aplicaFiltroElement('selectPeriodoPro', 'periodo', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'refPeriod');
+    }
+    filtroAux = aplicaFiltroElement('selectMunicipioPro', 'municipio', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'municipioId');
+    }
+    filtroAux = aplicaFiltroElement('selectDistritoPro', 'distrito', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'distritoId');
+    }
+    filtroAux = aplicaFiltroElement('selectBarrioPro', 'barrio', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'barrioId');
+    }
+    filtroAux = aplicaFiltroElement('selectSeccionCensalPro','seccionCensalId',arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'seccionCensalId');
+    }
 
+    indicadores(urlIndicador1,filtro);
 }
 
 /* 
@@ -109,20 +156,6 @@ function inicializaDatos() {
     if (LOG_DEBUG_COMUN) {
         console.log('inicializaDatosProcedencia');
     }
-
-    let paramCubo = 'procedencia';
-
-    let arrayPaisProcedencia = [];
-    let arrayProvinciaProcedencia = [];
-    let arrayMunicipioProcedencia = [];
-    let arrayNivelEstudio = [];
-    let arrayPeriodo = [];
-    let arrayEdadesQuinquenales = [];
-    let arrayMunicipio = [];
-    let arrayDistrito = [];
-    let arrayBarrio = [];
-    let arraySeccionCensal = [];
-    let urlAjax = '';
 
     let valores = [0, 0]; //Campos para recoger la información del objeto data del ajax
     let valores2 = ['id', 'title'];
@@ -172,20 +205,10 @@ function inicializaDatos() {
     obtenerComboValores('selectMunicipioProcedenciaPro', arrayMunicipioProcedencia, urlAjax, valores, 'checkbox', false, taskCombos, 2);
 	
     //selectEdadQuinquenales
-    urlAjax = dameURL(
-        DSD_VALORES_DIMENSIONES_URL_1 +
-            DIMENSION_EDAD_QUINQUENAL +
-            DSD_VALORES_DIMENSIONES_URL_2
-    );
-    obtenerComboValores('selectEdadQuinquenalesPro', arrayEdadesQuinquenales, urlAjax, valores2, 'checkbox', false, taskCombos, 3);
+    obtenerComboValoresConstantes('selectEdadQuinquenalesPro', arrayEdadesQuinquenales, 'VALORES_EDAD_QUINQUENAL', false, taskCombos, 3);
 
     //selectNivelEstudio
-    urlAjax = dameURL(
-        DSD_VALORES_DIMENSIONES_URL_1 +
-            DIMENSION_NIVEL_ESTUDIOS +
-            DSD_VALORES_DIMENSIONES_URL_2
-    );
-    obtenerComboValores('selectNivelEstudioPro', arrayNivelEstudio, urlAjax, valores2, 'checkbox', false, taskCombos, 4);
+    obtenerComboValoresConstantes('selectNivelEstudioPro', arrayNivelEstudio, 'VALORES_NIVEL_ESTUDIOS', false, taskCombos, 4);
 
     //selectPeriodo
     urlAjax = dameURL(
@@ -195,6 +218,7 @@ function inicializaDatos() {
             '?dimension=refPeriod&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
     obtenerComboValores('selectPeriodoPro', arrayPeriodo, urlAjax, valores, 'checkbox', true, taskCombos, 5);
+    urlIndicador1 = urlAjax;
     indicadores(urlAjax);
 
     //selectMunicipio
@@ -214,6 +238,8 @@ function inicializaDatos() {
             '?dimension=distritoId,distritoTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
     obtenerCombo('selectDistritoPro', arrayDistrito, urlAjax, 'checkbox', false, taskCombos, 7);
+
+    obtenerCombo('selectDistritoSCPro', arrayDistrito2, urlAjax, 'checkbox', false, taskCombos, 7);
 
     //selectBarrio
     urlAjax = dameURL(
@@ -253,6 +279,12 @@ function quitaSeleccionTodos() {
     $('#selectNivelEstudioPro .checkbox label input').prop('checked', false);
 	$('#selectEdadQuinquenalesPro .checkbox label input').prop('checked', false);
     $('#selectPeriodoPro .checkbox label input').prop('checked', false);
+
+    $('#radioMunicipio label input').prop('checked', true);
+    aplicaFiltro('municipio');
+    $('#selectMunicipioPro .checkbox label input').last().prop('checked', true);
+    $('#selectPeriodoPro .checkbox label input').first().prop('checked', true);
+    habilitaTerritorio();
 }
 
 function seleccionTerritorio(territorio) {
@@ -264,6 +296,7 @@ function seleccionTerritorio(territorio) {
         $('#selectBarrioPro').hide();
         quitarSeleccion('selectBarrioPro')
         $('#selectSeccionCensalPro').hide();
+        $('#selectDistritoSCPro').hide();
         quitarSeleccion('selectSeccionCensalPro')
     }else if(territorio=='distrito') {
         $('#selectMunicipioPro').hide();
@@ -273,6 +306,7 @@ function seleccionTerritorio(territorio) {
         $('#selectBarrioPro').hide();
         quitarSeleccion('selectBarrioPro')
         $('#selectSeccionCensalPro').hide();
+        $('#selectDistritoSCPro').hide();
         quitarSeleccion('selectSeccionCensalPro')
     }else if(territorio=='barrio') {
         $('#selectMunicipioPro').hide();
@@ -282,6 +316,7 @@ function seleccionTerritorio(territorio) {
         $('#selectBarrioPro').show();
         $('#selectBarrioPro .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
         $('#selectSeccionCensalPro').hide();
+        $('#selectDistritoSCPro').hide();
         quitarSeleccion('selectSeccionCensalPro')
     }else if(territorio=='seccion_censal') {
         $('#selectMunicipioPro').hide();
@@ -291,7 +326,66 @@ function seleccionTerritorio(territorio) {
         $('#selectBarrioPro').hide();
         quitarSeleccion('selectBarrioPro')
         $('#selectSeccionCensalPro').show();
-        $('#selectSeccionCensalPro .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
+        $('#selectDistritoSCPro').show();
+        // $('#selectSeccionCensalPro .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
     }
 
+}
+
+function addFiltro(paramValor, campo) {
+    if (!filtro) {
+        filtro = filtro + '&where=(';
+    } else {
+        filtro = filtro + ' and (';
+    }
+    if (paramValor.includes(',')) {
+        let params = paramValor.split(',');
+        let h;
+        for (h = 0; h < params.length; h++) {
+            filtro = filtro + campo + "='" + params[h];
+            if (h < params.length - 1) {
+                filtro = filtro + "' or ";
+            } else {
+                filtro = filtro + "'";
+            }
+        }
+    } else {
+        filtro = filtro + campo + "='" + paramValor + "'";
+    }
+    filtro = filtro + ')';
+
+    if (LOG_DEBUG_GRAFICO_BARRAS) {
+        console.log(
+            '[addFiltro] [paramValor:' +
+                paramValor +
+                '] [campo:' +
+                campo +
+                '] [filtro:' +
+                filtro +
+                ']'
+        );
+    }
+}
+
+function filtraTerritorio(territorio) {
+    if (LOG_DEBUG_GRAFICO_BARRAS) {
+        console.log('filtraTerritorio');
+    }
+
+    filtroAux = aplicaFiltroElement('selectDistritoSCPro', 'distrito', arrayIframes,'checkbox');
+    if(filtroAux) {
+        filtro = '';
+        $('#selectSeccionCensalPro').html('<div class="text-right"><button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo(\'selectSeccionCensalEdad\')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button><button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion(\'selectSeccionCensalEdad\')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button></div>');
+        if(filtroAux) {
+            addFiltro(filtroAux, 'distritoId');
+        }
+        urlAjax = 
+            POBLACION_URL_1 +
+                paramCubo +
+                POBLACION_URL_2 +
+                '?dimension=seccionCensalId,seccionCensalTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'+filtro;
+        arraySeccionCensal = [];
+        sessionStorage.removeItem("selectSeccionCensalPro");
+        obtenerCombo('selectSeccionCensalPro', arraySeccionCensal, urlAjax, 'checkbox', false, null);    
+    }
 }

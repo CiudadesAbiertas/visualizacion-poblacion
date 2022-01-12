@@ -50,9 +50,10 @@ See the Licence for the specific language governing permissions and limitations 
   
   <body>		
 	<div class="modal fade bd-loading-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
-		<div class="modal-dialog modal-sm">
-			<div class="modal-content" style="width: 48px">
-				<span class="fa fa-spinner fa-spin fa-3x"></span>
+		<div class="modal-dialog modal-lg modal-dialog-centered">
+			<div class="modal-content modal-loading">
+				<span class="fa fa-spinner fa-spin fa-5x"></span>
+                <span class="home-header_title">Cargando. Espere, por favor</span>
 			</div>
 		</div>
 	</div>
@@ -63,34 +64,42 @@ See the Licence for the specific language governing permissions and limitations 
 		<div class="container">
 			<div class="row">
 				<div class="col-sm-12">
-					<h1 class="lineasActuacion__title datosAbiertos-color" role="heading" aria-level="2" data-i18n="procedencia_que_es"></h1>
+					<h1 class="lineasActuacion__title datosAbiertos-color"  aria-level="2" data-i18n="procedencia_que_es">Que es</h1>
 					<p class="home-header_text" data-i18n="procedencia_texto_que_es"></p>
 				</div>
 			</div>
 			<div class="row" id="capaProcedencia" tabindex="0" role="tabpanel" > 			
-				<div id="filtro" class="col-xs-12 col-sm-12 col-md-3">
-						<form role="form">
+				<div  class="col-xs-12 col-sm-12 col-md-3 filtro">
+						<form>
                             <div class="col-sm-12 form-group ">
                                 <div class="col-sm-5 form-group">
                                     <label class="home-header_title" data-i18n="filtros">Filtros</label>
                                 </div>
                                 <div class="col-sm-7 form-group text-right">
-                                    <a href="#" onclick="quitaSeleccionTodos();">
-                                        <span class="fa fa-trash txOscuro"></span>
-                                       <span  class="txOscuro" data-i18n="limpiar"></span>
-                                    </a>
+									<div class="formBotones">
+										<button type="button" class="btn btn-primary bot-filtrar"  onclick="aplicaFiltro()">
+											<span class="fa fa-search "></span>
+											<span data-i18n="buscar"></span>
+										</button>
+									</div>
+									<div class="formBotones">
+										<button type="button" class="btn secondary bot-filtrar"  onclick="quitaSeleccionTodos();">
+											<span class="fa fa-trash"></span>
+											<span  data-i18n="limpiar"></span>
+										</button>
+									</div>	
                                 </div>
                             </div>
 
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapseTerritorio" data-toggle="collapse">
-                                    <label for="selectTerritorio" class="label_ner" data-i18n="territorio"></label>
+                                    <span  class="label_ner" data-i18n="territorio"></span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
                             <div id="collapseTerritorio" class="col-sm-12 form-group collapse in">
                                 <div id="selectTerritorio">
-                                    <div class="radio">
+                                    <div class="radio" id="radioMunicipio">
                                         <label><input type="radio" name="optradio" checked onclick="aplicaFiltro('municipio')">Municipio</label>
                                         <div class="" id="selectMunicipioPro">
                                             <div class="text-right">
@@ -102,7 +111,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="radio" id="radioDistrito">
                                         <label><input type="radio" name="optradio" onclick="aplicaFiltro('distrito')">Distrito</label>
                                         
-                                        <div class="" id="selectDistritoPro">
+                                        <div class="despla" id="selectDistritoPro">
                                             <div class="text-right">
                                                 <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectDistritoPro')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
                                                 <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectDistritoPro')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
@@ -111,7 +120,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     </div>
                                     <div class="radio" id="radioBarrio">
                                         <label><input type="radio" name="optradio" onclick="aplicaFiltro('barrio')">Barrio</label>
-                                        <div class="" id="selectBarrioPro">
+                                        <div class="despla" id="selectBarrioPro">
                                             <div class="text-right">
                                                 <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectBarrioPro')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
                                                 <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectBarrioPro')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
@@ -120,7 +129,12 @@ See the Licence for the specific language governing permissions and limitations 
                                     </div>
                                     <div class="radio" id="radioSeccionCensal">
                                         <label><input type="radio" name="optradio" onclick="aplicaFiltro('seccion_censal')">Seccion censal</label>
-                                        <div class="" id="selectSeccionCensalPro">
+                                        <div class="despla" id="selectDistritoSCPro">
+                                            <div class="checkbox">
+                                                <span class="text_small txOscuro" data-i18n="selectDistritoSC"></span>
+                                            </div>
+                                        </div>
+                                        <div class="checkbox2 despla" id="selectSeccionCensalPro">
                                             <div class="text-right">
                                                 <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectSeccionCensalPro')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
                                                 <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectSeccionCensalPro')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
@@ -132,7 +146,7 @@ See the Licence for the specific language governing permissions and limitations 
 
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapsePeriodo" data-toggle="collapse">
-                                    <label for="selectPeriodoPro" class="label_ner" data-i18n="periodo"></label>
+                                    <span  class="label_ner" data-i18n="periodo"></span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
@@ -141,12 +155,12 @@ See the Licence for the specific language governing permissions and limitations 
                                     <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectPeriodoPro')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
                                     <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectPeriodoPro')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
                                     </div>
-                                    <div id="selectPeriodoPro"></div>
+                                    <div id="selectPeriodoPro" class="despla"></div>
                             </div>
 							
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapsePaisProcedencia" data-toggle="collapse">
-                                    <label for="selectPaisProcedenciaPro" class="label_ner" data-i18n="pais_procedencia"></label>
+                                    <span  class="label_ner" data-i18n="pais_procedencia"></span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
@@ -155,12 +169,12 @@ See the Licence for the specific language governing permissions and limitations 
                                     <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectPaisProcedenciaPro')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
                                     <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectPaisProcedenciaPro')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
                                     </div>
-                                    <div id="selectPaisProcedenciaPro"></div>
+                                    <div id="selectPaisProcedenciaPro" class="despla"></div>
                             </div>
 							
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapseProvinciaProcedencia" data-toggle="collapse">
-                                    <label for="selectProvinciaProcedenciaPro" class="label_ner" data-i18n="provincia_procedencia"></label>
+                                    <span  class="label_ner" data-i18n="provincia_procedencia"></span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
@@ -169,12 +183,12 @@ See the Licence for the specific language governing permissions and limitations 
                                     <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectProvinciaProcedenciaPro')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
                                     <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectProvinciaProcedenciaPro')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
                                     </div>
-                                    <div id="selectProvinciaProcedenciaPro"></div>
+                                    <div id="selectProvinciaProcedenciaPro" class="despla"></div>
                             </div>
 
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapseMunicipioProcedencia" data-toggle="collapse">
-                                    <label for="selectMunicipioProcedenciaPro" class="label_ner" data-i18n="municipio_procedencia"></label>
+                                    <span  class="label_ner" data-i18n="municipio_procedencia"></span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
@@ -183,12 +197,12 @@ See the Licence for the specific language governing permissions and limitations 
                                     <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectMunicipioProcedenciaPro')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
                                     <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectMunicipioProcedenciaPro')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
                                     </div>
-                                    <div id="selectMunicipioProcedenciaPro"></div>
+                                    <div id="selectMunicipioProcedenciaPro" class="despla"></div>
                             </div>
 							
 							<div class="col-sm-12 form-group filtros">
 								<a href="#collapseNivelEstudios" data-toggle="collapse">
-									<label for="selectNivelEstudioPro" class="label_ner" data-i18n="niveles_estudio">Nivel de estudio</label>
+									<span  class="label_ner" data-i18n="niveles_estudio">Nivel de estudio</span>
 									<i class="fa fa-angle-down"></i>
 								</a>
 							</div>
@@ -202,7 +216,7 @@ See the Licence for the specific language governing permissions and limitations 
 					
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapseEdadQuinquenales" data-toggle="collapse">
-                                    <label for="selectEdadQuinquenalesPro" class="label_ner" data-i18n="edad_quinquenales"></label>
+                                    <span  class="label_ner" data-i18n="edad_quinquenales"></span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
@@ -211,14 +225,23 @@ See the Licence for the specific language governing permissions and limitations 
                                     <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectEdadQuinquenalesPro')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
                                     <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectEdadQuinquenalesPro')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
                                     </div>
-                                    <div id="selectEdadQuinquenalesPro"></div>
+                                    <div id="selectEdadQuinquenalesPro" class="despla"></div>
                             </div>
 
 
                             <div class="col-sm-12 form-group filtros">
-                                <button type="button" class="btn btn-primary bot-filtrar" id="buscarListado" onclick="aplicaFiltro()">
-                                    <span data-i18n="buscar"></span>
-                                </button>
+								<div class="formBotones">
+									<button type="button" class="btn btn-primary bot-filtrar"  onclick="aplicaFiltro()">
+										<span class="fa fa-search "></span>
+										<span data-i18n="buscar"></span>
+									</button>
+								</div>
+								<div class="formBotones">
+									<button type="button" class="btn secondary bot-filtrar"  onclick="quitaSeleccionTodos();">
+										<span class="fa fa-trash"></span>
+										<span  data-i18n="limpiar"></span>
+									</button>
+								</div>
                             </div>
 
 						</form>
@@ -226,7 +249,7 @@ See the Licence for the specific language governing permissions and limitations 
 				<!-- Graficos -->
 				<div class="col-xs-12 col-sm-12 col-md-9">
                     
-                    <ul class="nav nav-tabs">
+                    <ul class="nav nav-tabs" style="display: none">
                         <li id="liTerritorio" class="liPestana active"><a id="aTerritorio" class="titPestana" data-toggle="tab" href="#territorio">Territorio</a></li>
                         <li class="liPestana"><a class="titPestana" data-toggle="tab" href="#comparativa">Comparativa</a></li>
                     </ul>
@@ -234,11 +257,11 @@ See the Licence for the specific language governing permissions and limitations 
                     <div class="tab-content">
                         <div id="territorio" class="tab-pane fade in active">
 
-                            <div class="tab-content row mart10" id="nav-tabContent">
+                            <div class="tab-content row mart10" >
                                 <div class="col-xs-12 col-sm-12 col-md-8">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">Criterios seleccionados:</div>
-                                        <div class="panel-body">
+                                        <div class="panel-body despla">
                                             <p id='pcriterioTerritorio' style="display: none;"><label class="label_ner">Territorio:</label><span id="criterioTerritorio"></span></p>
                                             <p id='pcriterioPaisPro' style="display: none;"><label class="label_ner">Pais de procedencia:</label><span id="criterioPaisPro"></span></p>
                                             <p id='pcriterioProvPro' style="display: none;"><label class="label_ner">Provincia de procedencia:</label><span id="criterioProvPro"></span></p>
@@ -251,80 +274,70 @@ See the Licence for the specific language governing permissions and limitations 
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-4">
                                     <div class="panel panel-default">
-                                        <div class="fondo_gris"><h3 id="indicadores1"></h3></div>
-                                        <div class=""><h4 id="indicadores2">Dato 2</h4></div>
+                                        <div class="fondo_gris"><p class="ind1" id="indicadores1"></p></div>
+                                        <!--  <div class=""><p class="ind2" id="indicadores2">Dato 2</p></div>-->
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
+                            <div class="tab-content row" >
+                                <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoMapa" id="iframeGraficoMapa" class="embed-responsive-item" src="grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&cuboId=poblacionPorProcedencia" title="Bloque para el mapa del cubo de edad"></iframe>
+                                                <iframe class="graficoMapa embed-responsive-item" id="iframeGraficoMapa"  src="grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&cuboId=poblacionPorProcedencia" title="Bloque para el mapa del cubo de edad"></iframe>
                                             </article>
                                         </div>
                                     </div>
                                 </div>
                             </div>
         
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
+                            <div class="tab-content row" >
+                                <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoBarras" id="iframeGraficoBarras" class="embed-responsive-item" src="grafico_barras.html?ejeX=paisProcedencia&titulo=personas_paisprocedencia&iframe=iframeGraficoBarras&cubo=procedencia" title="Bloque para el gráfico de barras"></iframe>
+                                                <iframe class="graficoBarras embed-responsive-item" id="iframeGraficoBarras"  src="grafico_barras.html?ejeX=paisProcedencia&titulo=personas_paisprocedencia&iframe=iframeGraficoBarras&cubo=procedencia" title="Bloque para el gráfico de barras"></iframe>
                                             </article>
                                         </div>
                                     </div>
                                 </div>
                             </div>	
                             
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
+                            <div class="tab-content row" >
+                                <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoBarras" id="iframeGraficoBarras2" class="embed-responsive-item" src="grafico_barras.html?ejeX=provinciaProcedencia&titulo=personas_provinciaprocedencia&iframe=iframeGraficoBarras&cubo=procedencia" title="Bloque para el gráfico de barras"></iframe>
+                                                <iframe class="graficoBarras embed-responsive-item" id="iframeGraficoBarras2"  src="grafico_barras.html?ejeX=provinciaProcedencia&titulo=personas_provinciaprocedencia&iframe=iframeGraficoBarras&cubo=procedencia" title="Bloque para el gráfico de barras"></iframe>
                                             </article>
                                         </div>
                                     </div>
                                 </div>
                             </div>					
                             
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
+                            <div class="tab-content row" >
+                                <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoBarras" id="iframeGraficoBarras3" class="embed-responsive-item" src="grafico_barras.html?ejeX=municipioProcedencia&titulo=personas_municipioprocedencia&iframe=iframeGraficoBarras&cubo=procedencia" title="Bloque para el gráfico de barras"></iframe>
+                                                <iframe class="graficoBarras embed-responsive-item" id="iframeGraficoBarras3"  src="grafico_barras.html?ejeX=municipioProcedencia&titulo=personas_municipioprocedencia&iframe=iframeGraficoBarras&cubo=procedencia" title="Bloque para el gráfico de barras"></iframe>
                                             </article>
                                         </div>
                                     </div>
                                 </div>
                             </div>	
                           
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
-                                    <div class="row">
-                                        <div class="col-xs-12">
-                                            <article>
-                                                <iframe class="tablaDatosGenerica" id="iframetablaDatosGenerica" class="embed-responsive-item" src="grafico_tabla.html?lang=es&titulo=Tabla Datos&iframe=iframetablaDatosGenerica&cuboId=poblacionPorProcedencia" title="Bloque para el gráfico tabla"></iframe>
-                                            </article>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
+
 					    </div>
 
                         <div id="comparativa" class="tab-pane fade">
 
-                            <div class="tab-content row mart10" id="nav-tabContent">
+                            <div class="tab-content row mart10" >
                                 <div class="col-xs-12 col-sm-12 col-md-12">
                                     <div class="panel panel-default">
                                         <div class="panel-heading">Criterios seleccionados:</div>
-                                        <div class="panel-body">
+                                        <div class="panel-body despla">
                                             <p id='pcriterioTerritorio2' style="display: none;"><label class="label_ner">Territorio:</label><span id="criterioTerritorio2"></span></p>
                                             <p id='pcriterioPaisPro2' style="display: none;"><label class="label_ner">Pais de procedencia:</label><span id="criterioPaisPro2"></span></p>
                                             <p id='pcriterioProvPro2' style="display: none;"><label class="label_ner">Provincia de procedencia:</label><span id="criterioProvPro2"></span></p>
@@ -337,54 +350,65 @@ See the Licence for the specific language governing permissions and limitations 
                                 </div>
                             </div>
 
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
+                            <div class="tab-content row" >
+                                <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoMapa" id="iframeGraficoMapa2" class="embed-responsive-item" src="grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&cuboId=poblacionPorProcedencia" title="Bloque para el mapa del cubo de edad"></iframe>
+                                                <iframe class="graficoMapa embed-responsive-item" id="iframeGraficoMapa2"  src="grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&cuboId=poblacionPorProcedencia" title="Bloque para el mapa del cubo de edad"></iframe>
                                             </article>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                             
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
+                            <div class="tab-content row" >
+                                <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoCombinado" id="iframeComparadorTerritorio2" class="embed-responsive-item" src="grafico_comparador_territorios.html?lang=es&titulo=Personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=procedencia&tipoGrafico=barras" title="Bloque para el gráfico de barras del cubo"></iframe>
+                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeComparadorTerritorio2"  src="grafico_comparador_territorios.html?lang=es&titulo=Personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=procedencia&tipoGrafico=barras" title="Bloque para el gráfico de barras del cubo"></iframe>
                                             </article>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 							
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
+                            <div class="tab-content row" >
+                                <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoCombinado" id="iframeComparadorTerritorio" class="embed-responsive-item" src="grafico_comparador_territorios.html?lang=es&titulo=Personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=procedencia&tipoGrafico=lineas" title="Bloque para el gráfico de barras del cubo"></iframe>
+                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeComparadorTerritorio"  src="grafico_comparador_territorios.html?lang=es&titulo=Personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=procedencia&tipoGrafico=lineas" title="Bloque para el gráfico de barras del cubo"></iframe>
                                             </article>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 							
-                            <div class="tab-content row" id="nav-tabContent">
-                                <div class="tab-pane fade  in active" id="contact" role="tabpanel" >
+                            <div class="tab-content row" >
+                                <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoLinea" id="iframeGraficoLinea" class="embed-responsive-item" src="grafico_linea.html?lang=es&ejeX=refPeriod&titulo=personas_anyo&iframe=iframeGraficoLinea&cubo=procedencia" title="Bloque para el gráfico personas año"></iframe>
+                                                <iframe class="graficoLinea embed-responsive-item" id="iframeGraficoLinea"  src="grafico_linea.html?lang=es&ejeX=refPeriod&titulo=personas_anyo&iframe=iframeGraficoLinea&cubo=procedencia" title="Bloque para el gráfico personas año"></iframe>
                                             </article>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 							
+                        </div>
+                        <div class="tab-content row" >
+                            <div class="tab-pane fade  in active"  role="tabpanel" >
+                                <div class="row">
+                                    <div class="col-xs-12">
+                                        <article>
+                                            <iframe class="tablaDatosGenerica embed-responsive-item" id="iframetablaDatosGenerica"  src="grafico_tabla.html?lang=es&titulo=tabla_datos&iframe=iframetablaDatosGenerica&cuboId=poblacionPorProcedencia" title="Bloque para el gráfico tabla"></iframe>
+                                        </article>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 				</div>

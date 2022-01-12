@@ -49,9 +49,10 @@ See the Licence for the specific language governing permissions and limitations 
 
 	<body>
 		<div class="modal fade bd-loading-modal-lg" data-backdrop="static" data-keyboard="false" tabindex="-1">
-			<div class="modal-dialog modal-sm">
-				<div class="modal-content" style="width: 48px">
-					<span class="fa fa-spinner fa-spin fa-3x"></span>
+			<div class="modal-dialog modal-lg modal-dialog-centered">
+				<div class="modal-content modal-loading">
+					<span class="fa fa-spinner fa-spin fa-5x"></span>
+					<span class="home-header_title">Cargando. Espere, por favor</span>
 				</div>
 			</div>
 		</div>
@@ -101,12 +102,12 @@ See the Licence for the specific language governing permissions and limitations 
                                     </a>
                                     <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                                         <li><a id="descargaCSV" href="#" target="_blank" data-i18n="descarga_csv"></a></li>
-                                        <li><a id="descargaGeoJSON" href="#" target="_blank" data-i18n="descarga_geojson"></a></li>
+                                        <li><a id="descargaJSON" href="#" target="_blank" data-i18n="descarga_json"></a></li>
                                     </ul>
                                 </div>
                                 
                                 <div class="col-xs-1">
-                                    <a id="mostarDatos" onclick="mostrarDatos()">
+                                    <a  onclick="mostrarDatos()">
                                         <span class="fa fa-table n fa-3" aria-hidden="true"></span>
                                     </a>
                                 </div>
@@ -148,8 +149,7 @@ See the Licence for the specific language governing permissions and limitations 
 		<script src="https://cdn.amcharts.com/lib/version/4.10.22/core.js"></script>
         <script src="https://cdn.amcharts.com/lib/version/4.10.22/charts.js"></script>
         <script src="https://cdn.amcharts.com/lib/version/4.10.22/themes/frozen.js"></script>
-        <script src="https://cdn.amcharts.com/lib/version/4.10.22/themes/animated.js"></script>
-        <script src="https://cdn.amcharts.com/lib/version/4.10.22/lang/es_ES.js"></script>
+              <script src="https://cdn.amcharts.com/lib/version/4.10.22/lang/es_ES.js"></script>
 		
 		<!-- Normalización de datos -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/numeral.js/2.0.6/numeral.min.js"></script>
@@ -173,6 +173,7 @@ See the Licence for the specific language governing permissions and limitations 
 		<script>
 			$(document).ready(function() {
 				$('.modal').modal('show');
+                $('#myModalIndicadores').modal('hide');
 				initComun();
 				inicializa();
 			} );

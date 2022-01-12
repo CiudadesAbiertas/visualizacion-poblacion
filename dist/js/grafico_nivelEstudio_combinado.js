@@ -69,6 +69,7 @@ var agrupador = '';
 
 var chart;
 var xAxis;
+let periodos = [];
 
 /*
 	Función de inicialización del script
@@ -110,7 +111,13 @@ function inicializaMultidioma() {
             })
             .done(function () {
                 $('html').i18n();
-                inicializaDatos();
+                capturaParam();
+                periodo = paramPeriodo;
+                if(paramPeriodo=='ultimo') {
+                    dameUltimoPeriodo(paramCubo,periodos);
+                }else {
+                    inicializaDatos();
+                }
             });
     });
 
@@ -125,7 +132,6 @@ function inicializaDatos() {
         console.log('inicializaDatos');
     }
 
-    capturaParam();
     insertaURLSAPI();
     modificaTaskMaster('iframeGraficoBarras');
 
@@ -168,6 +174,14 @@ function inicializaDatos() {
         addFiltro(paramSexo, 'sex');
     }
     if (paramPeriodo) {
+        if(paramPeriodo=='ultimo') {
+            paramPeriodo = periodos[0];
+            let paramTitulo = $.i18n(paramTituloKey);
+            if (paramPeriodo) {
+                paramTitulo = paramTitulo + ' ' + paramPeriodo;
+            }
+            $('#tituloGrafico').html(decodeURI(paramTitulo));
+        }
         addFiltro(paramPeriodo, 'refPeriod');
     }
     if (paramMunicipio) {
@@ -233,31 +247,32 @@ function inicializaDatos() {
             filtro
     );
 
-    let urlEtiquetas =
-        URL_API +
-        '/data-cube/data-structure-definition/dimension/' +
-        dimension1 +
-        '/value';
-    $.getJSON(urlEtiquetas)
-        .done(function (data) {
-            if (data.records) {
-                let i;
-                for (i = 0; i < data.records.length; i++) {
-                    dimensionEtiquetas[data.records[i].id] = data.records[i].title;
-                    if(dimension1 == 'edadGruposQuinquenales'){
-                        if(data.records[i].title == 'De 5 a 9 años') {
-                            dimensionEtiquetas[data.records[i].id] = 'De 05 a 09 años';
-                        }
-                        if(data.records[i].title == 'De 0 a 4 años') {
-                            dimensionEtiquetas[data.records[i].id] = 'De 00 a 04 años';
-                        }
-                    }
-                }
-            }
-        })
-        .always(function () {
-            obtieneDatosAPI(url);
-        });
+    if(DIMENSION_CON_ETIQUETA.indexOf(dimension1)!=-1){
+        dimensionEtiquetas = dimensionEtiquetas;
+        if(dimension1=='sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(dimension1=='edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(dimension1=='nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(dimension1=='tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }
+    }
+    if(DIMENSION_CON_ETIQUETA.indexOf(dimension2)!=-1){
+        dimensionEtiquetas = dimensionEtiquetas;
+        if(dimension2=='sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(dimension2=='edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(dimension2=='nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(dimension2=='tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }
+    }
+    
+    obtieneDatosAPI(url);
 }
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
@@ -570,7 +585,7 @@ function obtieneDatosAPI(url) {
             lineaNiveles00.sort( compare );
             let htmlContent =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
+                $.i18n('dimension1') +
                 '</th><th>' +
                 $.i18n('dimension2') +
                 '</th><th>' +
@@ -1095,6 +1110,9 @@ function capturaParam() {
     if (getUrlVars()['seccionCensalId']) {
         paramSeccionCensal = getUrlVars()['seccionCensalId'];
     }
+    if (getUrlVars()['edadSimple']) {
+        paramEdad = getUrlVars()['edadSimple'];
+    }
     if (getUrlVars()['edad']) {
         paramEdad = getUrlVars()['edad'];
     }
@@ -1118,12 +1136,14 @@ function pintaGrafico() {
     }
 
     am4core.useTheme(am4themes_frozen);
-    am4core.useTheme(am4themes_animated);
-
+  
     chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.language.locale = am4lang_es_ES;
     chart.svgContainer.htmlElement.style.height = '800';
 
+    chart.focusFilter.stroke = am4core.color("#0f0");
+    chart.focusFilter.strokeWidth = 4;
+    
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = 'ejeX';
     categoryAxis.renderer.grid.template.location = 0;
@@ -1161,8 +1181,6 @@ function createSeries(name, data) {
     series.data = data;
     let columnTemplate = series.columns.template;
     columnTemplate.strokeWidth = 2;
-    columnTemplate.strokeOpacity = 1;
-
     return series;
 
 }

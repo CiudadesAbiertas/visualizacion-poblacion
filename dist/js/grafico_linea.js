@@ -40,6 +40,9 @@ var paramNivelEstudio;
 var paramProcedencia;
 var paramPaisNacimiento;
 var paramNacionalidad;
+var paramPaisProcedencia;
+var paramProvinciaProcedencia;
+var paramMunicipioProcedencia;
 
 var filtro = '';
 var cuboEdades = [];
@@ -47,6 +50,7 @@ var dimensionEtiquetas = {};
 
 var dimension = '';
 var agrupador = '';
+let periodos = [];
 
 /*
 	Función de inicialización del script
@@ -88,7 +92,13 @@ function inicializaMultidioma() {
             })
             .done(function () {
                 $('html').i18n();
-                inicializaDatos();
+                capturaParam();
+                periodo = paramPeriodo;
+                if(paramPeriodo=='ultimo') {
+                    dameUltimoPeriodo(paramCubo,periodos);
+                }else {
+                    inicializaDatos();
+                }
             });
     });
 
@@ -103,7 +113,6 @@ function inicializaDatos() {
         console.log('inicializaDatos');
     }
 
-    capturaParam();
     insertaURLSAPI();
     modificaTaskMaster('iframeGraficoBarras');
 
@@ -144,6 +153,14 @@ function inicializaDatos() {
         addFiltro(paramSexo, 'sex');
     }
     if (paramPeriodo) {
+        if(paramPeriodo=='ultimo') {
+            paramPeriodo = periodos[0];
+            let paramTitulo = $.i18n(paramTituloKey);
+            if (paramPeriodo) {
+                paramTitulo = paramTitulo + ' ' + paramPeriodo;
+            }
+            $('#tituloGrafico').html(decodeURI(paramTitulo));
+        }
         addFiltro(paramPeriodo, 'refPeriod');
     }
     if (paramMunicipio) {
@@ -163,6 +180,15 @@ function inicializaDatos() {
     }
     if (paramPaisNacimiento) {
         addFiltro(paramPaisNacimiento, 'paisNacimiento');
+    }
+    if (paramPaisProcedencia) {
+        addFiltro(paramPaisProcedencia, 'paisProcedencia');
+    }
+    if (paramProvinciaProcedencia) {
+        addFiltro(paramProvinciaProcedencia, 'provinciaProcedencia');
+    }
+    if (paramMunicipioProcedencia) {
+        addFiltro(paramMunicipioProcedencia, 'municipioProcedencia');
     }
 
     let url =
@@ -201,23 +227,20 @@ function inicializaDatos() {
             filtro
     );
 
-    let urlEtiquetas =
-        URL_API +
-        '/data-cube/data-structure-definition/dimension/' +
-        dimension +
-        '/value';
-    $.getJSON(urlEtiquetas)
-        .done(function (data) {
-            if (data.records) {
-                let i;
-                for (i = 0; i < data.records.length; i++) {
-                    dimensionEtiquetas[data.records[i].id] = data.records[i].title;
-                }
-            }
-        })
-        .always(function () {
-            obtieneDatosAPI(url);
-        });
+    if(DIMENSION_CON_ETIQUETA.indexOf(paramEjeX)!=-1){
+        dimensionEtiquetas = dimensionEtiquetas;
+        if(paramEjeX=='sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX=='edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX=='nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX=='tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }
+    }
+    
+    obtieneDatosAPI(url);
 }
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
@@ -365,6 +388,9 @@ function capturaParam() {
     if (getUrlVars()['seccionCensalId']) {
         paramSeccionCensal = getUrlVars()['seccionCensalId'];
     }
+    if (getUrlVars()['edadSimple']) {
+        paramEdad = getUrlVars()['edadSimple'];
+    }
     if (getUrlVars()['edad']) {
         paramEdad = getUrlVars()['edad'];
     }
@@ -380,6 +406,15 @@ function capturaParam() {
     if (getUrlVars()['medidaPor']) {
         paramMedidapor = getUrlVars()['medidaPor'];
     }
+    if (getUrlVars()['paisProcedencia']) {
+        paramPaisProcedencia = getUrlVars()['paisProcedencia'];
+    }
+    if (getUrlVars()['provinciaProcedencia']) {
+        paramProvinciaProcedencia = getUrlVars()['provinciaProcedencia'];
+    }
+    if (getUrlVars()['municipioProcedencia']) {
+        paramMunicipioProcedencia = getUrlVars()['municipioProcedencia'];
+    }
 }
 
 /*
@@ -391,12 +426,14 @@ function pintaGrafico() {
     }
 
     am4core.useTheme(am4themes_frozen);
-    am4core.useTheme(am4themes_animated);
-
+ 
     let chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.data = cuboEdades;
     chart.language.locale = am4lang_es_ES;
 
+    chart.focusFilter.stroke = am4core.color("#0f0");
+    chart.focusFilter.strokeWidth = 4;
+    
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = 'ejeX';
     categoryAxis.renderer.grid.template.location = 0;

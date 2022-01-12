@@ -104,8 +104,8 @@ elementoId : ej. selectEdad
 campo : ej. edad
 arrayIframes : iFrames sobre los que afecta
  */
-function aplicaFiltroElement(elementoId, campo, arrayIframes, tipoCombo) {
-    aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo);
+function aplicaFiltroElement(elementoId, campo, arrayIframes, tipoCombo, filtroIndicador1) {
+    return aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo, filtroIndicador1);
 }
 
 /*
@@ -115,7 +115,7 @@ elementoId : ej. selectEdad
 campo : ej. edad
 arrayIframes : iFrames sobre los que afecta
  */
-function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
+function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo, filtroIndicador1) {
     if (LOG_DEBUG_COMUN) {
         console.log(
             '[aplicaFiltroElementGlobal] [elementoId:' +
@@ -131,13 +131,14 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
     if (tipoCombo=='checkbox') {
         let url = '';
         let i;
-        let criteriosEstablecido = false
+        let criteriosEstablecido = false;
+        let value = '';
         for (i = 0; i < arrayIframes.length; i++) {
             let iframe = arrayIframes[i];
             url = $('#' + iframe).attr('src');
             let arrayComponente = JSON.parse(sessionStorage.getItem(elementoId));
             let o;
-            let value = '';
+            value = '';
             if(arrayComponente) {
                 for(o=0;o<arrayComponente.length;o++) {
                     let key = arrayComponente[o].id;
@@ -154,6 +155,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                         campo,
                         value
                     );
+                    
                 } else {
                     let indice = url.indexOf(campo+'=');
                     if(indice!=-1) {
@@ -179,7 +181,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -199,15 +201,19 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
+                                } // selectDistritoSCEdad
+                                if(elementoId.indexOf('selectDistritoSC')==-1) {
+                                    $('#criterioTerritorio').append(' '+ etiqueta);
+                                    $('#criterioTerritorio2').append(' '+ etiqueta);
                                 }
-                                $('#criterioTerritorio').append(' '+ etiqueta);
-                                $('#criterioTerritorio2').append(' '+ etiqueta);
                             }
-                            $('#pcriterioTerritorio').show();
-                            $('#pcriterioTerritorio2').show();
+                            if(elementoId.indexOf('selectDistritoSC')==-1) {
+                                $('#pcriterioTerritorio').show();
+                                $('#pcriterioTerritorio2').show();
+                            }
                         }
                         
                         
@@ -219,7 +225,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -239,7 +245,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -259,7 +265,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -279,7 +285,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -297,7 +303,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -315,12 +321,30 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#pcriterioEdad').append(' '+ etiqueta);
-                                $('#pcriterioEdad2').append(' '+ etiqueta);
+                                $('#criterioEdad').append(' '+ etiqueta);
+                                $('#criterioEdad2').append(' '+ etiqueta);
+                            }
+                            $('#pcriterioEdad').show();
+                            $('#pcriterioEdad2').show();
+                        }
+                    }
+                    if(campo=='edadSimple'){
+                        let etiqueta = '';
+                        if(value) {
+                            let etiquetas = [];
+                            etiquetas = value.split(',');
+                            let d;
+                            for(d=0;d<etiquetas.length;d++) {
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
+                                if(d<(etiquetas.length-1)) {
+                                    etiqueta = etiqueta + ',';
+                                }
+                                $('#criterioEdad').append(' '+ etiqueta);
+                                $('#criterioEdad2').append(' '+ etiqueta);
                             }
                             $('#pcriterioEdad').show();
                             $('#pcriterioEdad2').show();
@@ -369,7 +393,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -387,7 +411,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -405,7 +429,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -416,32 +440,14 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             $('#pcriterioMunPro2').show();
                         }
                     }
-                    if(campo=='municipioProcedencia'){
+                    if(campo=='nivelEstudio'){
                         let etiqueta = '';
                         if(value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
-                                    etiqueta = etiqueta + ',';
-                                }
-                                $('#criterioMunPro').append(' '+ etiqueta);
-                                $('#criterioMunPro2').append(' '+ etiqueta);
-                            }
-                            $('#pcriterioMunPro').show();
-                            $('#pcriterioMunPro2').show();
-                        }
-                    }
-                    if(campo=='nivelEstudios'){
-                        let etiqueta = '';
-                        if(value) {
-                            let etiquetas = [];
-                            etiquetas = value.split(',');
-                            let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -459,7 +465,7 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                             etiquetas = value.split(',');
                             let d;
                             for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
+                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
                                 if(d<(etiquetas.length-1)) {
                                     etiqueta = etiqueta + ',';
                                 }
@@ -475,6 +481,12 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
             }
             criteriosEstablecido = true;
         }
+        if(value) {
+            // filtroIndicador1 = filtroIndicador1 + '&'+campo + '=' + value;
+            return value;
+        }else{
+            return '';
+        }
     }else if(tipoCombo=='option'){
         if (
             $('#' + elementoId).val() &&
@@ -482,20 +494,28 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
         ) {
             let url = '';
             let i;
+            let value = '';
             for (i = 0; i < arrayIframes.length; i++) {
                 let iframe = arrayIframes[i];
                 url = $('#' + iframe).attr('src');
+                value = $('#' + elementoId)
+                        .selectpicker()
+                        .val()
                 url = addParamIntoUrl(
                     url,
                     campo,
-                    $('#' + elementoId)
-                        .selectpicker()
-                        .val()
+                    value
                 );
                 $('#' + iframe).attr('src', url);
             }
+            if(value) {
+                return value;
+            }else{
+                return '';
+            }
         }
     }
+
 }
 
 /*
@@ -808,7 +828,7 @@ function includeHTML(menu, seccion_nav) {
     //Control para el slider
     $('.slider-tick-label-container').attr('style', 'margin-left: -35px;');
     $('.slider-tick-label').width('70px');
-    filtraMenuCubos();
+    //filtraMenuCubos();
 }
 
 function checkPageLoad() {
@@ -871,7 +891,7 @@ function cambioCSSPlantilla() {
     $('#buttonNacionalidad').css('font-weight', 'normal');
     $('#buttonProcedencia').css('font-weight', 'normal');
     $('#buttonPaisNacimiento').css('font-weight', 'normal');
-    $('#buttonGlosario').css('font-weight', 'normal');
+    $('#buttonAyuda').css('font-weight', 'normal');
 }
 
 /**
@@ -954,6 +974,9 @@ function changeSeleccionMultiplebySession(selectorId, arrayComponente, tipoCombo
                 $('#pcriterioEdad2').show();
             }
         }
+        if(selectorId.indexOf('selectDistritoSC')!=-1) {
+            onclick = ' onclick="chequeaMultiple(\'selectDistritoSC\')"';
+        }
         $('#' + selectorId).append(
             '<div class="checkbox"><label><input type="checkbox" id="'+ selectorId +
             componente.id +
@@ -1005,15 +1028,17 @@ function obtenerComboValores(selectorId, arrayComponente, urlAjax, valores, tipo
     ) {
         arrayComponente = JSON.parse(sessionStorage.getItem(selectorId));
         changeSeleccionMultiplebySession(selectorId, arrayComponente, tipoCombo, chequeaUtlimo);
-        taskCombos[posTask]=true;
-        let ultimoAcabado=true;
-        let d;
-        for(d=0;d<taskCombos.length;d++) {
-            ultimoAcabado = ultimoAcabado && taskCombos[d];
-        }
-        if(ultimoAcabado) {
-            aplicaFiltro('municipio');
-            cargaTerminada();
+        if(taskCombos) {
+            taskCombos[posTask]=true;
+            let ultimoAcabado=true;
+            let d;
+            for(d=0;d<taskCombos.length;d++) {
+                ultimoAcabado = ultimoAcabado && taskCombos[d];
+            }
+            if(ultimoAcabado) {
+                aplicaFiltro('municipio');
+                cargaTerminada();
+            }
         }
     } else {
         let jqxhr = $.getJSON(urlAjax)
@@ -1026,18 +1051,99 @@ function obtenerComboValores(selectorId, arrayComponente, urlAjax, valores, tipo
             })
             .always(function () {
                 sessionStorage.setItem(selectorId, JSON.stringify(arrayComponente));
-                taskCombos[posTask]=true;
-                let ultimoAcabado=true;
-                let d;
-                for(d=0;d<taskCombos.length;d++) {
-                    ultimoAcabado = ultimoAcabado && taskCombos[d];
-                }
-                if(ultimoAcabado) {
-                    aplicaFiltro('municipio');
-                    cargaTerminada();
+                if(taskCombos) {
+                    taskCombos[posTask]=true;
+                    let ultimoAcabado=true;
+                    let d;
+                    for(d=0;d<taskCombos.length;d++) {
+                        ultimoAcabado = ultimoAcabado && taskCombos[d];
+                    }
+                    if(ultimoAcabado) {
+                        aplicaFiltro('municipio');
+                        cargaTerminada();
+                    }
                 }
             });
     }
+}
+
+
+function obtenerComboValoresConstantes(selectorId, arrayComponente, constante, chequeaUtlimo, taskCombos, posTask) {
+    if (LOG_DEBUG_COMUN) {
+        console.log('obtenerComboValores2');
+    }
+
+    if(constante=='VALORES_EDAD_QUINQUENAL') {
+        VALORES_EDAD_QUINQUENAL.forEach(obtenerDatosMapa,arrayComponente);
+    }else if(constante=='VALORES_SEXO') {
+        VALORES_SEXO.forEach(obtenerDatosMapa,arrayComponente);
+    }else if(constante=='VALORES_NACIONALIDAD') {
+        VALORES_NACIONALIDAD.forEach(obtenerDatosMapa,arrayComponente);
+    }else if(constante=='VALORES_NIVEL_ESTUDIOS') {
+        VALORES_NIVEL_ESTUDIOS.forEach(obtenerDatosMapa,arrayComponente);
+    }
+    
+    arrayComponente.sort(compareId);
+    let h;
+    for(h=0;h<arrayComponente.length;h++) {
+        let componente = arrayComponente[h];
+        let onclick = '';
+            let checked = '';
+            if(chequeaUtlimo && h==(arrayComponente.length-1)) {
+                checked = 'checked';
+            }
+            if(selectorId.indexOf('selectMunicipio')!=-1) {
+                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
+            }
+            if(selectorId.indexOf('selectDistrito')!=-1) {
+                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
+            }
+            if(selectorId.indexOf('selectBarrio')!=-1) {
+                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
+            }
+            if(selectorId.indexOf('selectSeccionCensal')!=-1) {
+                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
+            }
+            if(selectorId.indexOf('selectPeriodo')!=-1) {
+                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
+            }
+            if(selectorId.indexOf('selectDistritoSC')!=-1) {
+                onclick = ' onclick="chequeaMultiple(\'selectDistritoSC\')"';
+            }
+
+            $('#' + selectorId).append(
+                '<div class="checkbox"><label ><input type="checkbox" id="'+ selectorId +
+                componente.id +
+                    '" value="' +
+                    componente.id +
+                    '"'+checked+onclick+'><span id=etiqueta'+ selectorId + componente.id+'>' +
+                    componente.title +
+                    '</span></label></div>'
+            );
+    }
+    sessionStorage.setItem(selectorId, JSON.stringify(arrayComponente));
+    if(taskCombos) {
+        taskCombos[posTask]=true;
+        let ultimoAcabado=true;
+        let d;
+        for(d=0;d<taskCombos.length;d++) {
+            ultimoAcabado = ultimoAcabado && taskCombos[d];
+        }
+        if(ultimoAcabado) {
+            aplicaFiltro('municipio');
+            cargaTerminada();
+        }
+    }
+}
+
+function obtenerDatosMapa(value, key, map) {
+
+    let componente;
+    componente = {
+        id : key,
+        title : value
+    };
+    this.push(componente);
 }
 
 /**
@@ -1105,8 +1211,12 @@ function changeSeleccionMultiple(selectorId, arrayComponente, data, valores, tip
                 arrayComponente.push(componente);
             }
         }
-
-        arrayComponente.sort(compareId);
+        if(selectorId.indexOf('selectPeriodo')!=-1) {
+            arrayComponente.sort(compareIdDesc);
+        }else {
+            arrayComponente.sort(compareId);
+        }
+        
         let h;
         for(h=0;h<arrayComponente.length;h++) {
             let componente = arrayComponente[h];
@@ -1121,7 +1231,7 @@ function changeSeleccionMultiple(selectorId, arrayComponente, data, valores, tip
             }else if(tipoCombo=='checkbox') {
                 let onclick = '';
                 let checked = '';
-                if(chequeaUtlimo && h==(arrayComponente.length-1)) {
+                if(chequeaUtlimo && h==0) {
                     checked = 'checked';
                 }
                 if(selectorId.indexOf('selectMunicipio')!=-1) {
@@ -1139,13 +1249,16 @@ function changeSeleccionMultiple(selectorId, arrayComponente, data, valores, tip
                 if(selectorId.indexOf('selectPeriodo')!=-1) {
                     onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
                 }
+                if(selectorId.indexOf('selectDistritoSC')!=-1) {
+                    onclick = ' onclick="chequeaMultiple(\'selectDistritoSC\')"';
+                }
 
                 $('#' + selectorId).append(
                     '<div class="checkbox"><label ><input type="checkbox" id="'+ selectorId +
                     componente.id +
                         '" value="' +
                         componente.id +
-                        '"'+checked+onclick+'><span id=etiqueta'+componente.id+'>' +
+                        '"'+checked+onclick+'><span id=etiqueta'+selectorId+componente.id+'>' +
                         componente.title +
                         '</span></label></div>'
                 );
@@ -1318,6 +1431,16 @@ function compareId(a, b) {
     return 0;
 }
 
+function compareIdDesc(a, b) {
+    if (a.id > b.id) {
+        return -1;
+    }
+    if (a.id < b.id) {
+        return 1;
+    }
+    return 0;
+}
+
 function cambioCapa(capa) {
     if (LOG_DEBUG_COMUN) {
         console.log('cambioCapa');
@@ -1325,17 +1448,7 @@ function cambioCapa(capa) {
     if(capa == 'inicio') {
         location.replace('index.html');
     } else if (capa == 'ayuda') {
-        $('#buttonIndicadores').css('font-weight', 'normal');
-        $('#buttonInicio').css('font-weight', 'normal');
-        $('#buttonEdadSimple').css('font-weight', 'normal');
-        $('#buttonEdadQuinquenales').css('font-weight', 'normal');
-        $('#buttonNivelEstudio').css('font-weight', 'normal');
-        $('#buttonGlosario').css('font-weight', 'bold');
-
-        $('#capaInicio').hide();
-        $('#capaEdadQuinquenales').hide();
-        $('#capIndicadoress').hide();
-        $('#capaAyuda').show();
+        location.replace('ayuda.html');
     } else if (capa == 'edadQuinquenales') {
         location.replace('edad_grupos_quinquenales.html');
     } else if (capa == 'edadSimple') {
@@ -1350,13 +1463,13 @@ function cambioCapa(capa) {
         location.replace('pais_nacimiento.html');
     } else if (capa == 'procedencia') {
         location.replace('procedencia.html');
-    }
+    } 
     
 }
 
-function indicadores(url) {
+function indicadores(url1,filtro1) {
     
-    $.getJSON(url)
+    $.getJSON(url1+filtro1)
         .done(function (data) {
             let suma = 0;
             if (data.records) {
@@ -1367,8 +1480,11 @@ function indicadores(url) {
                 }
                 let numeralSuma = numeral(suma);
                 $('#indicadores1').html(numeralSuma.format(numFormatoSinDecimales)+' personas');
+            }else{
+                $('#indicadores1').html('0 personas');
             }
-        })
+        }
+    )
         
 }
 
@@ -1381,11 +1497,16 @@ function deshabilitaTerritorio() {
 function habilitaTerritorio() {
     $('#liTerritorio').removeClass('disabled');
     $('#aTerritorio').removeClass('btn disabled');
+    $('.nav-tabs a:first').tab('show');
 }
 
 function chequeaMultiple(capa) {
     if (LOG_DEBUG_COMUN) {
         console.log('cambioCapa');
+    }
+
+    if(capa.indexOf('selectDistritoSC')!=-1) {
+        filtraTerritorio();
     }
 
     let numchecked = 0;
@@ -1400,4 +1521,42 @@ function chequeaMultiple(capa) {
     } else {
         habilitaTerritorio();
     }
+}
+
+function obtenerEtiquetas(value, key, map) {
+    this[key] = value;
+}
+
+function dameUltimoPeriodo(cubo, periodos) { 
+
+    let url;
+    if(URL_CUBOS.get(cubo)) {
+        url =
+        URL_CUBOS.get(cubo) +
+        POBLACION_URL_2 +
+        '?dimension=refPeriod&group=SUM&measure=numeroPersonas&sort=refPeriod&page=1&pageSize=100';
+    }else {
+        url =
+        POBLACION_URL_1 +
+        cubo +
+        POBLACION_URL_2 +
+        '?dimension=refPeriod&group=SUM&measure=numeroPersonas&sort=refPeriod&page=1&pageSize=100';
+    }
+
+    $.getJSON(url)
+        .done(function (data) {
+            let suma = 0;
+            if (data.records) {
+                let i;
+                for (i = 0; i < data.records.length; i++) {
+                    periodos.push(data.records[i][0]);
+                }
+                
+            }
+        }
+        ).always(function () {
+            // ultimoPeriodo = periodos[0];
+            inicializaDatos();
+        });
+
 }

@@ -41,6 +41,9 @@ var paramNivelEstudio;
 var paramProcedencia;
 var paramPaisNacimiento;
 var paramNacionalidad;
+var paramPaisProcedencia;
+var paramProvinciaProcedencia;
+var paramMunicipioProcedencia;
 
 var filtro = '';
 var lineaEdades0004 = [];
@@ -71,6 +74,8 @@ var agrupador = '';
 
 var chart;
 var xAxis;
+
+let periodos = [];
 
 /*
 	Función de inicialización del script
@@ -112,7 +117,13 @@ function inicializaMultidioma() {
             })
             .done(function () {
                 $('html').i18n();
-                inicializaDatos();
+                capturaParam();
+                periodo = paramPeriodo;
+                if(paramPeriodo=='ultimo') {
+                    dameUltimoPeriodo(paramCubo,periodos);
+                }else {
+                    inicializaDatos();
+                }
             });
     });
 
@@ -127,7 +138,6 @@ function inicializaDatos() {
         console.log('inicializaDatos');
     }
 
-    capturaParam();
     insertaURLSAPI();
     modificaTaskMaster('iframeGraficoBarras');
 
@@ -172,6 +182,14 @@ function inicializaDatos() {
         addFiltro(paramSexo, 'sex');
     }
     if (paramPeriodo) {
+        if(paramPeriodo=='ultimo') {
+            paramPeriodo = periodos[0];
+            let paramTitulo = $.i18n(paramTituloKey);
+            if (paramPeriodo) {
+                paramTitulo = paramTitulo + ' ' + paramPeriodo;
+            }
+            $('#tituloGrafico').html(decodeURI(paramTitulo));
+        }
         addFiltro(paramPeriodo, 'refPeriod');
     }
     if (paramMunicipio) {
@@ -192,7 +210,16 @@ function inicializaDatos() {
     if (paramPaisNacimiento) {
         addFiltro(paramPaisNacimiento, 'paisNacimiento');
     }
-
+    if (paramPaisProcedencia) {
+        addFiltro(paramPaisProcedencia, 'paisProcedencia');
+    }
+    if (paramProvinciaProcedencia) {
+        addFiltro(paramProvinciaProcedencia, 'provinciaProcedencia');
+    }
+    if (paramMunicipioProcedencia) {
+        addFiltro(paramMunicipioProcedencia, 'municipioProcedencia');
+    }
+    
     let url =
         POBLACION_URL_1 +
         paramCubo +
@@ -237,31 +264,32 @@ function inicializaDatos() {
             filtro
     );
 
-    let urlEtiquetas =
-        URL_API +
-        '/data-cube/data-structure-definition/dimension/' +
-        dimension1 +
-        '/value';
-    $.getJSON(urlEtiquetas)
-        .done(function (data) {
-            if (data.records) {
-                let i;
-                for (i = 0; i < data.records.length; i++) {
-                    dimensionEtiquetas[data.records[i].id] = data.records[i].title;
-                    if(dimension1 == 'edadGruposQuinquenales'){
-                        if(data.records[i].title == 'De 5 a 9 años') {
-                            dimensionEtiquetas[data.records[i].id] = 'De 05 a 09 años';
-                        }
-                        if(data.records[i].title == 'De 0 a 4 años') {
-                            dimensionEtiquetas[data.records[i].id] = 'De 00 a 04 años';
-                        }
-                    }
-                }
-            }
-        })
-        .always(function () {
-            obtieneDatosAPI(url);
-        });
+    if(DIMENSION_CON_ETIQUETA.indexOf(paramEjeX1)!=-1){
+        dimensionEtiquetas = dimensionEtiquetas;
+        if(paramEjeX1=='sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX1=='edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX1=='nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX1=='tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }
+    }
+    if(DIMENSION_CON_ETIQUETA.indexOf(paramEjeX2)!=-1){
+        dimensionEtiquetas = dimensionEtiquetas;
+        if(paramEjeX2=='sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX2=='edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX2=='nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX2=='tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }
+    }
+
+    obtieneDatosAPI(url);
 }
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
@@ -457,133 +485,132 @@ function obtieneDatosAPI(url) {
                             };
                             lineaEdades0509.push(muestra0509);
                         }else if(data.records[i][dimension1]=='10-a-14') {
-                            muestra0509 = {
+                            muestra1014 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades1014.push(muestra1014);
                         }else if(data.records[i][dimension1]=='15-a-19') {
-                            muestra0509 = {
+                            muestra1519 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades1519.push(muestra1519);
                         }else if(data.records[i][dimension1]=='20-a-24') {
-                            muestra0509 = {
+                            muestra2024 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades2024.push(muestra2024);
                         }else if(data.records[i][dimension1]=='25-a-29') {
-                            muestra0509 = {
+                            muestra2529 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades2529.push(muestra2529);
                         }else if(data.records[i][dimension1]=='30-a-34') {
-                            muestra0509 = {
+                            muestra3034 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades3034.push(muestra3034);
                         }else if(data.records[i][dimension1]=='35-a-39') {
-                            muestra0509 = {
+                            muestra3539 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades3539.push(muestra3539);
                         }else if(data.records[i][dimension1]=='40-a-44') {
-                            muestra0509 = {
+                            muestra4044 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades4044.push(muestra4044);
                         }else if(data.records[i][dimension1]=='45-a-49') {
-                            muestra0509 = {
+                            muestra4549 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades4549.push(muestra4549);
                         }else if(data.records[i][dimension1]=='50-a-54') {
-                            muestra0509 = {
+                            muestra5054 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades5054.push(muestra5054);
                         }else if(data.records[i][dimension1]=='55-a-59') {
-                            muestra0509 = {
+                            muestra5559 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades5559.push(muestra5559);
                         }else if(data.records[i][dimension1]=='60-a-64') {
-                            muestra0509 = {
+                            muestra6064 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades6064.push(muestra6064);
                         }else if(data.records[i][dimension1]=='65-a-69') {
-                            muestra0509 = {
+                            muestra6569 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades6569.push(muestra6569);
                         }else if(data.records[i][dimension1]=='70-a-74') {
-                            muestra0509 = {
+                            muestra7074 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades7074.push(muestra7074);
                         }else if(data.records[i][dimension1]=='75-a-79') {
-                            muestra0509 = {
+                            muestra7579 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades7579.push(muestra7579);
                         }else if(data.records[i][dimension1]=='80-a-84') {
-                            muestra0509 = {
+                            muestra8084 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades8084.push(muestra8084);
                         }else if(data.records[i][dimension1]=='85-a-89') {
-                            muestra0509 = {
+                            muestra8589 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades8589.push(muestra8589);
                         }else if(data.records[i][dimension1]=='90-a-94') {
-                            muestra0509 = {
+                            muestra9094 = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades9094.push(muestra9094);
                         }else if(data.records[i][dimension1]=='95-y-mas') {
-                            muestra0509 = {
+                            muestra95mas = {
                                 edad : data.records[i][dimension1],
                                 ejeX : data.records[i][dimension2],
                                 ejeY : data.records[i][agrupador]
                             };
-                            lineaEdades0509.push(muestra0509);
+                            lineaEdades95mas.push(muestra95mas);
                         }
-                       
                     }
                     
                     
@@ -602,7 +629,7 @@ function obtieneDatosAPI(url) {
             lineaEdades0004.sort( compare );
             let htmlContent =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
+                $.i18n('dimension1') +
                 '</th><th>' +
                 $.i18n('dimension2') +
                 '</th><th>' +
@@ -1109,6 +1136,9 @@ function capturaParam() {
     if (getUrlVars()['seccionCensalId']) {
         paramSeccionCensal = getUrlVars()['seccionCensalId'];
     }
+    if (getUrlVars()['edadSimple']) {
+        paramEdad = getUrlVars()['edadSimple'];
+    }
     if (getUrlVars()['edad']) {
         paramEdad = getUrlVars()['edad'];
     }
@@ -1124,6 +1154,15 @@ function capturaParam() {
     if (getUrlVars()['medidaPor']) {
         paramMedidapor = getUrlVars()['medidaPor'];
     }
+    if (getUrlVars()['paisProcedencia']) {
+        paramPaisProcedencia = getUrlVars()['paisProcedencia'];
+    }
+    if (getUrlVars()['provinciaProcedencia']) {
+        paramProvinciaProcedencia = getUrlVars()['provinciaProcedencia'];
+    }
+    if (getUrlVars()['municipioProcedencia']) {
+        paramMunicipioProcedencia = getUrlVars()['municipioProcedencia'];
+    }
 }
 
 function pintaGrafico() {
@@ -1131,13 +1170,15 @@ function pintaGrafico() {
         console.log('pintaGraficoBarras');
     }
 
-    am4core.useTheme(am4themes_frozen);
-    am4core.useTheme(am4themes_animated);
+   // am4core.useTheme(am4themes_frozen);
 
     chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.language.locale = am4lang_es_ES;
     chart.svgContainer.htmlElement.style.height = '800';
 
+    chart.focusFilter.stroke = am4core.color("#0f0");
+    chart.focusFilter.strokeWidth = 4;
+    
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = 'ejeX';
     categoryAxis.renderer.grid.template.location = 0;
@@ -1151,7 +1192,7 @@ function pintaGrafico() {
     var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
     yAxis.min = 0;
 
-    chart.cursor = new am4charts.XYCursor();
+    // chart.cursor = new am4charts.XYCursor();
 
     chart.scrollbarX = new am4core.Scrollbar();
     chart.scrollbarX.parent = chart.bottomAxesContainer;
@@ -1165,10 +1206,9 @@ function createSeries(name, data) {
     series.dataFields.categoryX = 'ejeX';
     series.name = name;
     series.data = data;
-    series.columns.template.tooltipText = '{categoryX} : [bold]{valueY}[/]';
+    series.columns.template.tooltipText = '{edad} - {categoryX} : [bold]{valueY}[/]';
     let columnTemplate = series.columns.template;
     columnTemplate.strokeWidth = 2;
-    columnTemplate.strokeOpacity = 1;
 
     return series;
 

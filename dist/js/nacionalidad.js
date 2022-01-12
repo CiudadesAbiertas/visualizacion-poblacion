@@ -13,7 +13,34 @@ Unless required by applicable law or agreed to in writing, software distributed 
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the Licence for the specific language governing permissions and limitations under the Licence.
 */
-
+var urlIndicador1 = '';
+var filtro = '';
+let paramCubo = 'nacionalidad';
+let arrayNacionalidad = [];
+let arraySexo = [];
+let arrayPeriodo = [];
+let arrayMunicipio = [];
+let arrayDistrito = [];
+let arrayDistrito2 = [];
+let arrayBarrio = [];
+let arraySeccionCensal = [];
+let arrayEdadesQuinquenales = [];
+let urlAjax = '';
+let arrayIframesMapas = [
+    'iframeGraficoMapa',
+    'iframeGraficoMapa2'
+];
+let arrayIframes = [
+    'iframeGraficoMapa',
+    'iframeGraficoMapa2',
+    'iframeGraficoPiramide',
+    'iframeGraficoBarras',
+    'iframeGraficoTarta',
+    'iframeGraficoLinea',
+    'iframetablaDatosGenerica',
+    'iframeComparadorTerritorio',
+    'iframeComparadorTerritorio2'
+];
 /*
 	Método para aplicar filtros en el cubo de datos nacionalidad
 */
@@ -21,26 +48,11 @@ function aplicaFiltro(territorio) {
     if (LOG_DEBUG_COMUN) {
         console.log('[aplicaFiltro]');
     }
-    let arrayIframesMapas = [
-        'iframeGraficoMapa',
-        'iframeGraficoMapa2'
-    ];
+    
     //Cambiamos el parametro territorio par que los mapas se pinten correctamente
     if(territorio) {
         aplicaFiltroTerritorio(territorio,arrayIframesMapas);
     }
-    /* Se configura los iframes a los que les afecta los filtros */
-    let arrayIframes = [
-        'iframeGraficoMapa',
-        'iframeGraficoMapa2',
-        'iframeGraficoPiramide',
-        'iframeGraficoBarras',
-        'iframeGraficoTarta',
-        'iframeGraficoLinea',
-        'iframetablaDatosGenerica',
-        'iframeComparadorTerritorio',
-        'iframeComparadorTerritorio2'
-    ];
 
     $('#criterioTerritorio').html('');
     $('#criterioNacionalidad').html('');
@@ -70,16 +82,42 @@ function aplicaFiltro(territorio) {
         seleccionTerritorio(territorio);
     }
     
-    aplicaFiltroElement('selectNacionalidadNac','nacionalidad',arrayIframes,'checkbox');
-	aplicaFiltroElement('selectEdadQuinquenalesNac','edadQuinquenales',arrayIframes,'checkbox');
-    aplicaFiltroElement('selectSexoNac', 'sexo', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectPeriodoNac', 'periodo', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectMunicipioNac', 'municipio', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectDistritoNac', 'distrito', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectBarrioNac', 'barrio', arrayIframes,'checkbox');
-    aplicaFiltroElement('selectSeccionCensalNac','seccionCensalId',arrayIframes,'checkbox');
+    filtro = '';
+    let filtroAux = '';
+    filtroAux = aplicaFiltroElement('selectNacionalidadNac','nacionalidad',arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'nacionalidad');
+    }
+	filtroAux = aplicaFiltroElement('selectEdadQuinquenalesNac','edadQuinquenales',arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'edadGruposQuinquenales');
+    }
+    filtroAux = aplicaFiltroElement('selectSexoNac', 'sexo', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'sex');
+    }
+    filtroAux = aplicaFiltroElement('selectPeriodoNac', 'periodo', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'refPeriod');
+    }
+    filtroAux = aplicaFiltroElement('selectMunicipioNac', 'municipio', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'municipioId');
+    }
+    filtroAux = aplicaFiltroElement('selectDistritoNac', 'distrito', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'distritoId');
+    }
+    filtroAux = aplicaFiltroElement('selectBarrioNac', 'barrio', arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'barrioId');
+    }
+    filtroAux = aplicaFiltroElement('selectSeccionCensalNac','seccionCensalId',arrayIframes,'checkbox');
+    if(filtroAux) {
+        addFiltro(filtroAux, 'seccionCensalId');
+    }
 
-    
+    indicadores(urlIndicador1,filtro);
 }
 
 /* 
@@ -101,17 +139,7 @@ function inicializaDatos() {
         console.log('inicializaDatosNacionalidad');
     }
 
-    let paramCubo = 'nacionalidad';
 
-    let arrayNacionalidad = [];
-    let arraySexo = [];
-    let arrayPeriodo = [];
-    let arrayMunicipio = [];
-    let arrayDistrito = [];
-    let arrayBarrio = [];
-    let arraySeccionCensal = [];
-    let arrayEdadesQuinquenales = [];
-    let urlAjax = '';
 
     let valores = [0, 0]; //Campos para recoger la información del objeto data del ajax
     let valores2 = ['id', 'title'];
@@ -132,28 +160,13 @@ function inicializaDatos() {
     let taskCombos = [false, false, false, false, false, false, false, false];
 
     //selectNacionalidad
-    urlAjax = dameURL(
-        DSD_VALORES_DIMENSIONES_URL_1 +
-            DIMENSION_NACIONALIDAD +
-            DSD_VALORES_DIMENSIONES_URL_2
-    );
-    obtenerComboValores('selectNacionalidadNac', arrayNacionalidad, urlAjax, valores2, 'checkbox', false, taskCombos, 0);
-	
+	obtenerComboValoresConstantes('selectNacionalidadNac', arrayNacionalidad, 'VALORES_NACIONALIDAD', false, taskCombos, 0);
+
     //selectEdadQuinquenales
-    urlAjax = dameURL(
-        DSD_VALORES_DIMENSIONES_URL_1 +
-            DIMENSION_EDAD_QUINQUENAL +
-            DSD_VALORES_DIMENSIONES_URL_2
-    );
-    obtenerComboValores('selectEdadQuinquenalesNac', arrayEdadesQuinquenales, urlAjax, valores2, 'checkbox', false, taskCombos, 1);
+    obtenerComboValoresConstantes('selectEdadQuinquenalesNac', arrayEdadesQuinquenales, 'VALORES_EDAD_QUINQUENAL', false, taskCombos, 1);
 
     //selectSexo
-    urlAjax = dameURL(
-        DSD_VALORES_DIMENSIONES_URL_1 +
-            DIMENSION_SEXO +
-            DSD_VALORES_DIMENSIONES_URL_2
-    );
-    obtenerComboValores('selectSexoNac', arraySexo, urlAjax, valores2, 'checkbox', false, taskCombos, 2);
+    obtenerComboValoresConstantes('selectSexoNac', arraySexo, 'VALORES_SEXO', false, taskCombos, 2);
 
     //selectPeriodo
     urlAjax = dameURL(
@@ -163,6 +176,7 @@ function inicializaDatos() {
             '?dimension=refPeriod&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
     obtenerComboValores('selectPeriodoNac', arrayPeriodo, urlAjax, valores, 'checkbox', true, taskCombos, 3);
+    urlIndicador1 = urlAjax;
     indicadores(urlAjax);
 
     //selectMunicipio
@@ -182,6 +196,8 @@ function inicializaDatos() {
             '?dimension=distritoId,distritoTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
     obtenerCombo('selectDistritoNac', arrayDistrito, urlAjax, 'checkbox', false, taskCombos, 5);
+
+    obtenerCombo('selectDistritoSCNac', arrayDistrito2, urlAjax, 'checkbox', false, taskCombos, 5);
 
     //selectBarrio
     urlAjax = dameURL(
@@ -219,6 +235,12 @@ function quitaSeleccionTodos() {
 	$('#selectEdadQuinquenalesNac .checkbox label input').prop('checked', false);
     $('#selectSexoNac .checkbox label input').prop('checked', false);
     $('#selectPeriodoNac .checkbox label input').prop('checked', false);
+
+    $('#radioMunicipio label input').prop('checked', true);
+    aplicaFiltro('municipio');
+    $('#selectMunicipioNac .checkbox label input').last().prop('checked', true);
+    $('#selectPeriodoNac .checkbox label input').first().prop('checked', true);
+    habilitaTerritorio();
 }
 
 function seleccionTerritorio(territorio) {
@@ -230,6 +252,7 @@ function seleccionTerritorio(territorio) {
         $('#selectBarrioNac').hide();
         quitarSeleccion('selectBarrioNac')
         $('#selectSeccionCensalNac').hide();
+        $('#selectDistritoSCNac').hide();
         quitarSeleccion('selectSeccionCensalNac')
     }else if(territorio=='distrito') {
         $('#selectMunicipioNac').hide();
@@ -239,6 +262,7 @@ function seleccionTerritorio(territorio) {
         $('#selectBarrioNac').hide();
         quitarSeleccion('selectBarrioNac')
         $('#selectSeccionCensalNac').hide();
+        $('#selectDistritoSCNac').hide();
         quitarSeleccion('selectSeccionCensalNac')
     }else if(territorio=='barrio') {
         $('#selectMunicipioNac').hide();
@@ -248,6 +272,7 @@ function seleccionTerritorio(territorio) {
         $('#selectBarrioNac').show();
         $('#selectBarrioNac .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
         $('#selectSeccionCensalNac').hide();
+        $('#selectDistritoSCNac').hide();
         quitarSeleccion('selectSeccionCensalNac')
     }else if(territorio=='seccion_censal') {
         $('#selectMunicipioNac').hide();
@@ -257,7 +282,66 @@ function seleccionTerritorio(territorio) {
         $('#selectBarrioNac').hide();
         quitarSeleccion('selectBarrioNac')
         $('#selectSeccionCensalNac').show();
-        $('#selectSeccionCensalNac .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
+        $('#selectDistritoSCNac').show();
+        // $('#selectSeccionCensalNac .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
     }
 
+}
+
+function addFiltro(paramValor, campo) {
+    if (!filtro) {
+        filtro = filtro + '&where=(';
+    } else {
+        filtro = filtro + ' and (';
+    }
+    if (paramValor.includes(',')) {
+        let params = paramValor.split(',');
+        let h;
+        for (h = 0; h < params.length; h++) {
+            filtro = filtro + campo + "='" + params[h];
+            if (h < params.length - 1) {
+                filtro = filtro + "' or ";
+            } else {
+                filtro = filtro + "'";
+            }
+        }
+    } else {
+        filtro = filtro + campo + "='" + paramValor + "'";
+    }
+    filtro = filtro + ')';
+
+    if (LOG_DEBUG_GRAFICO_BARRAS) {
+        console.log(
+            '[addFiltro] [paramValor:' +
+                paramValor +
+                '] [campo:' +
+                campo +
+                '] [filtro:' +
+                filtro +
+                ']'
+        );
+    }
+}
+
+function filtraTerritorio(territorio) {
+    if (LOG_DEBUG_GRAFICO_BARRAS) {
+        console.log('filtraTerritorio');
+    }
+
+    filtroAux = aplicaFiltroElement('selectDistritoSCNac', 'distrito', arrayIframes,'checkbox');
+    if(filtroAux) {
+        filtro = '';
+        $('#selectSeccionCensalNac').html('<div class="text-right"><button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo(\'selectSeccionCensalNac\')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button><button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion(\'selectSeccionCensalNac\')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button></div>');
+        if(filtroAux) {
+            addFiltro(filtroAux, 'distritoId');
+        }
+        urlAjax = 
+            POBLACION_URL_1 +
+                paramCubo +
+                POBLACION_URL_2 +
+                '?dimension=seccionCensalId,seccionCensalTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'+filtro;
+        arraySeccionCensal = [];
+        sessionStorage.removeItem("selectSeccionCensalNac");
+        obtenerCombo('selectSeccionCensalNac', arraySeccionCensal, urlAjax, 'checkbox', false, null);    
+    }
 }

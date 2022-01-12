@@ -39,6 +39,9 @@ var paramProcedencia;
 var paramPaisNacimiento;
 var paramNacionalidad;
 var cuboId;
+var paramPaisProcedencia;
+var paramProvinciaProcedencia;
+var paramMunicipioProcedencia;
 
 var filtro = '';
 var cuboEdades = [];
@@ -48,6 +51,7 @@ var dimension = '';
 var agrupador = '';
 
 var datosCuboInfo=new Array();
+let periodos = [];
 
 //Vble para controlar el tamaño
 var tamanyFijobarras = $(document).height();
@@ -92,7 +96,13 @@ function inicializaMultidioma() {
             })
             .done(function () {
                 $('html').i18n();
-                inicializaDatos();
+                capturaParam();
+                periodo = paramPeriodo;
+                if(paramPeriodo=='ultimo') {
+                    dameUltimoPeriodo(paramCubo,periodos);
+                }else {
+                    inicializaDatos();
+                }
             });
     });
 
@@ -107,7 +117,6 @@ function inicializaDatos() {
         console.log('inicializaDatos');
     }
 
-    capturaParam();
     insertaURLSAPI();
 
     modificaTaskMaster('iframetablaDatosGenerica');
@@ -145,6 +154,14 @@ function inicializaDatos() {
         addFiltro(paramSexo, 'sex');
     }
     if (paramPeriodo) {
+        if(paramPeriodo=='ultimo') {
+            paramPeriodo = periodos[0];
+            let paramTitulo = $.i18n(paramTituloKey);
+            if (paramPeriodo) {
+                paramTitulo = paramTitulo + ' ' + paramPeriodo;
+            }
+            $('#tituloGrafico').html(decodeURI(paramTitulo));
+        }
         addFiltro(paramPeriodo, 'refPeriod');
     }
     if (paramMunicipio) {
@@ -165,12 +182,21 @@ function inicializaDatos() {
     if (paramPaisNacimiento) {
         addFiltro(paramPaisNacimiento, 'paisNacimiento');
     }
+    if (paramPaisProcedencia) {
+        addFiltro(paramPaisProcedencia, 'paisProcedencia');
+    }
+    if (paramProvinciaProcedencia) {
+        addFiltro(paramProvinciaProcedencia, 'provinciaProcedencia');
+    }
+    if (paramMunicipioProcedencia) {
+        addFiltro(paramMunicipioProcedencia, 'municipioProcedencia');
+    }
 
     if (isSessionTimeOut()) {
         removeSessionStorage(cuboId);
     }
 
-    obtenerInfoCubosDSD();
+    pintaTabla();
 
     let url = URL_CUBOS_OBSERVACION.get(cuboId) + filtro;
 
@@ -268,6 +294,9 @@ function capturaParam() {
     if (getUrlVars()['seccionCensalId']) {
         paramSeccionCensal = getUrlVars()['seccionCensalId'];
     }
+    if (getUrlVars()['edadSimple']) {
+        paramEdad = getUrlVars()['edadSimple'];
+    }
     if (getUrlVars()['edad']) {
         paramEdad = getUrlVars()['edad'];
     }
@@ -279,6 +308,15 @@ function capturaParam() {
     }
     if (getUrlVars()['cuboId']) {
         cuboId = getUrlVars()['cuboId'];
+    }
+    if (getUrlVars()['paisProcedencia']) {
+        paramPaisProcedencia = getUrlVars()['paisProcedencia'];
+    }
+    if (getUrlVars()['provinciaProcedencia']) {
+        paramProvinciaProcedencia = getUrlVars()['provinciaProcedencia'];
+    }
+    if (getUrlVars()['municipioProcedencia']) {
+        paramMunicipioProcedencia = getUrlVars()['municipioProcedencia'];
     }
 
     if (getUrlVars()['titulo']) {
@@ -438,70 +476,33 @@ function preparaTablaCubo() {
     }
 
     let copyCadena = $.i18n('copiar');
+    let modificarTablaCadena = $.i18n('modificar_tabla');
+    let descargarCadena = $.i18n('descargar');
 
     let cabecerasTablaBuscador = '';
 
     let columnsCubo = [];
 
-    if (datosCuboInfo && datosCuboInfo.dimension) {
-        //Si tenemos la configuración de las columnas en el js del cubo se incorpora a la tabla
-        if (
-            ORDEN_COLUMNAS_TABLA_DATOS &&
-            ORDEN_COLUMNAS_TABLA_DATOS.get(cuboId)
-        ) {
-            let ordenColumnas = ORDEN_COLUMNAS_TABLA_DATOS.get(cuboId);
-            let i;
-            for (i = 0; i < ordenColumnas.length; i++) {
-                let valor = ordenColumnas[i];
-                let etiqueta = ETIQUETAS_DIMENSION_DSD.get(valor);
-                if (!etiqueta || !etiqueta) {
-                    etiqueta = valor;
-                }
-                cabecerasTablaBuscador =
-                    cabecerasTablaBuscador + '<th>' + etiqueta + '</th>';
-                let columnInfo = {
-                    data : valor,
-                    title : ETIQUETAS_DIMENSION_DSD.get(valor),
-                    name : valor
-                };
-                columnsCubo.push(columnInfo);
+    if (
+        ORDEN_COLUMNAS_TABLA_DATOS &&
+        ORDEN_COLUMNAS_TABLA_DATOS.get(cuboId)
+    ) {
+        let ordenColumnas = ORDEN_COLUMNAS_TABLA_DATOS.get(cuboId);
+        let i;
+        for (i = 0; i < ordenColumnas.length; i++) {
+            let valor = ordenColumnas[i];
+            let etiqueta = ETIQUETAS_DIMENSION_DSD.get(valor);
+            if (!etiqueta || !etiqueta) {
+                etiqueta = valor;
             }
-        } //Obtenemos toda la información del cubo y la incorporamos a la tabla
-        else {
-            //Dimensiones
-            let i;
-            for (i = 0; i < datosCuboInfo.dimension.length; i++) {
-                let valor = datosCuboInfo.dimension[i];
-                let etiqueta = ETIQUETAS_DIMENSION_DSD.get(valor);
-                if (!etiqueta || !etiqueta) {
-                    etiqueta = valor;
-                }
-                cabecerasTablaBuscador =
-                    cabecerasTablaBuscador + '<th>' + etiqueta + '</th>';
-                let columnInfo = {
-                    data : valor,
-                    title : etiqueta,
-                    name : valor
-                };
-                columnsCubo.push(columnInfo);
-            }
-            //Medidas
-            let j;
-            for (j = 0; i < datosCuboInfo.measure.length; j++) {
-                let valor = datosCuboInfo.measure[j];
-                let etiqueta = ETIQUETAS_DIMENSION_DSD.get(valor);
-                if (!etiqueta || !etiqueta) {
-                    etiqueta = valor;
-                }
-                cabecerasTablaBuscador =
-                    cabecerasTablaBuscador + '<th>' + etiqueta + '</th>';
-                let columnInfo = {
-                    data : valor,
-                    title : etiqueta,
-                    name : valor
-                };
-                columnsCubo.push(columnInfo);
-            }
+            cabecerasTablaBuscador =
+                cabecerasTablaBuscador + '<th>' + etiqueta + '</th>';
+            let columnInfo = {
+                data : valor,
+                title : ETIQUETAS_DIMENSION_DSD.get(valor),
+                name : valor
+            };
+            columnsCubo.push(columnInfo);
         }
     }
 
@@ -560,145 +561,162 @@ function preparaTablaCubo() {
         },
         order: [0, 'asc'],
         columns: columnsCubo,
-        dom: '<"row"<"col-sm-4"lfi><"col-sm-8"p>>rt<"row"<"col-sm-4"fi><"col-sm-8"p>>',
+        // dom: '<"row"<"col-sm-4"lfi><"col-sm-8"p>>rt<"row"<"col-sm-4"fi><"col-sm-8"p>>',
+        dom: '<"row panel-footer"<"col-sm-offset-1 col-sm-5"l><"col-sm-6"B>>rt<"row"<"col-sm-5"fi><"col-sm-7"p>>',
         buttons: [
             {
-                extend: 'csv',
-                text: 'CSV <span class="fa fa-table"></span>',
-                className: 'btn btn-primary',
-				className: 'btn btn-primary',				
-                className: 'btn btn-primary',
-				className: 'btn btn-primary',				
-                className: 'btn btn-primary',
-                exportOptions: {
-                    columns: [1, 2, 3],
-                    search: 'applied',
-                    order: 'applied',
-                },
-                bom: true,
+                extend: 'colvis',
+                text: modificarTablaCadena+' <span class="fa fa-angle-down"></span>',
+                title: 'modificar tabla',
+                className: 'btn btn-light'
             },
             {
-                text: 'JSON <span class="fa fa-list-alt "></span>',
+                extend: 'collection',
+                text: descargarCadena+' <span class="fa fa-angle-down"></span>',
+                title: 'descargar',
                 className: 'btn btn-primary',
-                exportOptions: {
-                    columns: [1, 2, 3],
-                    search: 'applied',
-                    order: 'applied',
-                },
-                action: function (e, dt, button, config) {
-                    let data = dt.buttons.exportData();
+                buttons: [
+                    {
+                        extend: 'csv',
+                        text: 'CSV <span class="fa fa-table"></span>',
+                        title: 'poblacion',
+                        className: 'btn btn-primary',
+                        exportOptions: {
+                            search: 'applied',
+                            order: 'applied',
+                        },
+                        bom: true,
+                    },
+                    {
+                        extend: 'excel',
+                        text: 'EXCEL <span class="fa fa-file-excel-o"></span>',
+                        title: 'poblacion',
+                        className: 'btn btn-primary',
+                        exportOptions: {
+                            search: 'applied',
+                            order: 'applied',
+                        },
+                    },
+                    {
+                        text: 'JSON <span class="fa fa-list-alt "></span>',
+                        title: 'poblacion',
+                        className: 'btn btn-primary',
+                        exportOptions: {
+                            search: 'applied',
+                            order: 'applied',
+                        },
+                        action: function (e, dt, button, config) {
+                            let data = dt.buttons.exportData();
 
-                    $.fn.dataTable.fileSave(
-                        new Blob([JSON.stringify(data)]),
-                        'datos.json'
-                    );
-                },
-            },
-            {
-                extend: 'excel',
-                text: 'EXCEL <span class="fa fa-file-excel-o"></span>',
-                className: 'btn btn-primary',
-				className: 'btn btn-primary',				
-                className: 'btn btn-primary',
-				className: 'btn btn-primary',				
-                className: 'btn btn-primary',
-                exportOptions: {
-                    columns: [1, 2, 3],
-                    search: 'applied',
-                    order: 'applied',
-                },
-            },
-            {
-                text: 'PDF <span class="fa fa-file-pdf-o"></span>',
-                className: 'btn btn-primary',
-                extend: 'pdfHtml5',
-                filename: 'dt_custom_pdf',
-                orientation: 'landscape',
-                pageSize: 'A4',
-                exportOptions: {
-                    columns: [1, 2, 3],
-                    search: 'applied',
-                    order: 'applied',
-                },
-                customize: function (doc) {
-                    doc.content.splice(0, 1);
-                    let now = new Date();
-                    let jsDate =
-                        now.getDate() +
-                        '-' +
-                        (now.getMonth() + 1) +
-                        '-' +
-                        now.getFullYear();
-                    let logo = logoBase64;
-                    doc.pageMargins = [20, 60, 20, 30];
-                    doc.defaultStyle.fontSize = 7;
-                    doc.styles.tableHeader.fontSize = 7;
-                    doc['header'] = function () {
-                        return {
-                            columns: [
-                                {
-                                    image: logo,
-                                    width: 96,
-                                },
-                            ],
-                            margin: 20,
-                        };
-                    };
-                    doc['footer'] = function (page, pages) {
-                        return {
-                            columns: [
-                                {
-                                    alignment: 'left',
-                                    text: ['Created on: ', { text: jsDate.toString() }],
-                                },
-                                {
-                                    alignment: 'right',
-                                    text: [
-                                        'page ',
-                                        { text: page.toString() },
-                                        ' of ',
-                                        { text: pages.toString() },
+                            $.fn.dataTable.fileSave(
+                                new Blob([JSON.stringify(data)]),
+                                'poblacion.json'
+                            );
+                        },
+                    },
+                    /*{
+                        text: 'PDF <span class="fa fa-file-pdf-o"></span>',
+                        title: 'poblacion',
+                        className: 'btn btn-primary',
+                        extend: 'pdfHtml5',
+                        filename: 'listado_poblacion',
+                        orientation: 'landscape',
+                        pageSize: 'A4',
+                        exportOptions: {
+                            search: 'applied',
+                            order: 'applied',
+                        },
+                        customize: function (doc) {
+                            doc.content.splice(0, 1);
+                            let now = new Date();
+                            let jsDate =
+                                now.getDate() +
+                                '-' +
+                                (now.getMonth() + 1) +
+                                '-' +
+                                now.getFullYear();
+                            let logo = LOGO_BASE_64;
+                            doc.pageMargins = [20, 60, 20, 30];
+                            doc.defaultStyle.fontSize = 7;
+                            doc.styles.tableHeader.fontSize = 7;
+                            doc['header'] = function () {
+                                return {
+                                    columns: [
+                                        {
+                                            image: logo,
+                                            width: 96,
+                                        },
+                                        {
+                                            alignment: 'center',
+                                            fontSize: '14',
+                                            text: ['Listado de poblacion'],
+                                        },
                                     ],
-                                },
-                            ],
-                            margin: 20,
-                        };
-                    };
-                    let objLayout = {};
-                    objLayout['hLineWidth'] = function (i) {
-                        return 0.5;
-                    };
-                    objLayout['vLineWidth'] = function (i) {
-                        return 0.5;
-                    };
-                    objLayout['hLineColor'] = function (i) {
-                        return '#aaa';
-                    };
-                    objLayout['vLineColor'] = function (i) {
-                        return '#aaa';
-                    };
-                    objLayout['paddingLeft'] = function (i) {
-                        return 4;
-                    };
-                    objLayout['paddingRight'] = function (i) {
-                        return 4;
-                    };
-                    doc.content[0].layout = objLayout;
-						doc.content[0].layout = objLayout;			
-                    doc.content[0].layout = objLayout;
-						doc.content[0].layout = objLayout;			
-                    doc.content[0].layout = objLayout;
-                },
+                                    margin: 20,
+                                };
+                            };
+                            doc['footer'] = function (page, pages) {
+                                return {
+                                    columns: [
+                                        {
+                                            alignment: 'left',
+                                            text: ['Creado el: ', { text: jsDate.toString() }],
+                                        },
+                                        {
+                                            alignment: 'right',
+                                            text: [
+                                                'Pág. ',
+                                                { text: page.toString() },
+                                                ' de ',
+                                                { text: pages.toString() },
+                                            ],
+                                        },
+                                    ],
+                                    margin: 20,
+                                };
+                            };
+                            let objLayout = {};
+                            objLayout['hLineWidth'] = function (i) {
+                                return 0.5;
+                            };
+                            objLayout['vLineWidth'] = function (i) {
+                                return 0.5;
+                            };
+                            objLayout['hLineColor'] = function (i) {
+                                return '#aaa';
+                            };
+                            objLayout['vLineColor'] = function (i) {
+                                return '#aaa';
+                            };
+                            objLayout['paddingLeft'] = function (i) {
+                                return 4;
+                            };
+                            objLayout['paddingRight'] = function (i) {
+                                return 4;
+                            };
+                            doc.content[0].layout = objLayout;
+                        },
+                    },*/
+                    
+                ],
             },
             {
-                extend: 'copy',
-                text: copyCadena + ' <span class="fa fa-copy    "></span>',
+                extend: 'collection',
+                text: '...',
+                title: 'otros',
                 className: 'btn btn-primary',
-                exportOptions: {
-                    columns: [1, 2, 3],
-                    search: 'applied',
-                    order: 'applied',
-                },
+                buttons: [
+                    {
+                        extend: 'copy',
+                        text: copyCadena + ' <span class="fa fa-copy"></span>',
+                        title: 'poblacion',
+                        className: 'btn btn-primary',
+                        exportOptions: {
+                            search: 'applied',
+                            order: 'applied',
+                        },
+                    },
+                ]
             },
         ],
         initComplete: function (settings, json) {

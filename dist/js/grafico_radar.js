@@ -53,11 +53,7 @@ var valor4Dim2;
 var valor5Dim2;
 
 var filtro = '';
-var linea1 = [];
-var linea2 = [];
-var linea3 = [];
-var linea4 = [];
-var linea5 = [];
+
 
 var dimensionEtiquetas = {};
 
@@ -70,6 +66,14 @@ var agrupador = '';
 var chart;
 var xAxis;
 let medidas;
+
+var medida1 = {};
+var medida2 = {};
+var medida3 = {};
+var medida4 = {};
+var medida5 = {};
+let datos = [];
+let series = [];
 let periodos = [];
 
 /*
@@ -253,23 +257,120 @@ function inicializaDatos() {
             filtro
         );
 
-        obtieneDatosAPI(url,medida,d,numMedidas);
+        obtieneDatosAPINueva(url,d);
     }
     
 
 }
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
-function obtieneDatosAPI(url,medida,d,numMedidas) {
+function obtieneDatosAPINueva(url,d) {
+
+    if(d==0) {
+        medida1['nombre'] = medidas[d];
+    }else if(d==1) {
+        medida2['nombre'] = medidas[d];
+    }else if(d==2) {
+        medida3['nombre'] = medidas[d];
+    }else if(d==3) {
+        medida4['nombre'] = medidas[d];
+    }else if(d==4) {
+        medida5['nombre'] = medidas[d];
+    }
+    
+    let jqxhr = $.getJSON(url)
+        .done(function (data) {
+            if (data.records) {
+                let i;
+                for (i = 0; i < data.records.length; i++) {
+                    if(d==0) {
+                        if(data.records[i][agrupador]) {
+                            medida1[data.records[i][dimension2]] = data.records[i][agrupador];
+                            
+                        }else{
+                            medida1[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==1) {
+                        if(data.records[i][agrupador]) {
+                            medida2[data.records[i][dimension2]] = data.records[i][agrupador];
+                        }else{
+                            medida2[data.records[i][dimension2]] = 0;
+                        }
+                        
+                    }else if(d==2) {
+                        if(data.records[i][agrupador]) {
+                            medida3[data.records[i][dimension2]] = data.records[i][agrupador];
+                        }else{
+                            medida3[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==3) {
+                        if(data.records[i][agrupador]) {
+                            medida4[data.records[i][dimension2]] = data.records[i][agrupador];
+                        }else{
+                            medida4[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==4) {
+                        if(data.records[i][agrupador]) {
+                            medida5[data.records[i][dimension2]] = data.records[i][agrupador];
+                        }else{
+                            medida5[data.records[i][dimension2]] = 0;
+                        }
+                    }
+                    if(series.indexOf(data.records[i][dimension2])==-1) {
+                        series.push(data.records[i][dimension2]);
+                    }
+                }
+                if(d==0) {
+                    datos.push(medida1);
+                }else if(d==1) {
+                    datos.push(medida2);
+                }else if(d==2) {
+                    datos.push(medida3);
+                }else if(d==3) {
+                    datos.push(medida4);
+                }else if(d==4) {
+                    datos.push(medida5);
+                }
+            }
+            if (data.next) {
+                obtieneDatosAPINueva(data.next,d);
+            }
+        })
+        .always(function () {
+            if(medidas.length==d+1){
+                let htmlContentCabecera =
+                "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
+                'Nombre' +
+                '</th>';
+                let htmlContent = '';
+                let d;
+                for(d=0;d<series.length;d++) {
+                    createSeries(series[d],datos,series[d]);
+                    htmlContentCabecera = htmlContentCabecera + '<th>' + series[d] + '</th>'                        
+                }
+
+                for(a=0;a<datos.length;a++) {
+                    let t;
+                    htmlContent = htmlContent + "<tr>" + "<td>" + datos[a].nombre + "</td>";
+                    for(t=0;t<series.length;t++) {
+                        htmlContent =
+                            htmlContent + "<td>" + datos[a][series[t]] + "</td>";
+                    }
+                    htmlContent = htmlContent + "</tr>";
+                }
+
+                htmlContent = htmlContent + '</table></div></div>';
+                $('#datos_tabla').html(htmlContentCabecera+'</tr>'+htmlContent);
+                $('.modal').modal('hide');
+            }   
+        }
+    );
+}
+/* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
+function obtieneDatosAPI(url,medida) {
 
     let jqxhr = $.getJSON(url)
         .done(function (data) {
-            let htmlContent =
-                "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
-                '</th><th>' +
-                $.i18n('medida') +
-                '</th></tr>';
             if (data.records) {
                 for (let i = 0; i < data.records.length; i++) {                 
                     let muestra1;
@@ -281,69 +382,42 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                     if(data.records[i][dimension1_1]==valor1Dim1) {
                         muestra1 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            ejeY : data.records[i][agrupador]
                         };
-                        if(data.records[i][agrupador]) {
-                            muestra1[medida] = data.records[i][agrupador];
-                            muestra1['ejeY'] = data.records[i][agrupador];
-                        }else{
-                            muestra1[medida] = 0;
-                            muestra1['ejeY'] = 0;
-                        }
-                        
+                        muestra1[medida] = data.records[i][agrupador];
                         linea1.push(muestra1);
                     }else if(data.records[i][dimension1_1]==valor2Dim1) {
                         muestra2 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            ejeY : data.records[i][agrupador]
                         };
-                        if(data.records[i][agrupador]) {
-                            muestra2[medida] = data.records[i][agrupador];
-                            muestra2['ejeY'] = data.records[i][agrupador];
-                        }else{
-                            muestra2[medida] = 0;
-                            muestra2['ejeY'] = 0;
-                        }
+                        muestra2[medida] = data.records[i][agrupador];
                         linea2.push(muestra2);
                     }else if(data.records[i][dimension1_1]==valor3Dim1) {
                         muestra3 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            ejeY : data.records[i][agrupador]
                         };
-                        if(data.records[i][agrupador]) {
-                            muestra3[medida] = data.records[i][agrupador];
-                            muestra3['ejeY'] = data.records[i][agrupador];
-                        }else{
-                            muestra3[medida] = 0;
-                            muestra3['ejeY'] = 0;
-                        }
+                        muestra3[medida] = data.records[i][agrupador];
                         linea3.push(muestra3);
                     }else if(data.records[i][dimension1_1]==valor4Dim1) {
                         muestra4 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            ejeY : data.records[i][agrupador]
                         };
-                        if(data.records[i][agrupador]) {
-                            muestra4[medida] = data.records[i][agrupador];
-                            muestra4['ejeY'] = data.records[i][agrupador];
-                        }else{
-                            muestra4[medida] = 0;
-                            muestra4['ejeY'] = 0;
-                        }
+                        muestra4[medida] = data.records[i][agrupador];
                         linea4.push(muestra4);
                     }else if(data.records[i][dimension1_1]==valor3Dim1) {
                         muestra5 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            ejeY : data.records[i][agrupador]
                         };
-                        
-                        if(data.records[i][agrupador]) {
-                            muestra5[medida] = data.records[i][agrupador];
-                            muestra5['ejeY'] = data.records[i][agrupador];
-                        }else{
-                            muestra5[medida] = 0;
-                            muestra5['ejeY'] = 0;
-                        }
+                        muestra5[medida] = data.records[i][agrupador];
                         linea5.push(muestra5);
                     }
                     
@@ -359,166 +433,141 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
             }*/
         })
         .always(function () {
-            if(numMedidas==1 || medidas.length==d+1){
-                linea1.sort( compare );
-                let htmlContent =
-                    "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                    $.i18n('dimension1') +
-                    '</th><th>' +
-                    $.i18n('dimension2') +
-                    '</th><th>' +
-                    $.i18n('medida') +
-                    '</th></tr>';
-                let j;
-                for(j=0;j<linea1.length;j++){
-                    muestra = linea1[j];
-                    let numeralEjeY = numeral(muestra.ejeY);
-                    htmlContent =
-                        htmlContent +
-                        '<tr>' +
-                        '<td>' +
-                        muestra.valor.toString() +
-                        '</td>' +
-                        '<td>' +
-                        muestra.ejeX.toString() +
-                        '</td>' +
-                        '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
-                        '</td>' +
-                        '</tr>';
-                }
-                $('#datos_tabla').html(htmlContent);
-
-                linea2.sort( compare );
-                for(j=0;j<linea2.length;j++){
-                    muestra = linea2[j];
-                    let numeralEjeY = numeral(muestra.ejeY);
-                    htmlContent =
-                        htmlContent +
-                        '<tr>' +
-                        '<td>' +
-                        muestra.valor.toString() +
-                        '</td>' +
-                        '<td>' +
-                        muestra.ejeX.toString() +
-                        '</td>' +
-                        '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
-                        '</td>' +
-                        '</tr>';
-                }
-                $('#datos_tabla').html(htmlContent);
-
-                linea3.sort( compare );
-                for(j=0;j<linea3.length;j++){
-                    muestra = linea3[j];
-                    let numeralEjeY = numeral(muestra.ejeY);
-                    htmlContent =
-                        htmlContent +
-                        '<tr>' +
-                        '<td>' +
-                        muestra.valor.toString() +
-                        '</td>' +
-                        '<td>' +
-                        muestra.ejeX.toString() +
-                        '</td>' +
-                        '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
-                        '</td>' +
-                        '</tr>';
-                }
-                $('#datos_tabla').html(htmlContent);
-
-                linea4.sort( compare );
-                for(j=0;j<linea4.length;j++){
-                    muestra = linea4[j];
-                    let numeralEjeY = numeral(muestra.ejeY);
-                    htmlContent =
-                        htmlContent +
-                        '<tr>' +
-                        '<td>' +
-                        muestra.valor.toString() +
-                        '</td>' +
-                        '<td>' +
-                        muestra.ejeX.toString() +
-                        '</td>' +
-                        '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
-                        '</td>' +
-                        '</tr>';
-                }
-                $('#datos_tabla').html(htmlContent);
-
-                linea5.sort( compare );
-                for(j=0;j<linea5.length;j++){
-                    muestra = linea5[j];
-                    let numeralEjeY = numeral(muestra.ejeY);
-                    htmlContent =
-                        htmlContent +
-                        '<tr>' +
-                        '<td>' +
-                        muestra.valor.toString() +
-                        '</td>' +
-                        '<td>' +
-                        muestra.ejeX.toString() +
-                        '</td>' +
-                        '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
-                        '</td>' +
-                        '</tr>';
-                }
-
-                htmlContent = htmlContent + '</table></div></div>';
-                $('#datos_tabla').html(htmlContent);
-
-                if(numMedidas!=1) {
-                    let a;
-                    for(a=0;a<medidas.length;a++) {
-                        
-                        if(linea1.length) {
-                            createSeries(linea1[0].valor + ' ' + medidas[a],linea1,medidas[a]);
-                        }
-                        if(linea2.length) {
-                            createSeries(linea2[0].valor + ' ' + medidas[a],linea2,medidas[a]);
-                        }
-                        if(linea3.length) {
-                            createSeries(linea3[0].valor + ' ' + medidas[a],linea3,medidas[a]);
-                        }
-                        if(linea4.length) {
-                            createSeries(linea4[0].valor + ' ' + medidas[a],linea4,medidas[a]);
-                        }
-                        if(linea5.length) {
-                            createSeries(linea5[0].valor + ' ' + medidas[a],linea5,medidas[a]);
-                        }
-                    }
-                } else {
-                    if(linea1.length) {
-                        createSeries(linea1[0].valor + ' ' + medida,linea1,medida);
-                    }
-                    if(linea2.length) {
-                        createSeries(linea2[0].valor + ' ' + medida,linea2,medida);
-                    }
-                    if(linea3.length) {
-                        createSeries(linea3[0].valor + ' ' + medida,linea3,medida);
-                    }
-                    if(linea4.length) {
-                        createSeries(linea4[0].valor + ' ' + medida,linea4,medida);
-                    }
-                    if(linea5.length) {
-                        createSeries(linea5[0].valor + ' ' + medida,linea5,medida);
-                    }
-                }
-                
-                
-
-                // linea1 = [];
-                // linea2 = [];
-                // linea3 = [];
-                // linea4 = [];
-                // linea5 = [];
-
-                $('.modal').modal('hide');
+            linea1.sort( compare );
+            let htmlContent =
+                "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
+                $.i18n('dimension1') +
+                '</th><th>' +
+                $.i18n('dimension2') +
+                '</th><th>' +
+                $.i18n('medida') +
+                '</th></tr>';
+            let j;
+            for(j=0;j<linea1.length;j++){
+                muestra = linea1[j];
+                let numeralEjeY = numeral(muestra.ejeY);
+                htmlContent =
+                    htmlContent +
+                    '<tr>' +
+                    '<td>' +
+                    muestra.valor.toString() +
+                    '</td>' +
+                    '<td>' +
+                    muestra.ejeX.toString() +
+                    '</td>' +
+                    '<td>' +
+                    numeralEjeY.format(numFormatoSinDecimales) +
+                    '</td>' +
+                    '</tr>';
             }
+            $('#datos_tabla').html(htmlContent);
+
+            linea2.sort( compare );
+            for(j=0;j<linea2.length;j++){
+                muestra = linea2[j];
+                let numeralEjeY = numeral(muestra.ejeY);
+                htmlContent =
+                    htmlContent +
+                    '<tr>' +
+                    '<td>' +
+                    muestra.valor.toString() +
+                    '</td>' +
+                    '<td>' +
+                    muestra.ejeX.toString() +
+                    '</td>' +
+                    '<td>' +
+                    numeralEjeY.format(numFormatoSinDecimales) +
+                    '</td>' +
+                    '</tr>';
+            }
+            $('#datos_tabla').html(htmlContent);
+
+            linea3.sort( compare );
+            for(j=0;j<linea3.length;j++){
+                muestra = linea3[j];
+                let numeralEjeY = numeral(muestra.ejeY);
+                htmlContent =
+                    htmlContent +
+                    '<tr>' +
+                    '<td>' +
+                    muestra.valor.toString() +
+                    '</td>' +
+                    '<td>' +
+                    muestra.ejeX.toString() +
+                    '</td>' +
+                    '<td>' +
+                    numeralEjeY.format(numFormatoSinDecimales) +
+                    '</td>' +
+                    '</tr>';
+            }
+            $('#datos_tabla').html(htmlContent);
+
+            linea4.sort( compare );
+            for(j=0;j<linea4.length;j++){
+                muestra = linea4[j];
+                let numeralEjeY = numeral(muestra.ejeY);
+                htmlContent =
+                    htmlContent +
+                    '<tr>' +
+                    '<td>' +
+                    muestra.valor.toString() +
+                    '</td>' +
+                    '<td>' +
+                    muestra.ejeX.toString() +
+                    '</td>' +
+                    '<td>' +
+                    numeralEjeY.format(numFormatoSinDecimales) +
+                    '</td>' +
+                    '</tr>';
+            }
+            $('#datos_tabla').html(htmlContent);
+
+            linea5.sort( compare );
+            for(j=0;j<linea5.length;j++){
+                muestra = linea5[j];
+                let numeralEjeY = numeral(muestra.ejeY);
+                htmlContent =
+                    htmlContent +
+                    '<tr>' +
+                    '<td>' +
+                    muestra.valor.toString() +
+                    '</td>' +
+                    '<td>' +
+                    muestra.ejeX.toString() +
+                    '</td>' +
+                    '<td>' +
+                    numeralEjeY.format(numFormatoSinDecimales) +
+                    '</td>' +
+                    '</tr>';
+            }
+
+            htmlContent = htmlContent + '</table></div></div>';
+            $('#datos_tabla').html(htmlContent);
+
+            
+            if(linea1.length) {
+                createSeries(linea1[0].valor + ' ' + medida,linea1,medida);
+            }
+            if(linea2.length) {
+                createSeries(linea2[0].valor + ' ' + medida,linea2,medida);
+            }
+            if(linea3.length) {
+                createSeries(linea3[0].valor + ' ' + medida,linea3,medida);
+            }
+            if(linea4.length) {
+                createSeries(linea4[0].valor + ' ' + medida,linea4,medida);
+            }
+            if(linea5.length) {
+                createSeries(linea5[0].valor + ' ' + medida,linea5,medida);
+            }
+
+            linea1 = [];
+            linea2 = [];
+            linea3 = [];
+            linea4 = [];
+            linea5 = [];
+
+            $('.modal').modal('hide');
         });
 }
 
@@ -641,7 +690,7 @@ function pintaGrafico() {
 
     am4core.useTheme(am4themes_frozen);
   
-    chart = am4core.create('chartdiv', am4charts.XYChart);
+    chart = am4core.create('chartdiv', am4charts.RadarChart);
     chart.language.locale = am4lang_es_ES;
     chart.svgContainer.htmlElement.style.height = '800';
 
@@ -649,60 +698,41 @@ function pintaGrafico() {
     chart.focusFilter.strokeWidth = 4;
     
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
-    categoryAxis.dataFields.category = 'ejeX';
-    categoryAxis.renderer.grid.template.location = 0;
-    categoryAxis.renderer.minGridDistance = 1;
+    categoryAxis.dataFields.category = 'nombre';
+    // categoryAxis.renderer.grid.template.location = 0;
+    // categoryAxis.renderer.minGridDistance = 1;
 
-    let label = categoryAxis.renderer.labels.template;
-    label.truncate = true;
-    label.maxWidth = 100;
-    label.tooltipText = '{ejeX}';
+    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
 
-    var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    yAxis.min = 0;
+    // let label = categoryAxis.renderer.labels.template;
+    // label.truncate = true;
+    // label.maxWidth = 100;
+    // label.tooltipText = '{ejeX}';
+
+    // var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    // yAxis.min = 0;
     
     // chart.legend = new am4charts.Legend();
-    // chart.legend.position = "bottom";
-	// chart.legend.valign = "center";
-	// chart.legend.maxWidth = 800;
-	// chart.legend.maxHeight = 400;
-	// chart.legend.scrollable = true;
-	// chart.legend.itemContainers.template.paddingTop = 5;
-	// chart.legend.itemContainers.template.paddingBottom = 5;
 
-    chart.scrollbarX = new am4core.Scrollbar();
-    chart.scrollbarX.parent = chart.bottomAxesContainer;
+    // chart.scrollbarX = new am4core.Scrollbar();
+    // chart.scrollbarX.parent = chart.bottomAxesContainer;
 
 }
 
-function createSeries(name, data, medida) {
+function createSeries(name, data, valueY) {
     if (LOG_DEBUG_GRAFICO_BARRAS) {
         console.log('createSeries');
     }
 
     chart.data = data;
-    let series;
-    if(!medida) {
-        medida = 'ejeY';
-    }
-    if(paramTipoGrafico=='barras') {
-        let series = chart.series.push(new am4charts.ColumnSeries());
-        series.dataFields.valueY = medida;
-        series.dataFields.categoryX = 'ejeX';
-        series.name = name;
-        series.data = data;
-        series.columns.template.tooltipText = name+' - {categoryX} : [bold]{valueY}[/]';
-        let columnTemplate = series.columns.template;
-        columnTemplate.strokeWidth = 2;
-    }else if(paramTipoGrafico=='lineas'){
-        let series = chart.series.push(new am4charts.LineSeries());
-        series.dataFields.valueY = medida;
-        series.dataFields.categoryX = 'ejeX';
-        series.name = name;
-        series.data = data;
-        series.tooltipText = name+' - {categoryX} : [bold]{valueY}[/]';
-        series.strokeWidth = 3;
-    }
+
+    var series = chart.series.push(new am4charts.RadarSeries());
+    series.dataFields.valueY = valueY;
+    series.dataFields.categoryX = "nombre";
+    series.name = name;
+    series.strokeWidth = 3;
+    series.zIndex = 2;
+    // series.columns.template.tooltipText = "{name}\nIndicador: {categoryX}\nValor: {valueY}";
 
     return series;
 

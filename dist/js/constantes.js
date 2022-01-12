@@ -32,8 +32,9 @@ const REGISTROS_TABLA_BUSQUEDA = 10;
 /* Número de registros para las tablas de los gráficos */
 const REGISTRO_TABLA_GRAFICOS = 500;
 
+
 /* Dominio de la API */
-const URL_API = "https://api.ciudades-abiertas.es/";
+const URL_API = 'https://api.ciudades-abiertas.es/';
 /* URL de la documentación de la API */
 const DOC_API = URL_API+'/swagger/index.html';
 
@@ -70,11 +71,19 @@ const POBLACION_URL_2_CSV = '/query.csv';
 /* URL para pedir las coordenadas del territorio */
 const TERRITORIO_URL_1 = URL_API+IDIOMA_API+'/territorio/';
 const TERRITORIO_URL_2 = '.geojson?'+PARAM_PAGE_API+'=1&'+PARAM_SORT_API+'=id&srId=EPSG%3A4326';
+//const TERRITORIO_URL_2 = '.geojson?'+PARAM_PAGE_API+'=1&'+PARAM_SORT_API+'=-id&srId=EPSG%3A4326';
+/* Dominio del conjunto de datos de una petición    agrupada en formato CSV */
+// const territorioSeccionCensalURLCSV =URL_API+IDIOMA_API+'/territorio/seccionCensal.csv?'+PARAM_PAGE_API+'=1&'+PARAM_SORT_API+'=id&srId=EPSG%3A4326';
+/* Dominio de la documentación del conjunto de datos de subvención */
+// const docTerritorioSeccionCensalAPI = URL_API+'/swagger/index.html#/Territorio - Sección Censal';
 
 /* URL para obtener los datos de la pirámide de la población */
 const POBLACION_PIRAMIDE_URL = DATACUBE_URL+'/edad-grupo-quinquenal/query.json';
 const POBLACION_PIRAMIDE_TERR_URL = DATACUBE_URL+'/edad-grupo-quinquenal/query.json';
 const POBLACION_PIRAMIDE_URL_CSV = DATACUBE_URL+'/edad-grupo-quinquenal/query.csv';
+// const POBLACION_PIRAMIDE_URL = DATACUBE_URL+'/edad-grupo-quinquenal/query.json?dimension=edadGruposQuinquenales as edadGruposQuinquenales%2Csex as sex&group=SUM&measure=numeroPersonas&'+PARAM_PAGE_API+'=1&'+PARAM_PAGESIZE_API+'=100';
+// const POBLACION_PIRAMIDE_URL_CSV = DATACUBE_URL+'/edad-grupo-quinquenal/query.csv?dimension=edadGruposQuinquenales as edadGruposQuinquenales%2Csex as sex&group=SUM&measure=numeroPersonas&'+PARAM_PAGE_API+'=1&'+PARAM_PAGESIZE_API+'=100';
+// const POBLACION_PIRAMIDE_TERR_URL = DATACUBE_URL+'/edad-grupo-quinquenal/query.json?dimension=barrioId as barrioId%2CedadGruposQuinquenales as edadGruposQuinquenales%2Csex as sex&group=SUM&measure=numeroPersonas&'+PARAM_PAGE_API+'=1&'+PARAM_PAGESIZE_API+'=100';
 const POBLACION_PIRAMIDE_ETIQUETAS_URL = DSD_URL+'/dimension/edadGruposQuinquenales/value?'+PARAM_PAGE_API+'=1&'+PARAM_PAGESIZE_API+'=100';
 
 /* URL para obtener los datos de la pirámide de la población simple*/
@@ -82,6 +91,8 @@ const POBLACION_PIRAMIDE_S_URL = DATACUBE_URL+'/edad/query.json';
 const POBLACION_PIRAMIDE_S_TERR_URL = DATACUBE_URL+'/edad/query.json';
 const POBLACION_PIRAMIDE_S_URL_CSV = DATACUBE_URL+'/edad/query.csv';
 const POBLACION_PIRAMIDE_S_ETIQUETAS_URL = DSD_URL+'/dimension/edad/value?'+PARAM_PAGE_API+'=1&'+PARAM_PAGESIZE_API+'=100';
+
+
 
 /* Paginas definidas para los includes */
 const MENU_INICIO = 'inicio';
@@ -200,32 +211,35 @@ const ETIQUETAS_PORCENTAJES_DSD = new Map([
 /* Constantes para configurar la ordenación de las columnas de las tablas de datos genericas */
 //no mostramos información de pais, provincia, autonomia
 
-let ORDEN_COLUMNAS_TABLAS_DATOS_INDICADORES = ['refPeriod', 'numeroPersonas',
- 'indiceDependencia', 'indiceFeminidad','indiceInfancia','indiceJuventud', 'indiceMaternidad', 'indicePoblacionActiva', 'indiceReemplazo','indiceSobreenvejecimiento','indiceTendencia','tasaMortalidad','tasaNatalidad','porcentajePoblacionJoven','porcentajePoblacionAdulta','porcentajePoblacionEnvejecida','porcentajePoblacionAnalfabeta','porcentajePoblacionExtranjera','porcentajePoblacionExtranjeraInfantil',
- 'porcentajePoblacionNacidaExtranjero','municipioId','municipioTitle','distritoId', 'distritoTitle',
- 'barrioId', 'barrioTitle', 'seccionCensalId', 'seccionCensalTitle'];
+let ORDEN_COLUMNAS_TABLAS_DATOS_INDICADORES = ['refPeriod','municipioId','municipioTitle','distritoId', 'distritoTitle',
+'barrioId', 'barrioTitle', 'seccionCensalId', 'seccionCensalTitle', 'indiceDependencia', 'indiceFeminidad',
+'indiceInfancia','indiceJuventud', 'indiceMaternidad', 'indicePoblacionActiva', 'indiceReemplazo',
+'indiceSobreenvejecimiento','indiceTendencia','tasaMortalidad','tasaNatalidad','porcentajePoblacionJoven',
+'porcentajePoblacionAdulta','porcentajePoblacionEnvejecida','porcentajePoblacionAnalfabeta','porcentajePoblacionExtranjera',
+'porcentajePoblacionExtranjeraInfantil', 'porcentajePoblacionNacidaExtranjero', 'numeroPersonas'];
  
-let ORDEN_COLUMNAS_TABLAS_DATOS_EDAD_SIMPLE = ['age', 'sex','refPeriod',
-'numeroPersonas','municipioId','municipioTitle','distritoId',
-'distritoTitle', 'barrioId', 'barrioTitle', 'seccionCensalId', 'seccionCensalTitle'];
+let ORDEN_COLUMNAS_TABLAS_DATOS_EDAD_SIMPLE = ['age', 'sex','refPeriod','municipioId','municipioTitle','distritoId',
+'distritoTitle', 'barrioId', 'barrioTitle', 'seccionCensalId', 'seccionCensalTitle', 'numeroPersonas'];
 
 let ORDEN_COLUMNAS_TABLAS_DATOS_EDAD_QUINQUENALES = ['edadGruposQuinquenales','refPeriod',
-'sex','numeroPersonas','municipioId','municipioTitle','distritoId',
-'distritoTitle', 'barrioId', 'barrioTitle', 'seccionCensalId', 'seccionCensalTitle' ];
+'sex','municipioId','municipioTitle','distritoId',
+'distritoTitle', 'barrioId', 'barrioTitle', 'seccionCensalId', 'seccionCensalTitle','numeroPersonas' ];
 
-let ORDEN_COLUMNAS_TABLAS_DATOS_NACIONALIDAD = ['nacionalidad', 'edadGruposQuinquenales', 'refPeriod', 'sex', 'numeroPersonas', 'municipioId', 
+let ORDEN_COLUMNAS_TABLAS_DATOS_NACIONALIDAD = ['nacionalidad', 'edadGruposQuinquenales', 'refPeriod', 'sex', 'municipioId', 
 'municipioTitle', 'distritoId', 'distritoTitle', 'barrioId', 'barrioTitle', 'seccionCensalId', 
-'seccionCensalTitle'];
+'seccionCensalTitle', 'numeroPersonas'];
 
-let ORDEN_COLUMNAS_TABLAS_DATOS_NIVEL_ESTUDIO = ['tipoNivelEstudio', 'refPeriod', 'numeroPersonas'];
+let ORDEN_COLUMNAS_TABLAS_DATOS_NIVEL_ESTUDIO = ['tipoNivelEstudio', 'refPeriod', 'age', 'sex', 'numeroPersonas'];
 
-let ORDEN_COLUMNAS_TABLAS_DATOS_PAIS_NACIMIENTO = ['paisNacimiento', 'edadGruposQuinquenales', 'refPeriod', 'sex', 'numeroPersonas','municipioId', 
+let ORDEN_COLUMNAS_TABLAS_DATOS_PAIS_NACIMIENTO = ['paisNacimiento', 'edadGruposQuinquenales', 'refPeriod', 'sex','municipioId', 
 'municipioTitle', 'distritoId', 'distritoTitle', 'barrioId', 'barrioTitle', 'seccionCensalId', 
-'seccionCensalTitle'];
+'seccionCensalTitle', 'numeroPersonas'];
 
-let ORDEN_COLUMNAS_TABLAS_DATOS_PROCEDENCIA = ['municipioProcedencia', 'provinciaProcedencia', 'paisProcedencia','edadGruposQuinquenales', 'tipoNivelEstudio', 'refPeriod', 'numeroPersonas', 'municipioId', 
+let ORDEN_COLUMNAS_TABLAS_DATOS_PROCEDENCIA = ['municipioProcedencia', 'provinciaProcedencia', 'paisProcedencia','edadGruposQuinquenales', 'tipoNivelEstudio', 'refPeriod', 'municipioId', 
 'municipioTitle', 'distritoId', 'distritoTitle', 'barrioId', 'barrioTitle', 'seccionCensalId', 
-'seccionCensalTitle'];
+'seccionCensalTitle', 'numeroPersonas'];
+
+
 
 const ORDEN_COLUMNAS_TABLA_DATOS = new Map([
      ['poblacionPorIndicadores', ORDEN_COLUMNAS_TABLAS_DATOS_INDICADORES],
@@ -250,3 +264,66 @@ const FILTRO_SLIDER_TERRITORIO_INICIO = ['Municipio', 'Distrito', 'Barrio'];
 
  /* Disponibles: Indicadores, EdadSimple, EdadQuinquenales, Nacionalidad, NivelEstudio, Procedencia, PaisNacimiento */ 
 const FILTRO_MENU_CUBOS = [ 'Indicadores','EdadSimple','EdadQuinquenales','Nacionalidad','NivelEstudio', 'Procedencia', 'PaisNacimiento'];
+
+const VALORES_EDAD_QUINQUENAL = new Map([
+    ['00-a-04','De 00 a 4 años'],
+    ['05-a-09','De 05 a 9 años'],
+    ['10-a-14','De 10 a 14 años'],
+    ['15-a-19','De 15 a 19 años'],
+    ['20-a-24','De 20 a 24 años'],
+    ['25-a-29','De 25 a 29 años'],
+    ['30-a-34','De 30 a 34 años'],
+    ['35-a-39','De 35 a 39 años'],
+    ['40-a-44','De 40 a 44 años'],
+    ['45-a-49','De 45 a 49 años'],
+    ['50-a-54','De 50 a 54 años'],
+    ['55-a-59','De 55 a 59 años'],
+    ['60-a-64','De 60 a 64 años'],
+    ['65-a-69','De 65 a 69 años'],
+    ['70-a-74','De 70 a 74 años'],
+    ['75-a-79','De 75 a 79 años'],
+    ['80-a-84','De 80 a 84 años'],
+    ['85-a-89','De 85 a 89 años'],
+    ['90-a-94','De 90 a 94 años'],
+    ['95-y-mas','De 95 y más años'],
+    ['sin-clasificar','Sin clasificar']
+]);
+
+const VALORES_SEXO = new Map([
+    ['sex-F','Mujer'],
+    ['sex-M','Hombre'],
+    ['sex-N','No aplica'],
+    ['sex-T','Total'],
+    ['sex-U','Desconocido']
+]);
+
+const VALORES_NACIONALIDAD = new Map([
+    ['espanoles','Españoles'],
+    ['extranjeros-comunitarios-ue-27','Extranjeros comunitarios (UE-27)'],
+    ['extranjeros-comunitarios-ue-28','Extranjeros comunitarios (UE-28)'],
+    ['extranjeros-no-comunitarios','Extranjeros no comunitarios'],
+    ['no-consta','No consta']
+]);
+
+const VALORES_NIVEL_ESTUDIOS = new Map([
+    ['00','No aplicable por ser menor de 16 años'],
+    ['10','No sabe leer ni escribir'],
+    ['20','Inferior a grado escolar'],
+    ['21','Sin estudios'],
+    ['22','Enseñanza primaria incompleta'],
+    ['30','Grado escolar o equivalente'],
+    ['31','Bachiller elemental, graduado escolar, EGB completa, primaria completa, ESO, formación profesional básica'],
+    ['32','Formación profesional primer grado/grado medio, oficialía industrial'],
+    ['40','Bachiller, formación profesional de segundo grado o títulos equivalentes o superiores'],
+    ['41','Formación profesional segundo grado/grado superior, maestría industrial'],
+    ['42','achiller superior/LOGSE, BUP'],
+    ['43','Otras titulaciones medias'],
+    ['44','Diplomado en escuelas universitarias'],
+    ['45','Arquitecto o Ingeniero técnico'],
+    ['46','Grado/Licenciado universitario, arquitecto o ingeniero superior'],
+    ['47','Estudios superiores no universitarios'],
+    ['48','Doctorado, postgrado, especialización licenciado, máster universitario'],
+    ['99','Sin especificar']
+]);
+
+const DIMENSION_CON_ETIQUETA = [ 'sex','edadGruposQuinquenales','nacionalidad','tipoNivelEstudio'];

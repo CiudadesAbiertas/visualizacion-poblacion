@@ -52,6 +52,7 @@ var dimension2 = '';
 var agrupador = '';
 
 var chart;
+let periodos = [];
 
 /*
 	Función de inicialización del script
@@ -93,7 +94,13 @@ function inicializaMultidioma() {
             })
             .done(function () {
                 $('html').i18n();
-                inicializaDatos();
+                capturaParam();
+                periodo = paramPeriodo;
+                if(paramPeriodo=='ultimo') {
+                    dameUltimoPeriodo(paramCubo,periodos);
+                }else {
+                    inicializaDatos();
+                }
             });
     });
 
@@ -109,7 +116,7 @@ function inicializaDatos() {
     }
 
     // $('#urlAPIDoc').attr('href', DOC_API);
-    capturaParam();
+    
     insertaURLSAPI();
     modificaTaskMaster('iframeGraficoBarras');
 
@@ -155,6 +162,14 @@ function inicializaDatos() {
         addFiltro(paramSexo, 'sex');
     }
     if (paramPeriodo) {
+        if(paramPeriodo=='ultimo') {
+            paramPeriodo = periodos[0];
+            let paramTitulo = $.i18n(paramTituloKey);
+            if (paramPeriodo) {
+                paramTitulo = paramTitulo + ' ' + paramPeriodo;
+            }
+            $('#tituloGrafico').html(decodeURI(paramTitulo));
+        }
         addFiltro(paramPeriodo, 'refPeriod');
     }
     if (paramMunicipio) {
@@ -220,23 +235,33 @@ function inicializaDatos() {
             filtro
     );
 
-    let urlEtiquetas =
-        URL_API +
-        '/data-cube/data-structure-definition/dimension/' +
-        dimension2 +
-        '/value';
-    $.getJSON(urlEtiquetas)
-        .done(function (data) {
-            if (data.records) {
-                let i;
-                for (i = 0; i < data.records.length; i++) {
-                    dimensionEtiquetas[data.records[i].id] = data.records[i].title;
-                }
-            }
-        })
-        .always(function () {
-            obtieneDatosAPI(url);
-        });
+    if(DIMENSION_CON_ETIQUETA.indexOf(paramEjeX1)!=-1){
+        dimensionEtiquetas = dimensionEtiquetas;
+        if(paramEjeX1=='sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX1=='edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX1=='nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX1=='tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }
+    }
+
+    if(DIMENSION_CON_ETIQUETA.indexOf(paramEjeX2)!=-1){
+        dimensionEtiquetas = dimensionEtiquetas;
+        if(paramEjeX2=='sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX2=='edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX2=='nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }else if(paramEjeX2=='tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        }
+    }
+    
+    obtieneDatosAPI(url);
 }
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
@@ -332,7 +357,9 @@ function obtieneDatosAPI(url) {
             cuboEdadesHombres.sort( compare );
             let htmlContent =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
+                $.i18n('dimension1') +
+                '</th><th>' +
+				$.i18n('dimension2') +
                 '</th><th>' +
                 $.i18n('medida') +
                 '</th></tr>';
@@ -474,6 +501,9 @@ function capturaParam() {
     if (getUrlVars()['seccionCensalId']) {
         paramSeccionCensal = getUrlVars()['seccionCensalId'];
     }
+    if (getUrlVars()['edadSimple']) {
+        paramEdad = getUrlVars()['edadSimple'];
+    }
     if (getUrlVars()['edad']) {
         paramEdad = getUrlVars()['edad'];
     }
@@ -500,11 +530,13 @@ function pintaGrafico() {
     }
 
     am4core.useTheme(am4themes_frozen);
-    am4core.useTheme(am4themes_animated);
-
+  
     chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.language.locale = am4lang_es_ES;
 
+    chart.focusFilter.stroke = am4core.color("#0f0");
+    chart.focusFilter.strokeWidth = 4;
+    
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = 'ejeX';
     categoryAxis.renderer.grid.template.location = 0;

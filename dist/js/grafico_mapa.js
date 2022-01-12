@@ -41,6 +41,10 @@ var paramProcedencia;
 var paramPaisNacimiento;
 var paramNacionalidad;
 var paramIndicadores;
+var paramNivelEstudio;
+var paramPaisProcedencia;
+var paramProvinciaProcedencia;
+var paramMunicipioProcedencia;
 
 var datosPadron = [];
 var dataGeoJson;
@@ -56,6 +60,7 @@ var dimension1 = '';
 var dimension2 = '';
 var agrupador = 'SUM';
 var cuboId;
+let periodos = [];
 
 /*
 	Función de inicialización del script
@@ -100,7 +105,13 @@ function inicializaMultidioma() {
                 pocoCadena = $.i18n('poco');
                 muchoCadena = $.i18n('mucho');
                 capturaParam();
-                inicializaDatos();
+                periodo = paramPeriodo;
+                if(paramPeriodo=='ultimo') {
+                    dameUltimoPeriodo(cuboId,periodos);
+                }else {
+                    inicializaDatos();
+                }
+                
             });
     });
 
@@ -169,12 +180,32 @@ function inicializaDatos() {
         addFiltroMapa(paramSexo, 'sex');
     }
     if (paramPeriodo) {
+        if(paramPeriodo=='ultimo') {
+            paramPeriodo = periodos[0];
+            let paramTitulo = $.i18n(paramTituloKey);
+            if (paramPeriodo) {
+                paramTitulo = paramTitulo + ' ' + paramPeriodo;
+            }
+            $('#tituloGrafico').html(decodeURI(paramTitulo));
+        }
         addFiltroMapa(paramPeriodo, 'refPeriod');
+    }
+    if (paramNivelEstudio) {
+        addFiltroMapa(paramNivelEstudio, 'tipoNivelEstudio');
+    }
+    if (paramPaisProcedencia) {
+        addFiltroMapa(paramPaisProcedencia, 'paisProcedencia');
+    }
+    if (paramProvinciaProcedencia) {
+        addFiltroMapa(paramProvinciaProcedencia, 'provinciaProcedencia');
+    }
+    if (paramMunicipioProcedencia) {
+        addFiltroMapa(paramMunicipioProcedencia, 'municipioProcedencia');
     }
     if (paramMunicipio) {
         addFiltroMapa(paramMunicipio, 'municipioId');
 
-        if (!filtroTerritorio) {
+        /*if (!filtroTerritorio) {
             filtroTerritorio = filtroTerritorio + '&q=';
         } else {
             filtroTerritorio = filtroTerritorio + '&&';
@@ -184,12 +215,12 @@ function inicializaDatos() {
         } else {
             filtroTerritorio =
                 filtroTerritorio + "municipioId=='" + paramMunicipio + "'";
-        }
+        }*/
     }
     if (paramDistrito ) {
         addFiltroMapa(paramDistrito, 'distritoId');
 
-        if (!filtroTerritorio) {
+        /*if (!filtroTerritorio) {
             filtroTerritorio = filtroTerritorio + '&q=';
         } else {
             filtroTerritorio = filtroTerritorio + '&&';
@@ -214,7 +245,7 @@ function inicializaDatos() {
         } else {
             filtroTerritorio =
                 filtroTerritorio + filterKey + "=='" + paramDistrito + "'";
-        }
+        }*/
     }
     if (paramBarrio) {
         addFiltroMapa(paramBarrio, "barrioId");
@@ -223,7 +254,7 @@ function inicializaDatos() {
     if (paramSeccionCensal) {
         addFiltroMapa(paramSeccionCensal, "seccionCensalId");
 
-        if (filtroTerritorio == "") {
+        /*if (filtroTerritorio == "") {
             filtroTerritorio = filtroTerritorio + "&q=";
         } else {
             filtroTerritorio = filtroTerritorio + "&&";
@@ -248,7 +279,7 @@ function inicializaDatos() {
         } else {
             filtroTerritorio =
                 filtroTerritorio + filterKey + "=='" + paramSeccionCensal + "'";
-        }
+        }*/
     }
     
     if (paramEdad) {
@@ -403,7 +434,9 @@ function capturaParam() {
     if (getUrlVars()['seccionCensalId']) {
         paramSeccionCensal = getUrlVars()['seccionCensalId'];
     }
-
+    if (getUrlVars()['edadSimple']) {
+        paramEdad = getUrlVars()['edadSimple'];
+    }
     if (getUrlVars()['edad']) {
         paramEdad = getUrlVars()['edad'];
     }
@@ -418,6 +451,18 @@ function capturaParam() {
     }
     if (getUrlVars()['indicadores']) {
         paramIndicadores = getUrlVars()['indicadores'];
+    }
+    if (getUrlVars()['nivelEstudio']) {
+        paramNivelEstudio = getUrlVars()['nivelEstudio'];
+    }
+    if (getUrlVars()['paisProcedencia']) {
+        paramPaisProcedencia = getUrlVars()['paisProcedencia'];
+    }
+    if (getUrlVars()['provinciaProcedencia']) {
+        paramProvinciaProcedencia = getUrlVars()['provinciaProcedencia'];
+    }
+    if (getUrlVars()['municipioProcedencia']) {
+        paramMunicipioProcedencia = getUrlVars()['municipioProcedencia'];
     }
 }
 
@@ -445,12 +490,14 @@ function pintaGrafico() {
     );
 
     am4core.useTheme(am4themes_frozen);
-    am4core.useTheme(am4themes_animated);
-
+  
     let chart = am4core.create('chartdiv', am4maps.MapChart);
     chart.geodata = dataGeoJson;
     chart.language.locale = am4lang_es_ES;
 
+    chart.focusFilter.stroke = am4core.color("#0f0");
+    chart.focusFilter.strokeWidth = 4;
+    
     chart.projection = new am4maps.projections.Mercator();
 
     chart.zoomControl = new am4maps.ZoomControl();
@@ -476,6 +523,7 @@ function pintaGrafico() {
         target: polygonSeries.mapPolygons.template,
         min: chart.colors.getIndex(1).brighten(1),
         max: chart.colors.getIndex(1).brighten(-0.3),
+		logarithmic: true,
         dataField: 'value',
     });
 
@@ -485,38 +533,56 @@ function pintaGrafico() {
 
     let heatLegend = chart.createChild(am4maps.HeatLegend);
     heatLegend.series = polygonSeries;
+    heatLegend.width = am4core.percent(30);
     heatLegend.align = 'right';
     heatLegend.valign = 'top';
-    heatLegend.width = am4core.percent(20);
-    heatLegend.marginRight = am4core.percent(4);
-    heatLegend.minValue = 0;
-    heatLegend.maxValue = 40000000;
+	heatLegend.orientation = "horizontal";
+	heatLegend.valueAxis.renderer.labels.template.fontSize = 9;
+	heatLegend.valueAxis.renderer.minGridDistance = 40;
 
-    let minRange = heatLegend.valueAxis.axisRanges.create();
-    minRange.value = heatLegend.minValue;
-    minRange.label.text = pocoCadena;
-    let maxRange = heatLegend.valueAxis.axisRanges.create();
-    maxRange.value = heatLegend.maxValue;
-    maxRange.label.text = muchoCadena;
+	polygonSeries.mapPolygons.template.events.on("over", function(ev) {
+	  if (!isNaN(ev.target.dataItem.value)) {
+		heatLegend.valueAxis.showTooltipAt(ev.target.dataItem.value)
+	  }
+	  else {
+		heatLegend.valueAxis.hideTooltip();
+	  }
+	});
 
-    heatLegend.valueAxis.renderer.labels.template.adapter.add(
-        'text',
-        function (labelText) {
-            return '';
-        }
-    );
+	polygonSeries.mapPolygons.template.events.on("out", function(ev) {
+	  heatLegend.valueAxis.hideTooltip();
+	});
+
+
+   // heatLegend.marginRight = am4core.percent(4);
+    //heatLegend.minValue = 0;
+    //heatLegend.maxValue = 40000000;
+
+    //let minRange = heatLegend.valueAxis.axisRanges.create();
+    //minRange.value = heatLegend.minValue;
+    //minRange.label.text = pocoCadena;
+    //let maxRange = heatLegend.valueAxis.axisRanges.create();
+    //maxRange.value = heatLegend.maxValue;
+    //maxRange.label.text = muchoCadena;
+
+    //heatLegend.valueAxis.renderer.labels.template.adapter.add(
+    //    'text',
+    //    function (labelText) {
+    //        return '';
+    //    }
+    //);
 
     let polygonTemplate = polygonSeries.mapPolygons.template;
     polygonTemplate.tooltipText = '{title}: {value}';
     polygonTemplate.nonScalingStroke = true;
     polygonTemplate.strokeWidth = 0.5;
     //Evento para controlar el click del ratón en una zona del mapa
-    polygonTemplate.events.on('hit', function (ev) {
-        aplicarFiltrosMapa(ev.target.dataItem.dataContext.id);
-    });
+    //polygonTemplate.events.on('hit', function (ev) {
+    //    aplicarFiltrosMapa(ev.target.dataItem.dataContext.id);
+   // });
 
     let hs = polygonTemplate.states.create('hover');
-    hs.properties.fill = am4core.color('#3c5bdc');
+    hs.properties.fill = am4core.color('#40ff00');
 
     $('.modal').modal('hide');
 }
