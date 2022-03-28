@@ -21,12 +21,15 @@ var importeFormato = '0,0.[00] $';
 var importeFormatoSinDecimales = '0,0 $';
 var ultimoPeriodo = '2016';
 
+var dsdEdadQuinquenales = {};
+var dsdSexo = {};
+
 /* 
-	Métodos para el arranque de la web
+    Métodos para el arranque de la web
 */
 function initComun() {
     if (LOG_DEBUG_COMUN) {
-        console.log('initComun');
+        console.log('[general] [initComun]');
     }
 
     multidiomaComun();
@@ -34,11 +37,11 @@ function initComun() {
 }
 
 /* 
-	Función para el multiidioma 
+    Función para el multiidioma 
 */
 function multidiomaComun() {
     if (LOG_DEBUG_COMUN) {
-        console.log('multidiomaComun');
+        console.log('[general] [multidiomaComun]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -94,7 +97,7 @@ function multidiomaComun() {
     });
 
     // Enable debug
-    $.i18n.debug = LOG_DEBUG_COMUN;
+    // $.i18n.debug = LOG_DEBUG_COMUN;
 }
 
 /*
@@ -104,8 +107,8 @@ elementoId : ej. selectEdad
 campo : ej. edad
 arrayIframes : iFrames sobre los que afecta
  */
-function aplicaFiltroElement(elementoId, campo, arrayIframes, tipoCombo, filtroIndicador1) {
-    return aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo, filtroIndicador1);
+function aplicaFiltroElement(elementoId, campo, arrayIframes, tipoCombo) {
+    return aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo);
 }
 
 /*
@@ -115,20 +118,20 @@ elementoId : ej. selectEdad
 campo : ej. edad
 arrayIframes : iFrames sobre los que afecta
  */
-function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo, filtroIndicador1) {
+function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
     if (LOG_DEBUG_COMUN) {
         console.log(
-            '[aplicaFiltroElementGlobal] [elementoId:' +
-                elementoId +
-                '] [campo:' +
-                campo +
-                '] [arrayIframes:' +
-                arrayIframes +
-                ']'
+            '[general] [aplicaFiltroElementGlobal] [elementoId:' +
+            elementoId +
+            '] [campo:' +
+            campo +
+            '] [arrayIframes:' +
+            arrayIframes +
+            ']'
         );
     }
 
-    if (tipoCombo=='checkbox') {
+    if (tipoCombo == 'checkbox') {
         let url = '';
         let i;
         let criteriosEstablecido = false;
@@ -139,355 +142,374 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo, f
             let arrayComponente = JSON.parse(sessionStorage.getItem(elementoId));
             let o;
             value = '';
-            if(arrayComponente) {
-                for(o=0;o<arrayComponente.length;o++) {
+            if (arrayComponente) {
+                for (o = 0; o < arrayComponente.length; o++) {
                     let key = arrayComponente[o].id;
-                    if($('#'+elementoId+key).prop('checked')) {
-                        if(value) {
+                    if ($('#' + elementoId + key).prop('checked')) {
+                        if (value) {
                             value = value + ',';
                         }
-                        value = value + $('#'+elementoId + key).val();
+                        value = value + $('#' + elementoId + key).val();
                     }
                 }
-                if(value) {
+                if (value) {
                     url = addParamIntoUrl(
                         url,
                         campo,
                         value
                     );
-                    
+
                 } else {
-                    let indice = url.indexOf(campo+'=');
-                    if(indice!=-1) {
+                    let indice = url.indexOf(campo + '=');
+                    if (indice != -1) {
                         let auxUrl = url.substring(0, indice);
                         let auxRestoUrl = url.substring(indice, url.length);
                         if (auxRestoUrl.includes('&')) {
                             let indice2 = auxRestoUrl.indexOf('&');
                             auxRestoUrl = auxRestoUrl.substring(indice2, auxRestoUrl.length);
                             url = auxUrl + auxRestoUrl;
-                        }else{
+                        } else {
                             url = auxUrl;
                         }
                     }
                 }
-               
+
                 $('#' + iframe).attr('src', url);
 
-                if(!criteriosEstablecido) { 
-                    if(campo=='municipio'){
+                if (!criteriosEstablecido) {
+                    if (campo == 'municipio') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioTerritorio').append(' '+ etiqueta);
-                                $('#criterioTerritorio2').append(' '+ etiqueta);
+                                $('#criterioTerritorio').append(' ' + etiqueta);
+                                $('#criterioTerritorio2').append(' ' + etiqueta);
                             }
                             $('#pcriterioTerritorio').show();
                             $('#pcriterioTerritorio2').show();
                         }
-                       
-                        
+
+
                     }
-                    if(campo=='distrito'){
+                    if (campo == 'distrito') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 } // selectDistritoSCEdad
-                                if(elementoId.indexOf('selectDistritoSC')==-1) {
-                                    $('#criterioTerritorio').append(' '+ etiqueta);
-                                    $('#criterioTerritorio2').append(' '+ etiqueta);
+                                if (elementoId.indexOf('selectDistritoSC') == -1) {
+                                    $('#criterioTerritorio').append(' ' + etiqueta);
+                                    $('#criterioTerritorio2').append(' ' + etiqueta);
                                 }
                             }
-                            if(elementoId.indexOf('selectDistritoSC')==-1) {
+                            if (elementoId.indexOf('selectDistritoSC') == -1) {
                                 $('#pcriterioTerritorio').show();
                                 $('#pcriterioTerritorio2').show();
                             }
                         }
-                        
-                        
+
+
                     }
-                    if(campo=='barrio'){
+                    if (campo == 'barrio') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioTerritorio').append(' '+ etiqueta);
-                                $('#criterioTerritorio2').append(' '+ etiqueta);
+                                $('#criterioTerritorio').append(' ' + etiqueta);
+                                $('#criterioTerritorio2').append(' ' + etiqueta);
                             }
                             $('#pcriterioTerritorio').show();
                             $('#pcriterioTerritorio2').show();
                         }
-                        
-                        
+
+
                     }
-                    if(campo=='seccionCensalId'){
+                    if (campo == 'seccionCensalId') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioTerritorio').append(' '+ etiqueta);
-                                $('#criterioTerritorio2').append(' '+ etiqueta);
+                                $('#criterioTerritorio').append(' ' + etiqueta);
+                                $('#criterioTerritorio2').append(' ' + etiqueta);
                             }
                             $('#pcriterioTerritorio').show();
                             $('#pcriterioTerritorio2').show();
                         }
-                        
-                        
+
+
                     }
-                    if(campo=='periodo'){
+                    if (campo == 'periodo') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioPeriodo').append(' '+ etiqueta);
-                                $('#criterioPeriodo2').append(' '+ etiqueta);
+                                $('#criterioPeriodo').append(' ' + etiqueta);
+                                $('#criterioPeriodo2').append(' ' + etiqueta);
                             }
                             $('#pcriterioPeriodo').show();
                             $('#pcriterioPeriodo2').show();
                         }
-                        
-                        
+
+
                     }
-                    if(campo=='edadQuinquenales'){
+                    if (campo == 'edadQuinquenales') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioEdadQuinquenales').append(' '+ etiqueta);
-                                $('#criterioEdadQuinquenales2').append(' '+ etiqueta);
+                                $('#criterioEdadQuinquenales').append(' ' + etiqueta);
+                                $('#criterioEdadQuinquenales2').append(' ' + etiqueta);
                             }
                             $('#pcriterioEdadQuinquenales').show();
                             $('#pcriterioEdadQuinquenales2').show();
                         }
                     }
-                    if(campo=='sexo'){
+                    if (campo == 'sexo') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioSexo').append(' '+ etiqueta);
-                                $('#criterioSexo2').append(' '+ etiqueta);
+                                $('#criterioSexo').append(' ' + etiqueta);
+                                $('#criterioSexo2').append(' ' + etiqueta);
                             }
                             $('#pcriterioSexo').show();
                             $('#pcriterioSexo2').show();
                         }
                     }
-                    if(campo=='edad'){
+                    if (campo == 'edad') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioEdad').append(' '+ etiqueta);
-                                $('#criterioEdad2').append(' '+ etiqueta);
+                                $('#criterioEdad').append(' ' + etiqueta);
+                                $('#criterioEdad2').append(' ' + etiqueta);
                             }
                             $('#pcriterioEdad').show();
                             $('#pcriterioEdad2').show();
                         }
                     }
-                    if(campo=='edadSimple'){
+                    if (campo == 'edadSimple') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioEdad').append(' '+ etiqueta);
-                                $('#criterioEdad2').append(' '+ etiqueta);
+                                $('#criterioEdad').append(' ' + etiqueta);
+                                $('#criterioEdad2').append(' ' + etiqueta);
                             }
                             $('#pcriterioEdad').show();
                             $('#pcriterioEdad2').show();
                         }
                     }
-                    if(campo=='medidaInd'){
+                    if (campo == 'medidaInd') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioIndicadores').append(' '+ etiqueta);
-                                $('#criterioIndicadores2').append(' '+ etiqueta);
+                                $('#criterioIndicadores').append(' ' + etiqueta);
+                                $('#criterioIndicadores2').append(' ' + etiqueta);
                             }
                             $('#pcriterioIndicadores').show();
                             $('#pcriterioIndicadores2').show();
                         }
                     }
-                    if(campo=='medidaPor'){
+                    if (campo == 'medidaPor') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioIndicadores').append(' '+ etiqueta);
-                                $('#criterioIndicadores2').append(' '+ etiqueta);
+                                $('#criterioIndicadores').append(' ' + etiqueta);
+                                $('#criterioIndicadores2').append(' ' + etiqueta);
                             }
                             $('#pcriterioIndicadores').show();
                             $('#pcriterioIndicadores2').show();
                         }
                     }
-                    if(campo=='paisProcedencia'){
+                    if (campo == 'paisProcedencia') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioPaisPro').append(' '+ etiqueta);
-                                $('#criterioPaisPro2').append(' '+ etiqueta);
+                                $('#criterioPaisPro').append(' ' + etiqueta);
+                                $('#criterioPaisPro2').append(' ' + etiqueta);
                             }
                             $('#pcriterioPaisPro').show();
                             $('#pcriterioPaisPro2').show();
                         }
                     }
-                    if(campo=='provinciaProcedencia'){
+                    if (campo == 'provinciaProcedencia') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioProvPro').append(' '+ etiqueta);
-                                $('#criterioProvPro2').append(' '+ etiqueta);
+                                $('#criterioProvPro').append(' ' + etiqueta);
+                                $('#criterioProvPro2').append(' ' + etiqueta);
                             }
                             $('#pcriterioProvPro').show();
                             $('#pcriterioProvPro2').show();
                         }
                     }
-                    if(campo=='municipioProcedencia'){
+                    if (campo == 'municipioProcedencia') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioMunPro').append(' '+ etiqueta);
-                                $('#criterioMunPro2').append(' '+ etiqueta);
+                                $('#criterioMunPro').append(' ' + etiqueta);
+                                $('#criterioMunPro2').append(' ' + etiqueta);
                             }
                             $('#pcriterioMunPro').show();
                             $('#pcriterioMunPro2').show();
                         }
                     }
-                    if(campo=='nivelEstudio'){
+                    if (campo == 'nivelEstudio') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioNivelEstudio').append(' '+ etiqueta);
-                                $('#criterioNivelEstudio2').append(' '+ etiqueta);
+                                $('#criterioNivelEstudio').append(' ' + etiqueta);
+                                $('#criterioNivelEstudio2').append(' ' + etiqueta);
                             }
                             $('#pcriterioNivelEstudio').show();
                             $('#pcriterioNivelEstudio2').show();
                         }
                     }
-                    if(campo=='paisNacimiento'){
+                    if (campo == 'paisNacimiento') {
                         let etiqueta = '';
-                        if(value) {
+                        if (value) {
                             let etiquetas = [];
                             etiquetas = value.split(',');
                             let d;
-                            for(d=0;d<etiquetas.length;d++) {
-                                etiqueta = $('#etiqueta'+elementoId+etiquetas[d]).html();
-                                if(d<(etiquetas.length-1)) {
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
                                     etiqueta = etiqueta + ',';
                                 }
-                                $('#criterioPaisNac').append(' '+ etiqueta);
-                                $('#criterioPaisNac2').append(' '+ etiqueta);
+                                $('#criterioPaisNac').append(' ' + etiqueta);
+                                $('#criterioPaisNac2').append(' ' + etiqueta);
                             }
                             $('#pcriterioPaisNac').show();
-                            $('#pcriterioPaisNac').show();
+                            $('#pcriterioPaisNac2').show();
+                        }
+                    }
+
+                    if (campo == 'nacionalidad') {
+                        let etiqueta = '';
+                        if (value) {
+                            let etiquetas = [];
+                            etiquetas = value.split(',');
+                            let d;
+                            for (d = 0; d < etiquetas.length; d++) {
+                                etiqueta = $('#etiqueta' + elementoId + etiquetas[d]).html();
+                                if (d < (etiquetas.length - 1)) {
+                                    etiqueta = etiqueta + ',';
+                                }
+                                $('#criterioNacionalidad').append(' ' + etiqueta);
+                                $('#criterioNacionalidad2').append(' ' + etiqueta);
+                            }
+                            $('#pcriterioNacionalidad').show();
+                            $('#pcriterioNacionalidad2').show();
                         }
                     }
                 }
-               
+
             }
             criteriosEstablecido = true;
         }
-        if(value) {
+        if (value) {
             // filtroIndicador1 = filtroIndicador1 + '&'+campo + '=' + value;
             return value;
-        }else{
+        } else {
             return '';
         }
-    }else if(tipoCombo=='option'){
+    } else if (tipoCombo == 'option') {
         if (
             $('#' + elementoId).val() &&
             $('#' + elementoId).val().length
@@ -499,8 +521,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo, f
                 let iframe = arrayIframes[i];
                 url = $('#' + iframe).attr('src');
                 value = $('#' + elementoId)
-                        .selectpicker()
-                        .val()
+                    .selectpicker()
+                    .val()
                 url = addParamIntoUrl(
                     url,
                     campo,
@@ -508,9 +530,9 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo, f
                 );
                 $('#' + iframe).attr('src', url);
             }
-            if(value) {
+            if (value) {
                 return value;
-            }else{
+            } else {
                 return '';
             }
         }
@@ -519,11 +541,11 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo, f
 }
 
 /*
-	Se inicializa la librería para tratar los formatos de los números
+    Se inicializa la librería para tratar los formatos de los números
 */
 function numeralInit() {
     if (LOG_DEBUG_COMUN) {
-        console.log('numeralInit');
+        console.log('[general] [numeralInit]');
     }
 
     numeral.register('locale', 'es', {
@@ -548,14 +570,14 @@ function numeralInit() {
 }
 
 /*
-	Función usa la seguridad de la API en caso de ser necesario
+    Función usa la seguridad de la API en caso de ser necesario
 */
 function dameURL(URL) {
     if (LOG_DEBUG_COMUN) {
-        console.log('dameURL: ' + URL);
+        console.log('[general] [dameURL] [URL]' + URL);
     }
 
-    if (SEGURIDAD == false) {
+    if (!SEGURIDAD) {
         return encodeURI(URL);
     } else {
         return encodeURI(URL);
@@ -580,14 +602,18 @@ function getUrlVars() {
 Funcion que chequea el objecto taskMaster
 */
 function checkTaskMaster() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [checkTaskMaster]');
+    }
+
     if (!taskMaster) {
         return false;
     }
 
-    if (taskMaster.iframeGraficoBarras == false) {
+    if (!taskMaster.iframeGraficoBarras) {
         return false;
     }
-    if (taskMaster.iframeGraficoMapa == false) {
+    if (!taskMaster.iframeGraficoMapa) {
         return false;
     }
 
@@ -600,6 +626,10 @@ function checkTaskMaster() {
 Funcion que se invoca cuando se han terminado todas las llamadas ajax desde la funcion checkTaskMaster
 */
 function cargaTerminada() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [cargaTerminada]');
+    }
+
     $('.modal').modal('hide');
 }
 
@@ -607,18 +637,26 @@ function cargaTerminada() {
 Funcion que modifica un attributo del objeto taskmaster del padre (si existe)
 */
 function modificaTaskMaster(attr) {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [modificaTaskMaster] [attr] ' + attr);
+    }
+
     try {
         if (parent && parent.taskMaster) {
             eval('parent.taskMaster.' + attr + '=true');
             parent.checkTaskMaster();
         }
-    } catch (errorTM) {}
+    } catch (errorTM) { }
 }
 
 /*
-	Función que devuelve true si se ejecuta dentro de un iframe
+    Función que devuelve true si se ejecuta dentro de un iframe
 */
 function inIframe() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [inIframe]');
+    }
+
     try {
         return window.self !== window.top;
     } catch (e) {
@@ -626,12 +664,14 @@ function inIframe() {
     }
 }
 
-let dsdEdadQuinquenales = {};
-let dsdSexo = {};
 /*
-	Método para inicializar los datos de la visualización
+    Método para inicializar los datos de la visualización
 */
 function inicializaDatos() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [inicializaDatos]');
+    }
+
     let combos = ['dsdEdadQuinquenales', 'dsdSexo'];
 
     if (isSessionTimeOut()) {
@@ -641,8 +681,8 @@ function inicializaDatos() {
     let jqxhr = $.getJSON(
         dameURL(
             DSD_VALORES_DIMENSIONES_URL_1 +
-                DIMENSION_EDAD_QUINQUENAL +
-                DSD_VALORES_DIMENSIONES_URL_2
+            DIMENSION_EDAD_QUINQUENAL +
+            DSD_VALORES_DIMENSIONES_URL_2
         )
     )
         .done(function (data) {
@@ -660,8 +700,8 @@ function inicializaDatos() {
     jqxhr = $.getJSON(
         dameURL(
             DSD_VALORES_DIMENSIONES_URL_1 +
-                DIMENSION_SEXO +
-                DSD_VALORES_DIMENSIONES_URL_2
+            DIMENSION_SEXO +
+            DSD_VALORES_DIMENSIONES_URL_2
         )
     )
         .done(function (data) {
@@ -684,9 +724,9 @@ function inicializaDatos() {
     jqxhr = $.getJSON(
         dameURL(
             POBLACION_URL_1 +
-                paramCubo +
-                POBLACION_URL_2 +
-                '?dimension=refPeriod&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
+            paramCubo +
+            POBLACION_URL_2 +
+            '?dimension=refPeriod&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
         )
     )
         .done(function (data) {
@@ -706,7 +746,7 @@ function inicializaDatos() {
         }).always(function () {
             periodo.sort();
 
-            var valorDefecto=periodo[periodo.length-1];
+            var valorDefecto = periodo[periodo.length - 1];
             let mySlider = $('#filtroAnyo').bootstrapSlider({
                 ticks: periodo,
                 ticks_labels: periodo,
@@ -717,7 +757,7 @@ function inicializaDatos() {
 
             mySlider.on('change', function (sliderValue) {
                 filtraGraficosInicio(sliderValue.value.newValue);
-                ultimoPeriodo=sliderValue.value.newValue;
+                ultimoPeriodo = sliderValue.value.newValue;
             });
 
             filtraGraficosInicio(valorDefecto);
@@ -726,34 +766,35 @@ function inicializaDatos() {
 }
 
 /*
-	Método para filtrar por periodo los gráficos de inicio
+    Método para filtrar por periodo los gráficos de inicio
 */
 function filtraGraficosInicio(filtroPeriodo) {
     if (LOG_DEBUG_COMUN) {
-        console.log('filtraGraficosInicio ' + filtroPeriodo);
+        console.log('[general] [filtraGraficosInicio] [filtroPeriodo] ' + filtroPeriodo);
     }
+
     let territorio = sessionStorage.getItem('territorio');
 
     let url = 'grafico_piramide.html?titulo=piramide_poblacion';
     url = url + '&periodo=' + filtroPeriodo + '&lang=' + $.i18n().locale;
-    url = url + '&territorio='+territorio;
+    url = url + '&territorio=' + territorio;
     $('#iframeGraficoPiramide').attr('src', url);
 
     url = 'grafico_mapa.html?titulo=numero_habitantes&cuboId=poblacionPorEdadGruposQuinquenales';
     url = url + '&periodo=' + filtroPeriodo + '&lang=' + $.i18n().locale;
-    url = url + '&territorio='+territorio;
+    url = url + '&territorio=' + territorio;
     $('#iframeGraficoPoblacionTotal').attr('src', url);
 }
 
 /*
-	Funcion auxiliar de Cadenas (Tratamiento de parametros en url. Ejemplo Edad)
+    Funcion auxiliar de Cadenas (Tratamiento de parametros en url. Ejemplo Edad)
 */
 function addParamIntoUrl(url, param, value) {
-    let cadenaBusqueda = param + '=';
     if (LOG_DEBUG_COMUN) {
-        console.log('[addParamIntoUrl] url de entrada: ' + url);
+        console.log('[general] [addParamIntoUrl] url de entrada: ' + url);
     }
 
+    let cadenaBusqueda = param + '=';
     //Esta formula solo sirve si se insertan en un orden determinado
     if (url && url.includes(cadenaBusqueda)) {
         //Ya se ha fijado el valor param= por lo que no hay que incluirlo
@@ -782,6 +823,12 @@ function addParamIntoUrl(url, param, value) {
  * includeHTML
  */
 function includeHTML(menu, seccion_nav) {
+    if (LOG_DEBUG_COMUN) {
+        console.log(
+            '[general] [includeHTML] [menu:' + menu + '] [seccion:' + seccion_nav + ']'
+        );
+    }
+
     let z, elmnt, file, xhttp;
     /* Loop through a collection of all HTML elements: */
     z = document.getElementsByTagName('*');
@@ -817,29 +864,28 @@ function includeHTML(menu, seccion_nav) {
         include: true,
         css: true,
     };
-    if (LOG_DEBUG_COMUN) {
-        console.log(
-            '[includeHTML] [menu:' + menu + '] [seccion:' + seccion_nav + ']'
-        );
-    }
+
     checkPageLoad();
     controlCSS(menu);
     fijarSeccion(seccion_nav);
     //Control para el slider
     $('.slider-tick-label-container').attr('style', 'margin-left: -35px;');
     $('.slider-tick-label').width('70px');
-    //filtraMenuCubos();
 }
 
 function checkPageLoad() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [checkPageLoad]');
+    }
+
     if (pageLoad) {
         return false;
     }
 
-    if (pageLoad.include == false) {
+    if (!pageLoad.include) {
         return false;
     }
-    if (pageLoad.css == false) {
+    if (!pageLoad.css) {
         return false;
     }
 
@@ -855,11 +901,11 @@ function checkPageLoad() {
  */
 function controlCSS(menu) {
     if (LOG_DEBUG_COMUN) {
-        console.log('[controlCSS] [menu:' + menu + '] ');
+        console.log('[general] [controlCSS] [menu:' + menu + '] ');
     }
 
     if (!menu) {
-        console.error('[controlCSS] [menu:' + menu + '] [NOT FOUND!!] ');
+        console.error('[general] [controlCSS] [menu:' + menu + '] [NOT FOUND!!] ');
     } else {
         //Control de CSS
         if (MENU_INICIO == menu) {
@@ -883,6 +929,10 @@ function controlCSS(menu) {
 }
 
 function cambioCSSPlantilla() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [cambioCSSPlantilla]');
+    }
+
     $('#buttonInicio').css('font-weight', 'normal');
     $('#buttonEdadQuinquenales').css('font-weight', 'normal');
     $('#buttonEdad').css('font-weight', 'normal');
@@ -902,89 +952,93 @@ function cambioCSSPlantilla() {
 function changeSeleccionMultiplebySession(selectorId, arrayComponente, tipoCombo, chequeaUtlimo) {
     if (LOG_DEBUG_COMUN) {
         console.log(
-            '[changeSeleccionMultiplebySession] [selectorId:' +
-                selectorId +
-                ']    [arrayComponente:' +
-                arrayComponente +
-                '] '
+            '[general] [changeSeleccionMultiplebySession] [selectorId:' +
+            selectorId +
+            ']    [arrayComponente:' +
+            arrayComponente +
+            '] '
         );
     }
 
     let i;
     for (i = 0; i < arrayComponente.length; i++) {
         let componente = {
-            id : arrayComponente[i].id,
-            title : arrayComponente[i].title
+            id: arrayComponente[i].id,
+            title: arrayComponente[i].title
         };
 
         let onclick = '';
         let checked = '';
-        if(chequeaUtlimo && i==(arrayComponente.length-1)) {
+        if (chequeaUtlimo && i == (arrayComponente.length - 1)) {
             checked = 'checked';
-            if(selectorId=='selectMunicipio') {
-                $('#criterioTerritorio').append(' '+ componente.title);
-                $('#criterioTerritorio2').append(' '+ componente.title);
-                $('#pcriterioTerritorio').show();
-                $('#pcriterioTerritorio2').show();
-                onclick = ' onclick="chequeaMultiple"';
-            }
-            if(selectorId=='selectDistrito') {
-                $('#criterioTerritorio').append(' '+ componente.title);
-                $('#criterioTerritorio2').append(' '+ componente.title);
-                $('#pcriterioTerritorio').show();
-                $('#pcriterioTerritorio2').show();
-                onclick = ' onclick="chequeaMultiple"';
-            }
-            if(selectorId=='selectBarrio') {
-                $('#criterioTerritorio').append(' '+ componente.title);
-                $('#criterioTerritorio2').append(' '+ componente.title);
-                $('#pcriterioTerritorio').show();
-                $('#pcriterioTerritorio2').show();
-                onclick = ' onclick="chequeaMultiple"';
-            }
-            if(selectorId=='selectSeccionCensal') {
-                $('#criterioTerritorio').append(' '+ componente.title);
-                $('#criterioTerritorio2').append(' '+ componente.title);
+            if (selectorId == 'selectMunicipio') {
+                $('#criterioTerritorio').append(' ' + componente.title);
+                $('#criterioTerritorio2').append(' ' + componente.title);
                 $('#pcriterioTerritorio').show();
                 $('#pcriterioTerritorio2').show();
             }
-            if(selectorId=='selectPeriodo') {
-                $('#criterioPeriodo').append(' '+ componente.title);
-                $('#criterioPeriodo2').append(' '+ componente.title);
+            if (selectorId == 'selectDistrito') {
+                $('#criterioTerritorio').append(' ' + componente.title);
+                $('#criterioTerritorio2').append(' ' + componente.title);
+                $('#pcriterioTerritorio').show();
+                $('#pcriterioTerritorio2').show();
+            }
+            if (selectorId == 'selectBarrio') {
+                $('#criterioTerritorio').append(' ' + componente.title);
+                $('#criterioTerritorio2').append(' ' + componente.title);
+                $('#pcriterioTerritorio').show();
+                $('#pcriterioTerritorio2').show();
+            }
+            if (selectorId == 'selectSeccionCensal') {
+                $('#criterioTerritorio').append(' ' + componente.title);
+                $('#criterioTerritorio2').append(' ' + componente.title);
+                $('#pcriterioTerritorio').show();
+                $('#pcriterioTerritorio2').show();
+            }
+            if (selectorId == 'selectPeriodo') {
+                $('#criterioPeriodo').append(' ' + componente.title);
+                $('#criterioPeriodo2').append(' ' + componente.title);
                 $('#pcriterioPeriodo').show();
                 $('#pcriterioPeriodo2').show();
-                onclick = ' onclick="chequeaMultiple"';
             }
-            if(selectorId=='selectEdadQuinquenales') {
-                $('#criterioEdadQuinquenales').append(' '+ componente.title);
-                $('#criterioEdadQuinquenales2').append(' '+ componente.title);
+            if (selectorId == 'selectEdadQuinquenales') {
+                $('#criterioEdadQuinquenales').append(' ' + componente.title);
+                $('#criterioEdadQuinquenales2').append(' ' + componente.title);
                 $('#pcriterioEdadQuinquenales').show();
                 $('#pcriterioEdadQuinquenales').show();
             }
-            if(selectorId=='selectSexo') {
-                $('#criterioSexo').append(' '+ componente.title);
-                $('#criterioSexo2').append(' '+ componente.title);
+            if (selectorId == 'selectSexo') {
+                $('#criterioSexo').append(' ' + componente.title);
+                $('#criterioSexo2').append(' ' + componente.title);
                 $('#pcriterioSexo').show();
                 $('#pcriterioSexo').show();
             }
-            if(selectorId=='selectEdad') {
-                $('#criterioEdad').append(' '+ componente.title);
-                $('#criterioEdad2').append(' '+ componente.title);
+            if (selectorId == 'selectEdad') {
+                $('#criterioEdad').append(' ' + componente.title);
+                $('#criterioEdad2').append(' ' + componente.title);
                 $('#pcriterioEdad').show();
                 $('#pcriterioEdad2').show();
             }
+            if (selectorId == 'nacionalidad') {
+                $('#criterioNacionalidad').append(' ' + componente.title);
+                $('#criterioNacionalidad').append(' ' + componente.title);
+                $('#pcriterioNacionalidad').show();
+                $('#pcriterioNacionalidad').show();
+            }
         }
-        if(selectorId.indexOf('selectDistritoSC')!=-1) {
-            onclick = ' onclick="chequeaMultiple(\'selectDistritoSC\')"';
+        if (selectorId.indexOf('selectDistritoSC') != -1) {
+            onclick = ' onclick="filtraTerritorio()"';
         }
+
         $('#' + selectorId).append(
-            '<div class="checkbox"><label><input type="checkbox" id="'+ selectorId +
+            '<div class="checkbox"><label for="' + selectorId +
+            componente.id + '"><input type="checkbox" id="' + selectorId +
             componente.id +
-                '" value="' +
-                componente.id +
-                '"'+checked+onclick+'>' +
-                componente.title +
-                '</label></div>'
+            '" value="' +
+            componente.id +
+            '"' + checked + onclick + '><span id=etiqueta' + selectorId + componente.id + '>' +
+            componente.title +
+            '</span></label></div>'
         );
     }
 
@@ -1007,18 +1061,19 @@ function obtenerCombo(selectorId, arrayComponente, urlAjax, tipoCombo, chequeaUt
  * @param {*} urlAjax
  * @param {*} valores indica los campos de donde obtener los valores del objeto data (id,title)
  */
-function obtenerComboValores(selectorId, arrayComponente, urlAjax, valores, tipoCombo, chequeaUtlimo, taskCombos, posTask) {
+function obtenerComboValores(selectorId, arrayComponente, urlAjax, valores, tipoCombo, chequeaUtlimo, taskCombos,
+    posTask) {
     if (LOG_DEBUG_COMUN) {
         console.log(
-            '[obtenerComboValores] [selectorId:' +
-                selectorId +
-                ']    [arrayComponente:' +
-                arrayComponente +
-                '] [urlAjax:' +
-                urlAjax +
-                '] [valores:' +
-                valores +
-                ']'
+            '[general] [obtenerComboValores] [selectorId:' +
+            selectorId +
+            ']    [arrayComponente:' +
+            arrayComponente +
+            '] [urlAjax:' +
+            urlAjax +
+            '] [valores:' +
+            valores +
+            ']'
         );
     }
 
@@ -1028,16 +1083,15 @@ function obtenerComboValores(selectorId, arrayComponente, urlAjax, valores, tipo
     ) {
         arrayComponente = JSON.parse(sessionStorage.getItem(selectorId));
         changeSeleccionMultiplebySession(selectorId, arrayComponente, tipoCombo, chequeaUtlimo);
-        if(taskCombos) {
-            taskCombos[posTask]=true;
-            let ultimoAcabado=true;
+        if (taskCombos) {
+            taskCombos[posTask] = true;
+            let ultimoAcabado = true;
             let d;
-            for(d=0;d<taskCombos.length;d++) {
+            for (d = 0; d < taskCombos.length; d++) {
                 ultimoAcabado = ultimoAcabado && taskCombos[d];
             }
-            if(ultimoAcabado) {
-                aplicaFiltro('municipio');
-                cargaTerminada();
+            if (ultimoAcabado) {
+                inicializaInicio();
             }
         }
     } else {
@@ -1051,16 +1105,15 @@ function obtenerComboValores(selectorId, arrayComponente, urlAjax, valores, tipo
             })
             .always(function () {
                 sessionStorage.setItem(selectorId, JSON.stringify(arrayComponente));
-                if(taskCombos) {
-                    taskCombos[posTask]=true;
-                    let ultimoAcabado=true;
+                if (taskCombos) {
+                    taskCombos[posTask] = true;
+                    let ultimoAcabado = true;
                     let d;
-                    for(d=0;d<taskCombos.length;d++) {
+                    for (d = 0; d < taskCombos.length; d++) {
                         ultimoAcabado = ultimoAcabado && taskCombos[d];
                     }
-                    if(ultimoAcabado) {
-                        aplicaFiltro('municipio');
-                        cargaTerminada();
+                    if (ultimoAcabado) {
+                        inicializaInicio();
                     }
                 }
             });
@@ -1070,68 +1123,61 @@ function obtenerComboValores(selectorId, arrayComponente, urlAjax, valores, tipo
 
 function obtenerComboValoresConstantes(selectorId, arrayComponente, constante, chequeaUtlimo, taskCombos, posTask) {
     if (LOG_DEBUG_COMUN) {
-        console.log('obtenerComboValores2');
+        console.log('[general] [obtenerComboValoresConstantes]');
     }
 
-    if(constante=='VALORES_EDAD_QUINQUENAL') {
-        VALORES_EDAD_QUINQUENAL.forEach(obtenerDatosMapa,arrayComponente);
-    }else if(constante=='VALORES_SEXO') {
-        VALORES_SEXO.forEach(obtenerDatosMapa,arrayComponente);
-    }else if(constante=='VALORES_NACIONALIDAD') {
-        VALORES_NACIONALIDAD.forEach(obtenerDatosMapa,arrayComponente);
-    }else if(constante=='VALORES_NIVEL_ESTUDIOS') {
-        VALORES_NIVEL_ESTUDIOS.forEach(obtenerDatosMapa,arrayComponente);
+    if (constante == 'VALORES_EDAD_QUINQUENAL') {
+        VALORES_EDAD_QUINQUENAL.forEach(obtenerDatosMapa, arrayComponente);
+    } else if (constante == 'VALORES_SEXO') {
+        VALORES_SEXO.forEach(obtenerDatosMapa, arrayComponente);
+    } else if (constante == 'VALORES_NACIONALIDAD') {
+        VALORES_NACIONALIDAD.forEach(obtenerDatosMapa, arrayComponente);
+    } else if (constante == 'VALORES_NIVEL_ESTUDIOS') {
+        VALORES_NIVEL_ESTUDIOS.forEach(obtenerDatosMapa, arrayComponente);
     }
-    
+
     arrayComponente.sort(compareId);
     let h;
-    for(h=0;h<arrayComponente.length;h++) {
+    for (h = 0; h < arrayComponente.length; h++) {
         let componente = arrayComponente[h];
         let onclick = '';
-            let checked = '';
-            if(chequeaUtlimo && h==(arrayComponente.length-1)) {
-                checked = 'checked';
-            }
-            if(selectorId.indexOf('selectMunicipio')!=-1) {
-                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-            }
-            if(selectorId.indexOf('selectDistrito')!=-1) {
-                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-            }
-            if(selectorId.indexOf('selectBarrio')!=-1) {
-                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-            }
-            if(selectorId.indexOf('selectSeccionCensal')!=-1) {
-                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-            }
-            if(selectorId.indexOf('selectPeriodo')!=-1) {
-                onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-            }
-            if(selectorId.indexOf('selectDistritoSC')!=-1) {
-                onclick = ' onclick="chequeaMultiple(\'selectDistritoSC\')"';
-            }
+        let checked = '';
+        if (chequeaUtlimo && h == (arrayComponente.length - 1)) {
+            checked = 'checked';
+        }
+        if (selectorId.indexOf('selectDistritoSC') != -1) {
+            onclick = ' onclick="filtraTerritorio()"';
+        }
 
-            $('#' + selectorId).append(
-                '<div class="checkbox"><label ><input type="checkbox" id="'+ selectorId +
-                componente.id +
-                    '" value="' +
-                    componente.id +
-                    '"'+checked+onclick+'><span id=etiqueta'+ selectorId + componente.id+'>' +
-                    componente.title +
-                    '</span></label></div>'
-            );
+        $("#" + selectorId).append(
+            '<div class="checkbox"><label for="' +
+            selectorId +
+            componente.id +
+            '"><input type="checkbox" id="' +
+            selectorId +
+            componente.id +
+            '" value="' +
+            componente.id +
+            '"' +
+            checked + onclick +
+            "><span id=etiqueta" +
+            selectorId +
+            componente.id +
+            ">" +
+            componente.title +
+            "</span></label></div>"
+        );
     }
     sessionStorage.setItem(selectorId, JSON.stringify(arrayComponente));
-    if(taskCombos) {
-        taskCombos[posTask]=true;
-        let ultimoAcabado=true;
+    if (taskCombos) {
+        taskCombos[posTask] = true;
+        let ultimoAcabado = true;
         let d;
-        for(d=0;d<taskCombos.length;d++) {
+        for (d = 0; d < taskCombos.length; d++) {
             ultimoAcabado = ultimoAcabado && taskCombos[d];
         }
-        if(ultimoAcabado) {
-            aplicaFiltro('municipio');
-            cargaTerminada();
+        if (ultimoAcabado) {
+            inicializaInicio();
         }
     }
 }
@@ -1140,8 +1186,8 @@ function obtenerDatosMapa(value, key, map) {
 
     let componente;
     componente = {
-        id : key,
-        title : value
+        id: key,
+        title: value
     };
     this.push(componente);
 }
@@ -1156,31 +1202,43 @@ function obtenerDatosMapa(value, key, map) {
 function changeSeleccionMultiple(selectorId, arrayComponente, data, valores, tipoCombo, chequeaUtlimo) {
     if (LOG_DEBUG_COMUN) {
         console.log(
-            '[changeSeleccionMultiple] [selectorId:' +
-                selectorId +
-                ']    [arrayComponente:' +
-                arrayComponente +
-                '] [data:' +
-                data +
-                '] [valores:' +
-                valores +
-                ']'
+            '[general] [changeSeleccionMultiple] [selectorId:' +
+            selectorId +
+            ']    [arrayComponente:' +
+            arrayComponente +
+            '] [data:' +
+            data +
+            '] [valores:' +
+            valores +
+            ']'
         );
     }
 
-    if (data && data.records && data.records.length ) {
+    if (data && data.records && data.records.length) {
         let i;
         for (i = 0; i < data.records.length; i++) {
-            if(selectorId=='selectMunicipioPais' && data.records[i][1]=='EEUU') {
-                console.log('Se quita dato por ser erroneo');
-            }else {
+            if (selectorId == 'selectMunicipioPais' && data.records[i][1] == 'EEUU') {
+                if (LOG_DEBUG_COMUN) {
+                    console.log('Se quita dato por ser erroneo');
+                }
+            } else {
                 let componente;
                 //Si se han fijado de donde obtener los valores
                 if (valores) {
                     componente = {
-                        id : data.records[i][valores[0]],
-                        title : data.records[i][valores[1]]
+                        id: data.records[i][valores[0]],
+                        title: data.records[i][valores[1]]
                     };
+                    arrayComponente.push(componente);
+                    if (LOG_DEBUG_COMUN) {
+                        console.log(
+                            '[changeSeleccionMultiple] [componente.id:' +
+                            componente.id +
+                            ']    [componente.title:' +
+                            componente.title +
+                            '] '
+                        );
+                    }
                 } //en caso contrario revisamos el data para obtener los valores segun los datos.
                 else {
                     let auxId = data.records[i].id;
@@ -1194,92 +1252,81 @@ function changeSeleccionMultiple(selectorId, arrayComponente, data, valores, tip
                     if (!auxTitle || !auxTitle) {
                         auxTitle = data.records[i][0];
                     }
-                    componente = {
-                        id : data.records[i][0],
-                        title : auxTitle
-                    };
+                    if (auxId || auxTitle) {
+                        componente = {
+                            id: auxId,
+                            title: auxTitle
+                        };
+                        arrayComponente.push(componente);
+                        if (LOG_DEBUG_COMUN) {
+                            console.log(
+                                '[changeSeleccionMultiple] [componente.id:' +
+                                componente.id +
+                                ']    [componente.title:' +
+                                componente.title +
+                                '] '
+                            );
+                        }
+                    }
+
                 }
-                if (LOG_DEBUG_COMUN) {
-                    console.log(
-                        '[changeSeleccionMultiple] [componente.id:' +
-                            componente.id +
-                            ']    [componente.title:' +
-                            componente.title +
-                            '] '
-                    );
-                }
-                arrayComponente.push(componente);
+
             }
         }
-        if(selectorId.indexOf('selectPeriodo')!=-1) {
+        if (selectorId.indexOf('selectPeriodo') != -1) {
             arrayComponente.sort(compareIdDesc);
-        }else {
+        } else {
             arrayComponente.sort(compareId);
         }
-        
+
         let h;
-        for(h=0;h<arrayComponente.length;h++) {
+        for (h = 0; h < arrayComponente.length; h++) {
             let componente = arrayComponente[h];
-            if(tipoCombo=='option') {
+            if (tipoCombo == 'option') {
                 $('#' + selectorId).append(
                     "<option value='" +
-                        componente.id +
-                        "'>" +
-                        componente.title +
-                        "</option>"
+                    componente.id +
+                    "'>" +
+                    componente.title +
+                    "</option>"
                 );
-            }else if(tipoCombo=='checkbox') {
+            } else if (tipoCombo == 'checkbox') {
                 let onclick = '';
                 let checked = '';
-                if(chequeaUtlimo && h==0) {
+                if (chequeaUtlimo && !h) {
                     checked = 'checked';
                 }
-                if(selectorId.indexOf('selectMunicipio')!=-1) {
-                    onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-                }
-                if(selectorId.indexOf('selectDistrito')!=-1) {
-                    onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-                }
-                if(selectorId.indexOf('selectBarrio')!=-1) {
-                    onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-                }
-                if(selectorId.indexOf('selectSeccionCensal')!=-1) {
-                    onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-                }
-                if(selectorId.indexOf('selectPeriodo')!=-1) {
-                    onclick = ' onclick="chequeaMultiple(\''+selectorId+'\')"';
-                }
-                if(selectorId.indexOf('selectDistritoSC')!=-1) {
-                    onclick = ' onclick="chequeaMultiple(\'selectDistritoSC\')"';
+                if (selectorId.indexOf('selectDistritoSC') != -1) {
+                    onclick = ' onclick="filtraTerritorio()"';
                 }
 
                 $('#' + selectorId).append(
-                    '<div class="checkbox"><label ><input type="checkbox" id="'+ selectorId +
+                    '<div class="checkbox"><label for="' + selectorId +
+                    componente.id + '"><input type="checkbox" id="' + selectorId +
                     componente.id +
-                        '" value="' +
-                        componente.id +
-                        '"'+checked+onclick+'><span id=etiqueta'+selectorId+componente.id+'>' +
-                        componente.title +
-                        '</span></label></div>'
+                    '" value="' +
+                    componente.id +
+                    '"' + checked + onclick + '><span id=etiqueta' + selectorId + componente.id + '>' +
+                    componente.title +
+                    '</span></label></div>'
                 );
             }
-            
+
         }
-        
+
     }
 }
 
 function fijarSeccion(seccion) {
-    let elementoId = '' + seccion + '_li';
     if (LOG_DEBUG_COMUN) {
         console.log(
-            '[fijarSeccion] [seccion:' +
-                seccion +
-                '] [elementoId:' +
-                elementoId +
-                '] '
+            '[general] [fijarSeccion] [seccion:' +
+            seccion +
+            '] '
         );
     }
+
+    let elementoId = '' + seccion + '_li';
     if (seccion) {
         $('#seccion_todos_li').removeClass('active');
         $('#seccion_municipio_li').removeClass('active');
@@ -1298,8 +1345,9 @@ function fijarSeccion(seccion) {
  *    */
 function removeSessionStorage(selectores) {
     if (LOG_DEBUG_COMUN) {
-        console.log('[removeSessionStorage] [selectores:' + selectores + ']');
+        console.log('[general] [removeSessionStorage] [selectores:' + selectores + ']');
     }
+
     if (selectores) {
         let i;
         for (i = 0; i < selectores.length; i++) {
@@ -1312,6 +1360,10 @@ function removeSessionStorage(selectores) {
  * Metodo generico para comprobar si se deben recargar o no los parametros de session (Combos)
  *    */
 function isSessionTimeOut() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [isSessionTimeOut]');
+    }
+
     let result = false;
     let fecha = new Date();
     if (
@@ -1324,10 +1376,10 @@ function isSessionTimeOut() {
         if (LOG_DEBUG_COMUN) {
             console.log(
                 '[isSessionTimeOut] [seconds:' +
-                    seconds +
-                    '] > [TIME_SESSION_STORAGE:' +
-                    TIME_SESSION_STORAGE +
-                    ']'
+                seconds +
+                '] > [TIME_SESSION_STORAGE:' +
+                TIME_SESSION_STORAGE +
+                ']'
             );
         }
         if (seconds > TIME_SESSION_STORAGE) {
@@ -1343,17 +1395,24 @@ function isSessionTimeOut() {
 }
 
 function inicializaFiltros(filtroSlider) {
-    if(!filtroSlider){
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [inicializaFiltros] [filtroSlider] ' + filtroSlider);
+    }
+
+    if (!filtroSlider) {
         filtroSlider = FILTRO_SLIDER_TERRITORIO;
     }
 
-    if(filtroSlider.indexOf('Distrito')==-1){
+    if (filtroSlider.indexOf('Municipio') == -1) {
+        $('#radioMunicipio').hide();
+    }
+    if (filtroSlider.indexOf('Distrito') == -1) {
         $('#radioDistrito').hide();
     }
-    if(filtroSlider.indexOf('Barrio')==-1){
+    if (filtroSlider.indexOf('Barrio') == -1) {
         $('#radioBarrio').hide();
     }
-    if(filtroSlider.indexOf('Sección Censal')==-1){
+    if (filtroSlider.indexOf('Sección Censal') == -1) {
         $('#radioSeccionCensal').hide();
     }
 }
@@ -1364,12 +1423,12 @@ function inicializaFiltros(filtroSlider) {
  */
 function aplicaFiltroTerritorio(territorio, arrayIframes) {
     if (LOG_DEBUG_COMUN) {
-        console.log('[aplicaFiltroTerritorio]');
+        console.log('[general] [aplicaFiltroTerritorio] [territorio] ' + territorio);
     }
 
     let d;
-    for(d=0;d<arrayIframes.length;d++) {
-        let iframe = arrayIframes [d];
+    for (d = 0; d < arrayIframes.length; d++) {
+        let iframe = arrayIframes[d];
         let url = $('#' + iframe).attr('src');
         //Fijamos el prametros cuboId para pasarlo a los graficos del Mapa
         let indice = url.indexOf('cuboId');
@@ -1378,46 +1437,78 @@ function aplicaFiltroTerritorio(territorio, arrayIframes) {
             console.log('[aplicaFiltroTerritorio] [paramCuboId:' + paramCuboId + ']');
         }
 
-        if (territorio == 'municipio') {
-            url =
-                'grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&' +
-                paramCuboId;
-            $('#' + iframe).attr('src', url);
-        } else if (territorio == 'distrito') {
-            url =
-                'grafico_mapa.html?territorio=distrito&titulo=personas_distrito&iframe=iframeGraficoMapa&' +
-                paramCuboId;
-            $('#' + iframe).attr('src', url);
-        } else if (territorio == 'barrio') {
-            url =
-                'grafico_mapa.html?territorio=barrio&titulo=personas_barrio&iframe=iframeGraficoMapa&' +
-                paramCuboId;
-            $('#' + iframe).attr('src', url);
-        } else if (territorio == 'seccion_censal') {
-            url =
-                'grafico_mapa.html?territorio=seccion-censal&titulo=personas_seccion_censal&iframe=iframeGraficoMapa&' +
-                paramCuboId;
-            $('#' + iframe).attr('src', url);
-        } else {
-            console.error(
-                '[aplicaFiltroTerritorio] [filtro:' + territorio + '] Not found!!'
-            );
+        if (iframe == 'iframeGraficoMapa') {
+            if (territorio == 'municipio') {
+                url =
+                    'grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&' +
+                    paramCuboId;
+                $('#' + iframe).attr('src', url);
+            } else if (territorio == 'distrito') {
+                url =
+                    'grafico_mapa.html?territorio=distrito&titulo=personas_distrito&iframe=iframeGraficoMapa&' +
+                    paramCuboId;
+                $('#' + iframe).attr('src', url);
+            } else if (territorio == 'barrio') {
+                url =
+                    'grafico_mapa.html?territorio=barrio&titulo=personas_barrio&iframe=iframeGraficoMapa&' +
+                    paramCuboId;
+                $('#' + iframe).attr('src', url);
+            } else if (territorio == 'seccion_censal') {
+                url =
+                    'grafico_mapa.html?territorio=seccion-censal&titulo=personas_seccion_censal' +
+                    '&iframe=iframeGraficoMapa&' +
+                    paramCuboId;
+                $('#' + iframe).attr('src', url);
+            } else {
+                console.error(
+                    '[aplicaFiltroTerritorio] [filtro:' + territorio + '] Not found!!'
+                );
+            }
+        } else if (iframe == 'iframeGraficoMapaComp') {
+            if (territorio == 'municipio') {
+                url =
+                    'grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapaComp&' +
+                    paramCuboId;
+                $('#' + iframe).attr('src', url);
+            } else if (territorio == 'distrito') {
+                url =
+                    'grafico_mapa.html?territorio=distrito&titulo=personas_distrito&iframe=iframeGraficoMapaComp&' +
+                    paramCuboId;
+                $('#' + iframe).attr('src', url);
+            } else if (territorio == 'barrio') {
+                url =
+                    'grafico_mapa.html?territorio=barrio&titulo=personas_barrio&iframe=iframeGraficoMapaComp&' +
+                    paramCuboId;
+                $('#' + iframe).attr('src', url);
+            } else if (territorio == 'seccion_censal') {
+                url =
+                    'grafico_mapa.html?territorio=seccion-censal&titulo=personas_seccion_censal' +
+                    '&iframe=iframeGraficoMapaComp&' +
+                    paramCuboId;
+                $('#' + iframe).attr('src', url);
+            } else {
+                console.error(
+                    '[aplicaFiltroTerritorio] [filtro:' + territorio + '] Not found!!'
+                );
+            }
         }
     }
-    
+
 }
 
 function selececionarTodo(capa) {
     if (LOG_DEBUG_COMUN) {
-        console.log('selececionarTodo');
+        console.log('[general] [selececionarTodo] [capa] ' + capa);
     }
+
     $('#' + capa + ' .checkbox label input').prop('checked', true);
 }
 
 function quitarSeleccion(capa) {
     if (LOG_DEBUG_COMUN) {
-        console.log('quitarSeleccion');
+        console.log('[general] [quitarSeleccion] [capa] ' + capa);
     }
+
     $('#' + capa + ' .checkbox label input').prop('checked', false);
 }
 
@@ -1443,9 +1534,10 @@ function compareIdDesc(a, b) {
 
 function cambioCapa(capa) {
     if (LOG_DEBUG_COMUN) {
-        console.log('cambioCapa');
+        console.log('[general] [cambioCapa]');
     }
-    if(capa == 'inicio') {
+
+    if (capa == 'inicio') {
         location.replace('index.html');
     } else if (capa == 'ayuda') {
         location.replace('ayuda.html');
@@ -1463,13 +1555,20 @@ function cambioCapa(capa) {
         location.replace('pais_nacimiento.html');
     } else if (capa == 'procedencia') {
         location.replace('procedencia.html');
-    } 
-    
+    }
+
 }
 
-function indicadores(url1,filtro1) {
-    
-    $.getJSON(url1+filtro1)
+function indicadores(url1, filtro1, indicadores) {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [indicadores] [url1] ' + url1 + ' [filtro1] ' + filtro1);
+    }
+
+    let url = url1;
+    if (filtro1) {
+        url = url + filtro1;
+    }
+    $.getJSON(url)
         .done(function (data) {
             let suma = 0;
             if (data.records) {
@@ -1479,22 +1578,39 @@ function indicadores(url1,filtro1) {
 
                 }
                 let numeralSuma = numeral(suma);
-                $('#indicadores1').html(numeralSuma.format(numFormatoSinDecimales)+' personas');
-            }else{
-                $('#indicadores1').html('0 personas');
+                if (!indicadores) {
+                    $('#indicadores1').html(numeralSuma.format(numFormatoSinDecimales) + ' personas');
+                } else {
+                    $('#indicadores1').html(numeralSuma.format(numFormato));
+                }
+
+            } else {
+                if (!indicadores) {
+                    $('#indicadores1').html('0 personas');
+                } else {
+                    $('#indicadores1').html('0');
+                }
             }
         }
-    )
-        
+        )
+
 }
 
 function deshabilitaTerritorio() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [deshabilitaTerritorio]');
+    }
+
     $('#liTerritorio').addClass('disabled');
     $('#aTerritorio').addClass(' btn disabled');
     $('.nav-tabs a:last').tab('show');
 }
 
 function habilitaTerritorio() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [habilitaTerritorio]');
+    }
+
     $('#liTerritorio').removeClass('disabled');
     $('#aTerritorio').removeClass('btn disabled');
     $('.nav-tabs a:first').tab('show');
@@ -1502,45 +1618,56 @@ function habilitaTerritorio() {
 
 function chequeaMultiple(capa) {
     if (LOG_DEBUG_COMUN) {
-        console.log('cambioCapa');
+        console.log('[general] [chequeaMultiple] [capa] ' + capa);
     }
 
-    if(capa.indexOf('selectDistritoSC')!=-1) {
+    let esMultiple = false;
+    if (capa.indexOf('selectDistritoSC') != -1) {
         filtraTerritorio();
     }
 
     let numchecked = 0;
-    $('#' + capa + '  .checkbox label input').each(function( index ) {
-        if($( this ).is(':checked')) {
+    $('#' + capa + '  .checkbox label input').each(function (index) {
+        if ($(this).is(':checked')) {
             numchecked = numchecked + 1;
         }
     });
 
-    if(numchecked>1){
-        deshabilitaTerritorio();
-    } else {
-        habilitaTerritorio();
+    if (capa.indexOf('selectPeriodo') != -1 && numchecked <= 1) {
+        $('#capaGraficoMapaComp').show();
+    } else if (capa.indexOf('selectPeriodo') != -1 && numchecked > 1) {
+        $('#capaGraficoMapaComp').hide();
     }
+
+    if (numchecked > 1) {
+        esMultiple = true;
+    } else {
+        esMultiple = false;
+    }
+    return esMultiple;
 }
 
 function obtenerEtiquetas(value, key, map) {
     this[key] = value;
 }
 
-function dameUltimoPeriodo(cubo, periodos) { 
+function dameUltimoPeriodo(cubo, periodos) {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [dameUltimoPeriodo] [cubo] ' + cubo);
+    }
 
     let url;
-    if(URL_CUBOS.get(cubo)) {
+    if (URL_CUBOS.get(cubo)) {
         url =
-        URL_CUBOS.get(cubo) +
-        POBLACION_URL_2 +
-        '?dimension=refPeriod&group=SUM&measure=numeroPersonas&sort=refPeriod&page=1&pageSize=100';
-    }else {
+            URL_CUBOS.get(cubo) +
+            POBLACION_URL_2 +
+            '?dimension=refPeriod&group=SUM&measure=numeroPersonas&sort=refPeriod&page=1&pageSize=100';
+    } else {
         url =
-        POBLACION_URL_1 +
-        cubo +
-        POBLACION_URL_2 +
-        '?dimension=refPeriod&group=SUM&measure=numeroPersonas&sort=refPeriod&page=1&pageSize=100';
+            POBLACION_URL_1 +
+            cubo +
+            POBLACION_URL_2 +
+            '?dimension=refPeriod&group=SUM&measure=numeroPersonas&sort=refPeriod&page=1&pageSize=100';
     }
 
     $.getJSON(url)
@@ -1551,12 +1678,27 @@ function dameUltimoPeriodo(cubo, periodos) {
                 for (i = 0; i < data.records.length; i++) {
                     periodos.push(data.records[i][0]);
                 }
-                
+
             }
         }
         ).always(function () {
-            // ultimoPeriodo = periodos[0];
             inicializaDatos();
         });
 
+}
+
+function isFiltroMunicipio() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [isFiltroMunicipio]');
+    }
+
+    filtro = filtro + ' and (distritoId=null and barrioId=null and seccionCensalId=null)';
+}
+
+function isFiltroMunicipioQ() {
+    if (LOG_DEBUG_COMUN) {
+        console.log('[general] [isFiltroMunicipioQ]');
+    }
+
+    filtro = filtro + ' and (distritoId==null and barrioId==null and seccionCensalId==null)';
 }

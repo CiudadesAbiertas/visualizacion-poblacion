@@ -13,8 +13,8 @@ Unless required by applicable law or agreed to in writing, software distributed 
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the Licence for the specific language governing permissions and limitations under the Licence.
 */
-var urlIndicador1 = '';
-var filtro = '';
+let urlIndicador1 = '';
+let filtro = '';
 let paramCubo = 'pais-nacimiento';
 let arrayPaisNacimiento = [];
 let arraySexo = [];
@@ -28,45 +28,48 @@ let arrayEdadesQuinquenales = [];
 let urlAjax = '';
 let arrayIframesMapas = [
     'iframeGraficoMapa',
-    'iframeGraficoMapa2'
+    'iframeGraficoMapaComp'
 ];
 let arrayIframes = [
     'iframeGraficoMapa',
-    'iframeGraficoMapa2',
-    'iframeGraficoBarras',		
-    'iframeGraficoPiramide',		
-    'iframeGraficoPiramide2',	
-    'iframeGraficoLinea',		
-    'iframeGraficoSexoCombinado',		
+    'iframeGraficoMapaComp',
+    'iframeGraficoBarras',
+    'iframeGraficoPiramide',
+    'iframeGraficoPiramide2',
+    'iframeGraficoLinea',
+    'iframeGraficoSexoCombinado',
     'iframeGraficoTarta',
     'iframetablaDatosGenerica',
     'iframeComparadorTerritorio',
     'iframeComparadorTerritorio2'
 ];
+let cambioTerritorio = '';
+
 /*
-	Método para aplicar filtros en el cubo de datos pais de nacimiento
+    Método para aplicar filtros en el cubo de datos pais de nacimiento
 */
-function aplicaFiltro(territorio) {
-    if (LOG_DEBUG_COMUN) {
-        console.log('[aplicaFiltro]');
+function aplicaFiltro() {
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log('[paisNacimiento] [aplicaFiltro]');
     }
-    
+
     //Cambiamos el parametro territorio par que los mapas se pinten correctamente
-    if(territorio) {
-        aplicaFiltroTerritorio(territorio,arrayIframesMapas);
+    if (cambioTerritorio) {
+        aplicaFiltroTerritorio(cambioTerritorio, arrayIframesMapas);
+        cambioTerritorio = '';
     }
 
     $('#criterioTerritorio').html('');
     $('#criterioPaisNac').html('');
     $('#criterioPeriodo').html('');
     $('#criterioEdadQuinquenales').html('');
-    $('#criterioSexo').html('');   
+    $('#criterioSexo').html('');
 
     $('#criterioTerritorio2').html('');
     $('#criterioPaisNac2').html('');
     $('#criterioPeriodo2').html('');
     $('#criterioEdadQuinquenales2').html('');
-    $('#criterioSexo2').html('');   
+    $('#criterioSexo2').html('');
 
     $('#pcriterioTerritorio').hide();
     $('#pcriterioPaisNac').hide();
@@ -80,75 +83,77 @@ function aplicaFiltro(territorio) {
     $('#pcriterioEdadQuinquenales2').hide();
     $('#pcriterioSexo2').hide();
 
-    if(territorio) {
-        seleccionTerritorio(territorio);
-    }
-
     filtro = '';
     let filtroAux = '';
-    filtroAux = aplicaFiltroElement('selectPaisNacimientoPais','paisNacimiento',arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectPaisNacimientoPais', 'paisNacimiento', arrayIframes, 'checkbox');
+    if (filtroAux) {
         addFiltro(filtroAux, 'paisNacimiento');
     }
-	filtroAux = aplicaFiltroElement('selectEdadQuinquenalesPais','edadQuinquenales',arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectEdadQuinquenalesPais', 'edadQuinquenales', arrayIframes, 'checkbox');
+    if (filtroAux) {
         addFiltro(filtroAux, 'edadGruposQuinquenales');
     }
-    filtroAux = aplicaFiltroElement('selectSexoPais', 'sexo', arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectSexoPais', 'sexo', arrayIframes, 'checkbox');
+    if (filtroAux) {
         addFiltro(filtroAux, 'sex');
     }
-    filtroAux = aplicaFiltroElement('selectPeriodoPais', 'periodo', arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectPeriodoPais', 'periodo', arrayIframes, 'checkbox');
+    if (filtroAux) {
         addFiltro(filtroAux, 'refPeriod');
     }
-    filtroAux = aplicaFiltroElement('selectMunicipioPais', 'municipio', arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectMunicipioPais', 'municipio', arrayIframes, 'checkbox');
+    if (filtroAux) {
         addFiltro(filtroAux, 'municipioId');
     }
-    filtroAux = aplicaFiltroElement('selectDistritoPais', 'distrito', arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectDistritoPais', 'distrito', arrayIframes, 'checkbox');
+    if (filtroAux) {
         addFiltro(filtroAux, 'distritoId');
     }
-    filtroAux = aplicaFiltroElement('selectBarrioPais', 'barrio', arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectBarrioPais', 'barrio', arrayIframes, 'checkbox');
+    if (filtroAux) {
         addFiltro(filtroAux, 'barrioId');
     }
-    filtroAux = aplicaFiltroElement('selectSeccionCensalPais','seccionCensalId',arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectSeccionCensalPais', 'seccionCensalId', arrayIframes, 'checkbox');
+    if (filtroAux) {
         addFiltro(filtroAux, 'seccionCensalId');
     }
 
-    indicadores(urlIndicador1,filtro);
+    indicadores(urlIndicador1, filtro);
+
+    let esMultiple = chequeaMultiple('selectPeriodoPais') || chequeaMultiple('selectDistritoPais')
+        || chequeaMultiple('selectBarrioPais') || chequeaMultiple('selectSeccionCensalPais')
+        || chequeaMultiple('selectMunicipioPais') || chequeaMultiple('selectDistritoSCPais');
+    if (esMultiple) {
+        deshabilitaTerritorio();
+    } else {
+        habilitaTerritorio();
+    }
 }
 
 /* 
 Función que permite cambiar a la capa  del cubo
 */
 function cambioCapaPaisNacimiento() {
-    if (LOG_DEBUG_COMUN) {
-        console.log('cambioCapaPaisNacimiento');
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log('[paisNacimiento] [cambioCapaPaisNacimiento]');
     }
 
     location.replace('pais_nacimiento.html');
 }
 
 /*
-	Función que iniciliza los datos
+    Función que iniciliza los datos
 */
 function inicializaDatos() {
-    if (LOG_DEBUG_COMUN) {
-        console.log('inicializaDatosPaisNacimiento');
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log('[paisNacimiento] [inicializaDatos]');
     }
 
-
-
     let valores = [0, 0]; //Campos para recoger la información del objeto data del ajax
-    let valores2 = ['id', 'title'];
 
     let combos = [
         'selectPaisNacimientoPais',
-		'selectEdadQuinquenalesPais',
+        'selectEdadQuinquenalesPais',
         'selectSexoPais',
         'selectPeriodoPais',
         'selectMunicipioPais',
@@ -164,14 +169,16 @@ function inicializaDatos() {
     //selectPaisNacimiento
     urlAjax = dameURL(
         POBLACION_URL_1 +
-            paramCubo +
-            POBLACION_URL_2 +
-            '?dimension=paisNacimiento&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
+        paramCubo +
+        POBLACION_URL_2 +
+        '?dimension=paisNacimiento&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
-    obtenerComboValores('selectPaisNacimientoPais', arrayPaisNacimiento, urlAjax, valores, 'checkbox', false, taskCombos, 0);
-	
+    obtenerComboValores('selectPaisNacimientoPais', arrayPaisNacimiento, urlAjax, valores, 'checkbox', false,
+        taskCombos, 0);
+
     //selectEdadQuinquenales
-    obtenerComboValoresConstantes('selectEdadQuinquenalesPais', arrayEdadesQuinquenales, 'VALORES_EDAD_QUINQUENAL', false, taskCombos, 1);
+    obtenerComboValoresConstantes('selectEdadQuinquenalesPais', arrayEdadesQuinquenales, 'VALORES_EDAD_QUINQUENAL',
+        false, taskCombos, 1);
 
     //selectSexo
     obtenerComboValoresConstantes('selectSexoPais', arraySexo, 'VALORES_SEXO', false, taskCombos, 2);
@@ -179,80 +186,106 @@ function inicializaDatos() {
     //selectPeriodo
     urlAjax = dameURL(
         POBLACION_URL_1 +
-            paramCubo +
-            POBLACION_URL_2 +
-            '?dimension=refPeriod&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
+        paramCubo +
+        POBLACION_URL_2 +
+        '?dimension=refPeriod&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
     obtenerComboValores('selectPeriodoPais', arrayPeriodo, urlAjax, valores, 'checkbox', true, taskCombos, 3);
     urlIndicador1 = urlAjax;
     indicadores(urlAjax);
-    
+
     //selectMunicipio
     urlAjax = dameURL(
         POBLACION_URL_1 +
-            paramCubo +
-            POBLACION_URL_2 +
-            '?dimension=municipioId,municipioTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
+        paramCubo +
+        POBLACION_URL_2 +
+        '?dimension=municipioId,municipioTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
-    obtenerCombo('selectMunicipioPais', arrayMunicipio, urlAjax, 'checkbox', true, taskCombos, 4);
+    let chequeaUltimo = ('Municipio'.indexOf(FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0]) != -1);
+    obtenerCombo('selectMunicipioPais', arrayMunicipio, urlAjax, 'checkbox', chequeaUltimo, taskCombos, 4);
 
     //selectDistrito
     urlAjax = dameURL(
         POBLACION_URL_1 +
-            paramCubo +
-            POBLACION_URL_2 +
-            '?dimension=distritoId,distritoTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
+        paramCubo +
+        POBLACION_URL_2 +
+        '?dimension=distritoId,distritoTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
-    obtenerCombo('selectDistritoPais', arrayDistrito, urlAjax, 'checkbox', false, taskCombos, 5);
+    chequeaUltimo = ('Distrito'.indexOf(FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0]) != -1);
+    obtenerCombo('selectDistritoPais', arrayDistrito, urlAjax, 'checkbox', chequeaUltimo, taskCombos, 5);
 
     obtenerCombo('selectDistritoSCPais', arrayDistrito2, urlAjax, 'checkbox', false, taskCombos, 5);
 
     //selectBarrio
     urlAjax = dameURL(
         POBLACION_URL_1 +
-            paramCubo +
-            POBLACION_URL_2 +
-            '?dimension=barrioId,barrioTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
+        paramCubo +
+        POBLACION_URL_2 +
+        '?dimension=barrioId,barrioTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'
     );
-    obtenerCombo('selectBarrioPais', arrayBarrio, urlAjax, 'checkbox', false, taskCombos, 6);
+    chequeaUltimo = ('Barrio'.indexOf(FILTRO_SLIDER_TERRITORIO_NACIONALIDAD[0]) != -1);
+    obtenerCombo('selectBarrioPais', arrayBarrio, urlAjax, 'checkbox', chequeaUltimo, taskCombos, 6);
 
     //selectSeccionCensal
     urlAjax = dameURL(
         POBLACION_URL_1 +
-            paramCubo +
-            POBLACION_URL_2 +
-            '?dimension=seccionCensalId,seccionCensalTitle&group=SUM&measure=numeroPersonas&where=seccionCensalId!=null&page=1&pageSize=100'
+        paramCubo +
+        POBLACION_URL_2 +
+        '?dimension=seccionCensalId,seccionCensalTitle&group=SUM&measure=numeroPersonas&where=seccionCensalId!=null' +
+        '&page=1&pageSize=100'
     );
-    obtenerCombo('selectSeccionCensalPais', arraySeccionCensal, urlAjax, 'checkbox', false, taskCombos, 7);
-
-    cargaTerminada();
+    chequeaUltimo = ('Sección Censal'.indexOf(FILTRO_SLIDER_TERRITORIO_NACIONALIDAD[0]) != -1);
+    obtenerCombo('selectSeccionCensalPais', arraySeccionCensal, urlAjax, 'checkbox', chequeaUltimo, taskCombos, 7);
 
 }
 
 function cambioCSSPaisNacimiento() {
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log('[paisNacimiento] [cambioCSSPaisNacimiento]');
+    }
+
     cambioCSSPlantilla();
     $('#buttonPaisNacimiento').css('font-weight', 'bold');
 }
 
 function quitaSeleccionTodos() {
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log('[paisNacimiento] [quitaSeleccionTodos]');
+    }
+
     $('#selectMunicipioPais .checkbox label input').prop('checked', false);
     $('#selectDistritoPais .checkbox label input').prop('checked', false);
     $('#selectBarrioPais .checkbox label input').prop('checked', false);
     $('#selectSeccionCensalPais .checkbox label input').prop('checked', false);
     $('#selectPaisNacimientoPais .checkbox label input').prop('checked', false);
-	$('#selectEdadQuinquenalesPais .checkbox label input').prop('checked', false);
+    $('#selectEdadQuinquenalesPais .checkbox label input').prop('checked', false);
     $('#selectSexoPais .checkbox label input').prop('checked', false);
     $('#selectPeriodoPais .checkbox label input').prop('checked', false);
 
-    $('#radioMunicipio label input').prop('checked', true);
-    aplicaFiltro('municipio');
-    $('#selectMunicipioPais .checkbox label input').last().prop('checked', true);
+    if (FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0] == 'Municipio') {
+        $('#radioOptMunicipio').prop('checked', true);
+        seleccionTerritorio('municipio')
+    } else if (FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0] == 'Distrito') {
+        $('#radioOptDistrito').prop('checked', true);
+        seleccionTerritorio('distrito')
+    } else if (FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0] == 'Barrio') {
+        $('#radioOptBarrio').prop('checked', true);
+        seleccionTerritorio('barrio')
+    } else if (FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0] == 'Sección Censal') {
+        $('#radioOptSeccion').prop('checked', true);
+        seleccionTerritorio('seccion_censal')
+    }
     $('#selectPeriodoPais .checkbox label input').first().prop('checked', true);
     habilitaTerritorio();
 }
 
 function seleccionTerritorio(territorio) {
-    if(territorio=='municipio') {
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log('[paisNacimiento] [seleccionTerritorio]');
+    }
+
+    cambioTerritorio = territorio;
+    if (territorio == 'municipio') {
         $('#selectMunicipioPais').show();
         $('#selectMunicipioPais .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
         $('#selectDistritoPais').hide();
@@ -262,7 +295,7 @@ function seleccionTerritorio(territorio) {
         $('#selectSeccionCensalPais').hide();
         $('#selectDistritoSCPais').hide();
         quitarSeleccion('selectSeccionCensalPais')
-    }else if(territorio=='distrito') {
+    } else if (territorio == 'distrito') {
         $('#selectMunicipioPais').hide();
         quitarSeleccion('selectMunicipioPais')
         $('#selectDistritoPais').show();
@@ -272,7 +305,7 @@ function seleccionTerritorio(territorio) {
         $('#selectSeccionCensalPais').hide();
         $('#selectDistritoSCPais').hide();
         quitarSeleccion('selectSeccionCensalPais')
-    }else if(territorio=='barrio') {
+    } else if (territorio == 'barrio') {
         $('#selectMunicipioPais').hide();
         quitarSeleccion('selectMunicipioPais')
         $('#selectDistritoPais').hide();
@@ -282,7 +315,7 @@ function seleccionTerritorio(territorio) {
         $('#selectSeccionCensalPais').hide();
         $('#selectDistritoSCPais').hide();
         quitarSeleccion('selectSeccionCensalPais')
-    }else if(territorio=='seccion_censal') {
+    } else if (territorio == 'seccion_censal') {
         $('#selectMunicipioPais').hide();
         quitarSeleccion('selectMunicipioPais')
         $('#selectDistritoPais').hide();
@@ -291,12 +324,22 @@ function seleccionTerritorio(territorio) {
         quitarSeleccion('selectBarrioPais')
         $('#selectSeccionCensalPais').show();
         $('#selectDistritoSCPais').show();
-        $('#selectMselectSeccionCensalPaisunicipioEst .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
+        $('#selectSeccionCensalPais .checkbox').find('*').filter(':input:visible:first').prop('checked', true);
     }
 
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log(
+            '[paisNacimiento] [addFiltro] [paramValor:' +
+            paramValor +
+            '] [campo:' +
+            campo +
+            '] '
+        );
+    }
+
     if (!filtro) {
         filtro = filtro + '&where=(';
     } else {
@@ -318,38 +361,63 @@ function addFiltro(paramValor, campo) {
     }
     filtro = filtro + ')';
 
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
         console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
+            '[paisNacimiento] [addFiltro] [filtro:' +
+            filtro +
+            ']'
         );
     }
 }
 
-function filtraTerritorio(territorio) {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('filtraTerritorio');
+function filtraTerritorio() {
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log('[paisNacimiento] [filtraTerritorio]');
     }
 
-    filtroAux = aplicaFiltroElement('selectDistritoSCPais', 'distrito', arrayIframes,'checkbox');
-    if(filtroAux) {
+    filtroAux = aplicaFiltroElement('selectDistritoSCPais', 'distrito', arrayIframes, 'checkbox');
+    if (filtroAux) {
         filtro = '';
-        $('#selectSeccionCensalPais').html('<div class="text-right"><button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo(\'selectSeccionCensalEdad\')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button><button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion(\'selectSeccionCensalEdad\')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button></div>');
-        if(filtroAux) {
+        $('#selectSeccionCensalPais').html('<div class="text-right">' +
+            '<button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo(\'selectSeccionCensalEdad\')">' +
+            '<i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>' +
+            '<button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion(\'selectSeccionCensalEdad\')">' +
+            '<i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button></div>');
+        if (filtroAux) {
             addFiltro(filtroAux, 'distritoId');
         }
-        urlAjax = 
+        urlAjax =
             POBLACION_URL_1 +
-                paramCubo +
-                POBLACION_URL_2 +
-                '?dimension=seccionCensalId,seccionCensalTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100'+filtro;
+            paramCubo +
+            POBLACION_URL_2 +
+            '?dimension=seccionCensalId,seccionCensalTitle&group=SUM&measure=numeroPersonas&page=1&pageSize=100' +
+            filtro;
         arraySeccionCensal = [];
-        sessionStorage.removeItem("selectSeccionCensalPais");
-        obtenerCombo('selectSeccionCensalPais', arraySeccionCensal, urlAjax, 'checkbox', false, null);    
+        sessionStorage.removeItem('selectSeccionCensalPais');
+        obtenerCombo('selectSeccionCensalPais', arraySeccionCensal, urlAjax, 'checkbox', false, null);
     }
+}
+
+function inicializaInicio() {
+    if (LOG_DEBUG_PAIS_NACIMIENTO) {
+        console.log('[paisNacimiento] [inicializaInicio]');
+    }
+
+    if(FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0] == 'Municipio') {
+        $('#radioOptMunicipio').prop('checked', true);
+        cambioTerritorio = 'municipio';
+    }else if(FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0] == 'Distrito') {
+        $('#radioOptDistrito').prop('checked', true);
+        cambioTerritorio = 'distrito';
+    }else if(FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0] == 'Barrio') {
+        $('#radioOptBarrio').prop('checked', true);
+        cambioTerritorio = 'barrio';
+    }else if(FILTRO_SLIDER_TERRITORIO_PAIS_NACIMIENTO[0] == 'Sección Censal') {
+        $('#radioOptSeccion').prop('checked', true);
+        cambioTerritorio = 'seccion_censal';
+    }
+
+    seleccionTerritorio(cambioTerritorio);
+    aplicaFiltro();
+    cargaTerminada();
 }

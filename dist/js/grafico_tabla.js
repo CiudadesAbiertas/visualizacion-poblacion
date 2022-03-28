@@ -61,7 +61,7 @@ var tamanyFijobarras = $(document).height();
 */
 function inicializa() {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('inicializa');
+        console.log('[tabla] [inicializa]');
     }
 
     inicializaMultidioma();
@@ -72,7 +72,7 @@ function inicializa() {
 */
 function inicializaMultidioma() {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('inicializaMultidioma');
+        console.log('[tabla] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -106,7 +106,7 @@ function inicializaMultidioma() {
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_TABLA_DATOS;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_TABLA_DATOS;
 }
 
 /*
@@ -114,7 +114,7 @@ function inicializaMultidioma() {
 */
 function inicializaDatos() {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('inicializaDatos');
+        console.log('[tabla] [inicializaDatos]');
     }
 
     insertaURLSAPI();
@@ -155,11 +155,7 @@ function inicializaDatos() {
     }
     if (paramPeriodo) {
         if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
@@ -192,6 +188,10 @@ function inicializaDatos() {
         addFiltro(paramMunicipioProcedencia, 'municipioProcedencia');
     }
 
+    if(paramMunicipio) {
+        isFiltroMunicipioQ();
+    }
+
     if (isSessionTimeOut()) {
         removeSessionStorage(cuboId);
     }
@@ -201,7 +201,7 @@ function inicializaDatos() {
     let url = URL_CUBOS_OBSERVACION.get(cuboId) + filtro;
 
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('[inicializaDatos] url:' + url);
+        console.log('[tabla] [inicializaDatos] [url]' + url);
     }
     $('#urlAPI').attr('href', url);
     $('#descargaJSON').attr('href', url);
@@ -227,6 +227,10 @@ function inicializaDatos() {
 	Método que inserta URLs en el botón Acción
 */
 function insertaURLSAPI() {
+    if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
+        console.log('[tabla] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
@@ -237,7 +241,7 @@ function insertaURLSAPI() {
 */
 function capturaParam() {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('capturaParams');
+        console.log('[tabla] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
@@ -323,9 +327,6 @@ function capturaParam() {
         paramTituloKey = getUrlVars()['titulo'];
         let paramTitulo = $.i18n(paramTituloKey);
         if (paramTitulo) {
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
         } else {
             paramTitulo = ETIQUETAS_CUBOS_DSD.get(cuboId);
         }
@@ -334,6 +335,10 @@ function capturaParam() {
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
+        console.log('[tabla] [addFiltro] [paramValor] '+paramValor+' [campo] '+campo);
+    }
+
     if (!filtro) {
         filtro = filtro + "?q=";
     } else {
@@ -357,15 +362,7 @@ function addFiltro(paramValor, campo) {
     }
 
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
+        console.log("[tabla] [addFiltro] [filtro:" + filtro + "]");
     }
 }
 
@@ -374,15 +371,45 @@ function addFiltro(paramValor, campo) {
  */
 function loadDataTable() {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('[loadDataTable] [cuboId:' + cuboId + ']');
+        console.log('[tabla] [loadDataTable] [cuboId:' + cuboId + ']');
     }
-    let urlDatos = URL_CUBOS_OBSERVACION.get(cuboId) + filtro;
+    let urlDatos = URL_CUBOS_OBSERVACION.get(cuboId) + filtro ;
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('[loadDataTable] [urlDatos:' + urlDatos + ']');
+        console.log('[tabla] [loadDataTable] [urlDatos:' + urlDatos + ']');
     }
 
-    let table = $('#tablaBuscador').DataTable();
-    table.ajax.url(dameURL(urlDatos)).load(null, false);
+    let jqxhr = $.getJSON(
+        dameURL(
+            urlDatos
+        )
+    )
+        .done(function (data) {
+            // if (data && data.records && data.records.length) {
+            //     let i;
+            //     for (i = 0; i < data.records.length; i++) {
+            //         dsdEdadQuinquenales[data.records[i].id] = data.records[i].title;
+            //     }
+            // }
+            let table = $('#tablaBuscador').DataTable();
+            table.clear().draw();
+            if(data.records) {
+                var result = [];
+
+                for(var i in data.records) {
+                    result.push([i, data.records [i]]);
+                }
+                
+
+                table.rows.add(result).draw();
+            }
+            
+        })
+        .always(function () {
+            // sessionStorage.setItem('dsdEdadQuinquenales', dsdEdadQuinquenales);
+        });
+
+    // let table = $('#tablaBuscador').DataTable();
+    // table.ajax.url(dameURL(urlDatos)).load(null, false);
 }
 
 /**
@@ -393,11 +420,9 @@ function loadDataTable() {
 function obtenerInfoCubosDSD() {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
         console.log(
-            '[obtenerInfoCubosDSD] [cuboId:' +
+            '[tabla] [obtenerInfoCubosDSD] [cuboId:' +
                 cuboId +
-                '] [datosCuboInfo:' +
-                datosCuboInfo +
-                '] '
+                ']'
         );
     }
 
@@ -428,7 +453,7 @@ function obtenerInfoCubosDSD() {
     }
 
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('[obtenerInfoCubosDSD] [datosCuboInfo:' + datosCuboInfo + '] ');
+        console.log('[tabla] [obtenerInfoCubosDSD] [datosCuboInfo:' + datosCuboInfo + '] ');
     }
 }
 
@@ -441,7 +466,7 @@ function obtenerInfoCubosDSD() {
 function loadAjaxInfoCubobyId(data) {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
         console.log(
-            '[loadAjaxInfoCubobyId] [cuboId:' +
+            '[tabla] [loadAjaxInfoCubobyId] [cuboId:' +
                 cuboId +
                 ']    [datosCuboInfo:' +
                 datosCuboInfo +
@@ -461,7 +486,7 @@ function loadAjaxInfoCubobyId(data) {
 			datosCuboInfo.measure= data.records[i].measure;			 	
 			if(LOG_DEBUG_GRAFICO_TABLA_DATOS)
 			{
-				console.log("[loadAjaxInfoCubobyId] [datosCuboInfo.id:"+datosCuboInfo.id+"]  [datosCuboInfo.dimension:"+datosCuboInfo.dimension+"] [datosCuboInfo.measure:"+datosCuboInfo.measure+"] ");
+				console.log("[tabla] [loadAjaxInfoCubobyId] [datosCuboInfo.id:"+datosCuboInfo.id+"]  [datosCuboInfo.dimension:"+datosCuboInfo.dimension+"] [datosCuboInfo.measure:"+datosCuboInfo.measure+"] ");
             }
         }
     }
@@ -472,7 +497,7 @@ function loadAjaxInfoCubobyId(data) {
  */
 function preparaTablaCubo() {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('[preparaTablaCubo] [cuboId:' + cuboId + ']');
+        console.log('[tabla] [preparaTablaCubo] [cuboId:' + cuboId + ']');
     }
 
     let copyCadena = $.i18n('copiar');
@@ -491,7 +516,7 @@ function preparaTablaCubo() {
         let i;
         for (i = 0; i < ordenColumnas.length; i++) {
             let valor = ordenColumnas[i];
-            let etiqueta = ETIQUETAS_DIMENSION_DSD.get(valor);
+            let etiqueta = ETIQUETAS_TABLA.get(valor);
             if (!etiqueta || !etiqueta) {
                 etiqueta = valor;
             }
@@ -499,7 +524,7 @@ function preparaTablaCubo() {
                 cabecerasTablaBuscador + '<th>' + etiqueta + '</th>';
             let columnInfo = {
                 data : valor,
-                title : ETIQUETAS_DIMENSION_DSD.get(valor),
+                title : ETIQUETAS_TABLA.get(valor),
                 name : valor
             };
             columnsCubo.push(columnInfo);
@@ -529,39 +554,36 @@ function preparaTablaCubo() {
                 return data.records;
             },
             data: function (d) {
-                let newD = {};
-                let actualPage = null;
-                if (d.length != 0) {
-                    actualPage = d.start / d.length;
-                } else {
-                    actualPage = 1;
-                }
-                newD = {
-                    pageSize : d.length,
-                    page :  actualPage + 1
-                }
+                let actualPage;
+                let newD = new Object();
+                newD.pageSize = d.length;
+                if(d.length!=0)
+				{
+					actualPage=(d.start/d.length);
+				}
+				else
+				{
+					actualPage=1;
+				}
+				newD.page=(actualPage+1);
 
                 if (d.order.length) {
                     let numColumnaSeleccionada = d.order[0].column;
                     let dirColumnaSeleccionada = d.order[0].dir;
                     let dataColumnaSeleccionada = d.columns[numColumnaSeleccionada].name;
                     if (dirColumnaSeleccionada == 'asc') {
-                        newD = {
-                            sort : dataColumnaSeleccionada
-                        };
+                        newD.sort = dataColumnaSeleccionada;
                     } else {
-                        newD = {
-                            sort : '-' + dataColumnaSeleccionada
-                        };
+                        newD.sort = '-'+dataColumnaSeleccionada;
                     }
                 }
-
+                console.log('newD.page '+newD.page);
+                console.log('newD.sort '+newD.sort);
                 return newD;
             },
         },
         order: [0, 'asc'],
         columns: columnsCubo,
-        // dom: '<"row"<"col-sm-4"lfi><"col-sm-8"p>>rt<"row"<"col-sm-4"fi><"col-sm-8"p>>',
         dom: '<"row panel-footer"<"col-sm-offset-1 col-sm-5"l><"col-sm-6"B>>rt<"row"<"col-sm-5"fi><"col-sm-7"p>>',
         buttons: [
             {
@@ -614,90 +636,6 @@ function preparaTablaCubo() {
                             );
                         },
                     },
-                    /*{
-                        text: 'PDF <span class="fa fa-file-pdf-o"></span>',
-                        title: 'poblacion',
-                        className: 'btn btn-primary',
-                        extend: 'pdfHtml5',
-                        filename: 'listado_poblacion',
-                        orientation: 'landscape',
-                        pageSize: 'A4',
-                        exportOptions: {
-                            search: 'applied',
-                            order: 'applied',
-                        },
-                        customize: function (doc) {
-                            doc.content.splice(0, 1);
-                            let now = new Date();
-                            let jsDate =
-                                now.getDate() +
-                                '-' +
-                                (now.getMonth() + 1) +
-                                '-' +
-                                now.getFullYear();
-                            let logo = LOGO_BASE_64;
-                            doc.pageMargins = [20, 60, 20, 30];
-                            doc.defaultStyle.fontSize = 7;
-                            doc.styles.tableHeader.fontSize = 7;
-                            doc['header'] = function () {
-                                return {
-                                    columns: [
-                                        {
-                                            image: logo,
-                                            width: 96,
-                                        },
-                                        {
-                                            alignment: 'center',
-                                            fontSize: '14',
-                                            text: ['Listado de poblacion'],
-                                        },
-                                    ],
-                                    margin: 20,
-                                };
-                            };
-                            doc['footer'] = function (page, pages) {
-                                return {
-                                    columns: [
-                                        {
-                                            alignment: 'left',
-                                            text: ['Creado el: ', { text: jsDate.toString() }],
-                                        },
-                                        {
-                                            alignment: 'right',
-                                            text: [
-                                                'Pág. ',
-                                                { text: page.toString() },
-                                                ' de ',
-                                                { text: pages.toString() },
-                                            ],
-                                        },
-                                    ],
-                                    margin: 20,
-                                };
-                            };
-                            let objLayout = {};
-                            objLayout['hLineWidth'] = function (i) {
-                                return 0.5;
-                            };
-                            objLayout['vLineWidth'] = function (i) {
-                                return 0.5;
-                            };
-                            objLayout['hLineColor'] = function (i) {
-                                return '#aaa';
-                            };
-                            objLayout['vLineColor'] = function (i) {
-                                return '#aaa';
-                            };
-                            objLayout['paddingLeft'] = function (i) {
-                                return 4;
-                            };
-                            objLayout['paddingRight'] = function (i) {
-                                return 4;
-                            };
-                            doc.content[0].layout = objLayout;
-                        },
-                    },*/
-                    
                 ],
             },
             {
@@ -721,7 +659,7 @@ function preparaTablaCubo() {
         ],
         initComplete: function (settings, json) {
             if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-                console.log('fin de la carga de la tabla');
+                console.log('[tabla] fin de la carga de la tabla');
             }
             $('#iframetablaDatosGenerica', window.parent.document).height(
                 $(document).height()
@@ -735,9 +673,10 @@ function preparaTablaCubo() {
 
 function pintaTabla() {
     if (LOG_DEBUG_GRAFICO_TABLA_DATOS) {
-        console.log('[pintaTabla]');
+        console.log('[tabla] [pintaTabla]');
     }
     preparaTablaCubo();
+    
     loadDataTable();
     $('.modal').modal('hide');
 }

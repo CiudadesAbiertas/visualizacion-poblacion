@@ -17,58 +17,62 @@ See the Licence for the specific language governing permissions and limitations 
 /*
 Algunas variables que se usan en este javascript se inicializan en ciudadesAbiertas.js
 */
-var paramEjeX;
-var paramEjeY;
+let paramEjeX;
+let paramEjeY;
 
-var paramCubo;
-var paramTituloKey;
-var paramIframe;
+let paramCubo;
+let paramTituloKey;
+let paramIframe;
 
-var paramOperacion;
+let paramOperacion;
 
-var paramMunicipio;
-var paramDistrito;
-var paramBarrio;
-var paramSeccionCensal;
-var paramPeriodo;
-var paramSexo;
-var paramEdad;
-var paramEdadQuinquenales;
-var paramNivelEstudio;
-var paramProcedencia;
-var paramPaisNacimiento;
-var paramNacionalidad;
-var paramMedidaInd;
-var paramMedidapor;
-var paramPaisProcedencia;
-var paramProvinciaProcedencia;
-var paramMunicipioProcedencia;
+let paramMunicipio;
+let paramDistrito;
+let paramBarrio;
+let paramSeccionCensal;
+let paramPeriodo;
+let paramSexo;
+let paramEdad;
+let paramEdadQuinquenales;
+let paramNivelEstudio;
+let paramProcedencia;
+let paramPaisNacimiento;
+let paramNacionalidad;
+let paramMedidaInd;
+let paramMedidapor;
+let paramPaisProcedencia;
+let paramProvinciaProcedencia;
+let paramMunicipioProcedencia;
 
-var filtro = '';
-var cuboEdades = [];
-var dimensionEtiquetas = {};
+let filtro = '';
+let cuboEdades = [];
+let dimensionEtiquetas = {};
 
-var dimension = '';
-var agrupador = '';
+let dimension = '';
+let agrupador = '';
 let periodos = [];
+let medida = '';
+
+//Vble para controlar el tamaño
+let tamanyFijobarras = $(document).height();
 
 /*
-	Función de inicialización del script
+    Función de inicialización del script
 */
 function inicializa() {
     if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializa');
+        console.log('[barras] [inicializa]');
     }
 
     inicializaMultidioma();
 }
 
 /* 
-	Función para inicializar el multidioma
+    Función para inicializar el multidioma
 */
 function inicializaMultidioma() {
     if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaMultidioma');
+        console.log('[barras] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -94,23 +98,23 @@ function inicializaMultidioma() {
                 $('html').i18n();
                 capturaParam();
                 periodo = paramPeriodo;
-                if(paramPeriodo=='ultimo') {
-                    dameUltimoPeriodo(paramCubo,periodos);
-                }else {
+                if (paramPeriodo == 'ultimo') {
+                    dameUltimoPeriodo(paramCubo, periodos);
+                } else {
                     inicializaDatos();
                 }
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_BARRAS;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_BARRAS;
 }
 
 /*
-	Función que invoca a todas las funciones que se realizan al inicializar el script
+    Función que invoca a todas las funciones que se realizan al inicializar el script
 */
 function inicializaDatos() {
     if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaDatos');
+        console.log('[barras] [inicializaDatos]');
     }
 
     insertaURLSAPI();
@@ -121,19 +125,18 @@ function inicializaDatos() {
     } else {
         dimension = paramEjeX;
     }
-    let medida = 'numeroPersonas';
+    medida = 'numeroPersonas';
     if (paramEjeY) {
         medida = paramEjeY;
     }
-    
+
     if (paramMedidaInd) {
         medida = paramMedidaInd;
-    } 
-
-    if (paramMedidapor) {
-        medida = paramMedidapor; 
     }
 
+    if (paramMedidapor) {
+        medida = paramMedidapor;
+    }
 
     if (!paramOperacion) {
         agrupador = 'SUM';
@@ -165,12 +168,8 @@ function inicializaDatos() {
         addFiltro(paramSexo, 'sex');
     }
     if (paramPeriodo) {
-        if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
+        if (paramPeriodo == 'ultimo') {
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
@@ -194,6 +193,10 @@ function inicializaDatos() {
         paramPaisNacimiento = getUrlVars()['paisNacimiento'];
     }
 
+    if (paramMunicipio) {
+        isFiltroMunicipio();
+    }
+
     let url =
         POBLACION_URL_1 +
         paramCubo +
@@ -213,61 +216,60 @@ function inicializaDatos() {
     }
     $('#urlAPI').attr('href', url);
     $('#descargaJSON').attr('href', url);
-    $('#descargaCSV').attr(
-        'href',
+    let urlcsv =
         POBLACION_URL_1 +
-            paramCubo +
-            POBLACION_URL_2_CSV+
-            '?dimension=' +
-            dimension +
-            ' as ' +
-            dimension +
-            '&group=' +
-            agrupador +
-            '&measure=' +
-            medida +
-            '&page=1&pageSize=100' +
-            filtro
-    );
+        paramCubo +
+        POBLACION_URL_2_CSV +
+        "?dimension=" +
+        dimension +
+        " as " +
+        dimension +
+        "&group=" +
+        agrupador +
+        "&measure=" +
+        medida +
+        "&page=1&pageSize=100" +
+        filtro;
+    $("#descargaCSV").attr("href", urlcsv);
 
-    if(DIMENSION_CON_ETIQUETA.indexOf(paramEjeX)!=-1){
+    if (DIMENSION_CON_ETIQUETA.indexOf(paramEjeX) != -1) {
         dimensionEtiquetas = dimensionEtiquetas;
-        if(paramEjeX=='sex') {
-            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX=='edadGruposQuinquenales') {
-            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX=='nacionalidad') {
-            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX=='tipoNivelEstudio') {
-            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        if (paramEjeX == 'sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX == 'edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX == 'nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX == 'tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas, dimensionEtiquetas);
         }
     }
-    
+
     obtieneDatosAPI(url);
+    insertaURLSAPI(url,urlcsv);
 }
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPI(url) {
+    if (LOG_DEBUG_GRAFICO_BARRAS) {
+        console.log('[barras] [obtieneDatosAPI] [URL] ' + url);
+    }
+
     let jqxhr = $.getJSON(url)
         .done(function (data) {
-            let htmlContent =
-                "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
-                '</th><th>' +
-                $.i18n('medida') +
-                '</th></tr>';
             if (data.records) {
-                for (let i = 0; i < data.records.length; i++) {                 
+                let i;
+                for (i = 0; i < data.records.length; i++) {
                     let muestra;
                     if (dimensionEtiquetas[data.records[i][dimension]]) {
                         muestra = {
-                            ejeX : dimensionEtiquetas[data.records[i][dimension]],
-                            ejeY : data.records[i][agrupador]
+                            ejeX: dimensionEtiquetas[data.records[i][dimension]],
+                            ejeY: data.records[i][agrupador]
                         };
                     } else {
                         muestra = {
-                            ejeX : data.records[i][dimension],
-                            ejeY : data.records[i][agrupador]
+                            ejeX: data.records[i][dimension],
+                            ejeY: data.records[i][agrupador]
                         };
                     }
                     cuboEdades.push(muestra);
@@ -280,15 +282,15 @@ function obtieneDatosAPI(url) {
             }
         })
         .always(function () {
-            cuboEdades.sort( compare );
+            cuboEdades.sort(compare);
             let htmlContent =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
+                ETIQUETAS_TABLA.get(dimension) +
                 '</th><th>' +
-                $.i18n('medida') +
+                ETIQUETAS_TABLA.get(medida) +
                 '</th></tr>';
             let j;
-            for(j=0;j<cuboEdades.length;j++){
+            for (j = 0; j < cuboEdades.length; j++) {
                 muestra = cuboEdades[j];
                 let numeralEjeY = numeral(muestra.ejeY);
                 htmlContent =
@@ -320,25 +322,31 @@ function compare(a, b) {
 }
 
 /*
-	Método que inserta URLs en el botón Acción
+    Método que inserta URLs en el botón Acción
 */
-function insertaURLSAPI() {
+function insertaURLSAPI(urljson, urlcsv) {
+    if (LOG_DEBUG_GRAFICO_BARRAS) {
+        console.log('[barras] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
+    $('#descargaCSV').attr('href', urlcsv);
+    $('#descargaJSON').attr('href', urljson);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
 }
 
 /*
-	Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
+    Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
 */
 function capturaParam() {
     if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('capturaParams');
+        console.log('[barras] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
         paramCubo = getUrlVars()['cubo'];
-    } 
+    }
 
     if (getUrlVars()['iframe']) {
         paramIframe = getUrlVars()['iframe'];
@@ -379,9 +387,6 @@ function capturaParam() {
     if (getUrlVars()['titulo']) {
         paramTituloKey = getUrlVars()['titulo'];
         let paramTitulo = $.i18n(paramTituloKey);
-        if (paramPeriodo) {
-            paramTitulo = paramTitulo + ' ' + paramPeriodo;
-        }
         $('#tituloGrafico').html(decodeURI(paramTitulo));
     }
 
@@ -426,24 +431,25 @@ function capturaParam() {
     if (getUrlVars()['municipioProcedencia']) {
         paramMunicipioProcedencia = getUrlVars()['municipioProcedencia'];
     }
-    
+
 }
 
 /*
-	Función para crear el gráfico
+    Función para crear el gráfico
 */
 function pintaGrafico() {
     if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('pintaGraficoBarras');
+        console.log('[barras] [pintaGrafico]');
     }
 
     am4core.useTheme(am4themes_frozen);
-   
+    am4core.options.autoDispose = true;
+
     let chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.data = cuboEdades;
     chart.language.locale = am4lang_es_ES;
-    
-    chart.focusFilter.stroke = am4core.color("#0f0");
+
+    chart.focusFilter.stroke = am4core.color('#0f0');
     chart.focusFilter.strokeWidth = 4;
 
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
@@ -452,8 +458,8 @@ function pintaGrafico() {
     categoryAxis.renderer.minGridDistance = 1;
 
     let label = categoryAxis.renderer.labels.template;
-    label.truncate = true;
-    label.maxWidth = 100;
+    label.wrap = true;
+    label.maxWidth = 220;
     label.tooltipText = '{category}';
 
     categoryAxis.events.on('sizechanged', function (ev) {
@@ -485,12 +491,15 @@ function pintaGrafico() {
     $('.modal').modal('hide');
 }
 
-//Vble para controlar el tamaño
-let tamanyFijobarras = $(document).height();
+
 /*
-	Método que muestra u oculta la tabla con datos debajo de la visualización
+    Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_BARRAS) {
+        console.log('[barras] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
 
     let isVisible = $('#datos_tabla').is(':visible');
@@ -507,6 +516,18 @@ function mostrarDatos() {
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_BARRAS) {
+        console.log(
+            '[barras] [addFiltro] [paramValor:' +
+            paramValor +
+            '] [campo:' +
+            campo +
+            '] [filtro:' +
+            filtro +
+            ']'
+        );
+    }
+
     if (!filtro) {
         filtro = filtro + '&where=(';
     } else {
@@ -528,15 +549,5 @@ function addFiltro(paramValor, campo) {
     }
     filtro = filtro + ')';
 
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
-    }
 }
+

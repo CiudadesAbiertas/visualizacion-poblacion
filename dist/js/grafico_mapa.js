@@ -17,68 +17,70 @@ See the Licence for the specific language governing permissions and limitations 
 /*
 Algunas variables que se usan en este javascript se inicializan en ciudadesAbiertas.js
 */
-var paramTerritorio;
-var paramMedida;
-var paramMedidaInd;
-var paramMedidapor;
+let paramTerritorio;
+let paramMedida;
+let paramMedidaInd;
+let paramMedidapor;
 
-var paramCubo;
-var paramTituloKey;
-var paramIframe;
+let paramCubo;
+let paramTituloKey;
+let paramIframe;
 
-var paramOperacion;
+let paramOperacion;
 
-var paramMunicipio;
-var paramDistrito;
-var paramBarrio;
-var paramSeccionCensal;
-var paramPeriodo;
-var paramSexo;
-var paramEdad;
-var paramEdadQuinquenales;
-var paramNivelEstudio;
-var paramProcedencia;
-var paramPaisNacimiento;
-var paramNacionalidad;
-var paramIndicadores;
-var paramNivelEstudio;
-var paramPaisProcedencia;
-var paramProvinciaProcedencia;
-var paramMunicipioProcedencia;
+let paramMunicipio;
+let paramDistrito;
+let paramBarrio;
+let paramSeccionCensal;
+let paramPeriodo;
+let paramSexo;
+let paramEdad;
+let paramEdadQuinquenales;
+let paramNivelEstudio;
+let paramProcedencia;
+let paramPaisNacimiento;
+let paramNacionalidad;
+let paramIndicadores;
+let paramPaisProcedencia;
+let paramProvinciaProcedencia;
+let paramMunicipioProcedencia;
 
-var datosPadron = [];
-var dataGeoJson;
+let datosPadron = [];
+let dataGeoJson;
 
-var filtro = '';
-var filtroTerritorio = '';
+let filtro = '';
+let filtroTerritorio = '';
 
-var pocoCadena = $.i18n('poco');
-var muchoCadena = $.i18n('mucho');
+let pocoCadena = $.i18n('poco');
+let muchoCadena = $.i18n('mucho');
 
-var dimension = '';
-var dimension1 = '';
-var dimension2 = '';
-var agrupador = 'SUM';
-var cuboId;
+let dimension = '';
+let dimension1 = '';
+let dimension2 = '';
+let agrupador = 'SUM';
+let medida = '';
+let cuboId;
 let periodos = [];
+//Vble para controlar el tamaño
+let tamanyFijoMapa = $(document).height();
 
 /*
-	Función de inicialización del script
+    Función de inicialización del script
 */
 function inicializa() {
     if (LOG_DEBUG_GRAFICO_MAPA) {
-        console.log('inicializa');
+        console.log('[mapa] [inicializa]');
     }
 
     inicializaMultidioma();
 }
 
 /* 
-	Función para inicializar el multidioma
+    Función para inicializar el multidioma
 */
 function inicializaMultidioma() {
     if (LOG_DEBUG_GRAFICO_MAPA) {
-        console.log('inicializaMultidioma');
+        console.log('[mapa] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -106,24 +108,24 @@ function inicializaMultidioma() {
                 muchoCadena = $.i18n('mucho');
                 capturaParam();
                 periodo = paramPeriodo;
-                if(paramPeriodo=='ultimo') {
-                    dameUltimoPeriodo(cuboId,periodos);
-                }else {
+                if (paramPeriodo == 'ultimo') {
+                    dameUltimoPeriodo(cuboId, periodos);
+                } else {
                     inicializaDatos();
                 }
-                
+
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_MAPA;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_MAPA;
 }
 
 /*
-	Función que invoca a todas las funciones que se realizan al inicializar el script
+    Función que invoca a todas las funciones que se realizan al inicializar el script
 */
 function inicializaDatos() {
     if (LOG_DEBUG_GRAFICO_MAPA) {
-        console.log('inicializaDatos');
+        console.log('[mapa] [inicializaDatos]');
     }
 
     $('#urlAPIDoc').attr('href', DOC_API);
@@ -157,7 +159,7 @@ function inicializaDatos() {
             dimension2 = 'municipioTitle';
         }
     }
-    let medida = 'numeroPersonas';
+    medida = 'numeroPersonas';
     if (!paramMedida) {
         medida = 'numeroPersonas';
     } else {
@@ -165,9 +167,9 @@ function inicializaDatos() {
     }
     if (paramMedidaInd) {
         medida = paramMedidaInd;
-    } 
+    }
     if (paramMedidapor) {
-        medida = paramMedidapor; 
+        medida = paramMedidapor;
     }
 
     if (paramNacionalidad) {
@@ -180,12 +182,8 @@ function inicializaDatos() {
         addFiltroMapa(paramSexo, 'sex');
     }
     if (paramPeriodo) {
-        if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
+        if (paramPeriodo == 'ultimo') {
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltroMapa(paramPeriodo, 'refPeriod');
@@ -204,48 +202,9 @@ function inicializaDatos() {
     }
     if (paramMunicipio) {
         addFiltroMapa(paramMunicipio, 'municipioId');
-
-        /*if (!filtroTerritorio) {
-            filtroTerritorio = filtroTerritorio + '&q=';
-        } else {
-            filtroTerritorio = filtroTerritorio + '&&';
-        }
-        if (dimension.includes('municipioId')) {
-            filtroTerritorio = filtroTerritorio + "id=='" + paramMunicipio + "'";
-        } else {
-            filtroTerritorio =
-                filtroTerritorio + "municipioId=='" + paramMunicipio + "'";
-        }*/
     }
-    if (paramDistrito ) {
+    if (paramDistrito) {
         addFiltroMapa(paramDistrito, 'distritoId');
-
-        /*if (!filtroTerritorio) {
-            filtroTerritorio = filtroTerritorio + '&q=';
-        } else {
-            filtroTerritorio = filtroTerritorio + '&&';
-        }
-        let filterKey = '';
-        if (dimension.includes('distritoId')) {
-            filterKey = 'id';
-        } else {
-            filterKey = 'distritoId';
-        }
-        if (paramDistrito.includes(',')) {
-            let params = paramDistrito.split(',');
-            let h;
-            for (h = 0; h < params.length; h++) {
-                filtroTerritorio = filtroTerritorio + filterKey + "=='" + params[h];
-                if (h < params.length - 1) {
-                    filtroTerritorio = filtroTerritorio + "' or ";
-                } else {
-                    filtroTerritorio = filtroTerritorio + "'";
-                }
-            }
-        } else {
-            filtroTerritorio =
-                filtroTerritorio + filterKey + "=='" + paramDistrito + "'";
-        }*/
     }
     if (paramBarrio) {
         addFiltroMapa(paramBarrio, "barrioId");
@@ -253,35 +212,8 @@ function inicializaDatos() {
 
     if (paramSeccionCensal) {
         addFiltroMapa(paramSeccionCensal, "seccionCensalId");
-
-        /*if (filtroTerritorio == "") {
-            filtroTerritorio = filtroTerritorio + "&q=";
-        } else {
-            filtroTerritorio = filtroTerritorio + "&&";
-        }
-        let filterKey = "";
-        if (dimension.includes("seccionCensalId")) {
-            filterKey = "id";
-        } else {
-            filterKey = "seccionCensalId";
-        }
-        if (paramSeccionCensal.includes(",")) {
-            let params = paramSeccionCensal.split(",");
-            let h;
-            for (h = 0; h < params.length; h++) {
-                filtroTerritorio = filtroTerritorio + filterKey + "=='" + params[h];
-                if (h < params.length - 1) {
-                    filtroTerritorio = filtroTerritorio + "' or ";
-                } else {
-                    filtroTerritorio = filtroTerritorio + "'";
-                }
-            }
-        } else {
-            filtroTerritorio =
-                filtroTerritorio + filterKey + "=='" + paramSeccionCensal + "'";
-        }*/
     }
-    
+
     if (paramEdad) {
         addFiltroMapa(paramEdad, 'age');
     }
@@ -290,6 +222,10 @@ function inicializaDatos() {
     }
     if (paramPaisNacimiento) {
         addFiltroMapa(paramPaisNacimiento, 'paisNacimiento');
+    }
+
+    if (paramMunicipio) {
+        isFiltroMunicipio();
     }
 
     let url =
@@ -303,27 +239,43 @@ function inicializaDatos() {
         medida +
         '&page=1&pageSize=100' +
         filtro;
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
+    let urlcsv =
+        URL_CUBOS.get(cuboId) +
+        POBLACION_URL_2_CSV +
+        '?dimension=' +
+        dimension +
+        '&group=' +
+        agrupador +
+        '&measure=' +
+        medida +
+        '&page=1&pageSize=100' +
+        filtro;
+    if (LOG_DEBUG_GRAFICO_MAPA) {
         console.log('[inicializaDatos] url:' + url);
     }
+    $('#descargaJSON').attr( 'href',  url );
+    $('#descargaCSV').attr( 'href',  urlcsv );
     let jqxhr = $.getJSON(url)
         .done(function (data) {
             if (data.records) {
                 let htmlContent =
                     "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                    $.i18n("dimension") +
+                    ETIQUETAS_TABLA.get(dimension2) + 
                     "</th><th>" +
-                    $.i18n("medida") +
+                    ETIQUETAS_TABLA.get(medida) +
                     "</th></tr>";
                 let h;
                 for (h = 0; h < data.records.length; h++) {
                     let datoPadron;
                     datoPadron = {
-                        id : String(data.records[h][dimension1]),
-                        name : data.records[h][dimension2],
-                        value :  data.records[h][agrupador]
+                        id: String(data.records[h][dimension1]),
+                        name: data.records[h][dimension2],
+                        value: data.records[h][agrupador]
                     };
                     datosPadron.push(datoPadron);
+                    
+                    let medida = data.records[h][agrupador];
+                    medida = numeral(medida);
 
                     htmlContent =
                         htmlContent +
@@ -332,7 +284,7 @@ function inicializaDatos() {
                         data.records[h][dimension2].toString() +
                         '</td>' +
                         '<td>' +
-                        data.records[h][agrupador].toString() +
+                        medida.format(numFormatoSinDecimales) +
                         '</td>' +
                         '</tr>';
                 }
@@ -347,25 +299,29 @@ function inicializaDatos() {
 }
 
 /*
-	Método que inserta URLs en el botón Acción
+    Método que inserta URLs en el botón Acción
 */
 function insertaURLSAPI() {
+    if (LOG_DEBUG_GRAFICO_MAPA) {
+        console.log('[mapa] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
 }
 
 /*
-	Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
+    Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
 */
 function capturaParam() {
     if (LOG_DEBUG_GRAFICO_MAPA) {
-        console.log('capturaParam');
+        console.log('[mapa] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
         paramCubo = getUrlVars()['cubo'];
-    } 
+    }
 
     if (getUrlVars()['periodo']) {
         paramPeriodo = getUrlVars()['periodo'];
@@ -374,9 +330,6 @@ function capturaParam() {
     if (getUrlVars()['titulo']) {
         paramTituloKey = getUrlVars()['titulo'];
         let paramTitulo = $.i18n(paramTituloKey);
-        if (paramPeriodo) {
-            paramTitulo = paramTitulo + ' ' + paramPeriodo;
-        }
         $('#tituloGrafico').html(decodeURI(paramTitulo));
     }
 
@@ -467,11 +420,11 @@ function capturaParam() {
 }
 
 /*
-	Función para crear el gráfico
+    Función para crear el gráfico
 */
 function pintaGrafico() {
     if (LOG_DEBUG_GRAFICO_MAPA) {
-        console.log('pintaGraficoMapa');
+        console.log('[mapa] [pintaGrafico]');
     }
 
     let territorio = '';
@@ -484,20 +437,21 @@ function pintaGrafico() {
         'href',
         TERRITORIO_URL_1 + territorio + TERRITORIO_URL_2 + filtroTerritorio
     );
-    $('#descargaGeoJSON').attr(
-        'href',
-        TERRITORIO_URL_1 + territorio + TERRITORIO_URL_2 + filtroTerritorio
-    );
+    // $('#descargaGeoJSON').attr(
+    //     'href',
+    //     TERRITORIO_URL_1 + territorio + TERRITORIO_URL_2 + filtroTerritorio
+    // );
 
     am4core.useTheme(am4themes_frozen);
-  
+    am4core.options.autoDispose = true;
+
     let chart = am4core.create('chartdiv', am4maps.MapChart);
     chart.geodata = dataGeoJson;
     chart.language.locale = am4lang_es_ES;
 
     chart.focusFilter.stroke = am4core.color("#0f0");
     chart.focusFilter.strokeWidth = 4;
-    
+
     chart.projection = new am4maps.projections.Mercator();
 
     chart.zoomControl = new am4maps.ZoomControl();
@@ -523,7 +477,7 @@ function pintaGrafico() {
         target: polygonSeries.mapPolygons.template,
         min: chart.colors.getIndex(1).brighten(1),
         max: chart.colors.getIndex(1).brighten(-0.3),
-		logarithmic: true,
+        logarithmic: true,
         dataField: 'value',
     });
 
@@ -536,50 +490,27 @@ function pintaGrafico() {
     heatLegend.width = am4core.percent(30);
     heatLegend.align = 'right';
     heatLegend.valign = 'top';
-	heatLegend.orientation = "horizontal";
-	heatLegend.valueAxis.renderer.labels.template.fontSize = 9;
-	heatLegend.valueAxis.renderer.minGridDistance = 40;
+    heatLegend.orientation = "horizontal";
+    heatLegend.valueAxis.renderer.labels.template.fontSize = 9;
+    heatLegend.valueAxis.renderer.minGridDistance = 40;
 
-	polygonSeries.mapPolygons.template.events.on("over", function(ev) {
-	  if (!isNaN(ev.target.dataItem.value)) {
-		heatLegend.valueAxis.showTooltipAt(ev.target.dataItem.value)
-	  }
-	  else {
-		heatLegend.valueAxis.hideTooltip();
-	  }
-	});
+    polygonSeries.mapPolygons.template.events.on("over", function (ev) {
+        if (!isNaN(ev.target.dataItem.value)) {
+            heatLegend.valueAxis.showTooltipAt(ev.target.dataItem.value)
+        }
+        else {
+            heatLegend.valueAxis.hideTooltip();
+        }
+    });
 
-	polygonSeries.mapPolygons.template.events.on("out", function(ev) {
-	  heatLegend.valueAxis.hideTooltip();
-	});
-
-
-   // heatLegend.marginRight = am4core.percent(4);
-    //heatLegend.minValue = 0;
-    //heatLegend.maxValue = 40000000;
-
-    //let minRange = heatLegend.valueAxis.axisRanges.create();
-    //minRange.value = heatLegend.minValue;
-    //minRange.label.text = pocoCadena;
-    //let maxRange = heatLegend.valueAxis.axisRanges.create();
-    //maxRange.value = heatLegend.maxValue;
-    //maxRange.label.text = muchoCadena;
-
-    //heatLegend.valueAxis.renderer.labels.template.adapter.add(
-    //    'text',
-    //    function (labelText) {
-    //        return '';
-    //    }
-    //);
+    polygonSeries.mapPolygons.template.events.on("out", function (ev) {
+        heatLegend.valueAxis.hideTooltip();
+    });
 
     let polygonTemplate = polygonSeries.mapPolygons.template;
     polygonTemplate.tooltipText = '{title}: {value}';
     polygonTemplate.nonScalingStroke = true;
     polygonTemplate.strokeWidth = 0.5;
-    //Evento para controlar el click del ratón en una zona del mapa
-    //polygonTemplate.events.on('hit', function (ev) {
-    //    aplicarFiltrosMapa(ev.target.dataItem.dataContext.id);
-   // });
 
     let hs = polygonTemplate.states.create('hover');
     hs.properties.fill = am4core.color('#40ff00');
@@ -587,13 +518,14 @@ function pintaGrafico() {
     $('.modal').modal('hide');
 }
 
-//Vble para controlar el tamaño
-let tamanyFijoMapa = $(document).height();
-
 /*
-	Método que muestra u oculta la tabla con datos debajo de la visualización
+    Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_MAPA) {
+        console.log('[mapa] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
 
     let isVisible = $('#datos_tabla').is(':visible');
@@ -610,6 +542,10 @@ function mostrarDatos() {
 }
 
 function addFiltroMapa(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_MAPA) {
+        console.log('[mapa] [addFiltroMapa] [paramValor] ' + paramValor + ' [campo] ' + campo);
+    }
+
     if (filtro == "") {
         filtro = filtro + "&where=(";
     } else {
@@ -632,22 +568,15 @@ function addFiltroMapa(paramValor, campo) {
     filtro = filtro + ")";
 
     if (LOG_DEBUG_GRAFICO_MAPA) {
-        console.log(
-            '[addFiltroMapa] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
+        console.log("[addFiltroMapa] [filtro:" + filtro + "]");
     }
 }
 
 function obtenerGeojson() {
     if (LOG_DEBUG_GRAFICO_MAPA) {
-        console.log('obtenerGeojson');
+        console.log("[addFiltroMapa] [obtenerGeojson]");
     }
+
     let territorio = '';
     if (!paramTerritorio) {
         territorio = 'seccion-censal';
@@ -659,7 +588,7 @@ function obtenerGeojson() {
         TERRITORIO_URL_1 + territorio + TERRITORIO_URL_2 + filtroTerritorio;
     let jqxhr = $.getJSON(urlAux)
         .done(function (data) {
-            if (data && data.features && data.features.length ) {
+            if (data && data.features && data.features.length) {
                 let i;
                 for (i = 0; i < data.features.length; i++) {
                     data.features[i].id = data.features[i].properties.id;
@@ -716,7 +645,7 @@ function aplicarFiltrosMapa(idFiltro) {
  */
 function obtenerFiltroPorTerritorio() {
     if (LOG_DEBUG_GRAFICO_MAPA) {
-        console.log('[obtenerTerritorio]');
+        console.log("[addFiltroMapa] [obtenerFiltroPorTerritorio]");
     }
 
     let filtro = window.top.$('#filtroTerritorio').slider('getValue');

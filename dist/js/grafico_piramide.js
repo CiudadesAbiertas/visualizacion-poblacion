@@ -58,7 +58,7 @@ let tamanyFijo = $(document).height();
 */
 function inicializa() {
     if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
-        console.log('inicializaGraficoPiramide');
+        console.log('[piramide] [inicializa]');
     }
 
     inicializaMultidioma();
@@ -69,7 +69,7 @@ function inicializa() {
 */
 function inicializaMultidioma() {
     if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
-        console.log('inicializaMultidiomaGraficoPiramide');
+        console.log('[piramide] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -103,7 +103,7 @@ function inicializaMultidioma() {
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_PIRAMIDE;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_PIRAMIDE;
 }
 
 /*
@@ -111,7 +111,7 @@ function inicializaMultidioma() {
 */
 function inicializaDatos() {
     if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
-        console.log('inicializaTablaGraficoPiramide');
+        console.log('[piramide] [inicializaDatos]');
     }
 
     pintaGrafico();
@@ -143,11 +143,7 @@ function inicializaDatos() {
     }
     if (paramPeriodo) {
         if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
@@ -173,7 +169,10 @@ function inicializaDatos() {
         addFiltro(paramPaisNacimiento, 'paisNacimiento');
     }
     
-
+    if(paramMunicipio) {
+        isFiltroMunicipio();
+    }
+    
     let urlPoblacionPiramideJson =
         DATACUBE_URL+'/'+paramCubo+'/query.json' +
         '?dimension=' +
@@ -223,6 +222,10 @@ function inicializaDatos() {
 
 /* Método que obtiene los datos de población de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPIPobl(url) {
+    if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
+        console.log('[piramide] [obtieneDatosAPIPobl] [url] '+url);
+    }
+
     let jqxhr = $.getJSON(url).done(function (data) {
         if (data.records) {
            
@@ -262,10 +265,6 @@ function obtieneDatosAPIPobl(url) {
                 } else if (data.records[i][dimensionSex] == 'sex-M') {
                     muestra.male = data.records[i][agrupador];
                 }
-                /*if (muestra.female && muestra.male) {
-                   
-                    datosPoblacion.push(muestra);
-                }*/
                 datosPoblacionAux[muestra.age] = muestra;
             }
 
@@ -331,10 +330,14 @@ function obtieneDatosAPIPobl(url) {
 /*
 	Función que inserta las URLs de la API
 */
-function insertaURLSAPI(urlAPI,descargaCSV) {
-    $('#urlAPI').attr('href', POBLACION_PIRAMIDE_URL);
-    $('#descargaCSV').attr('href', POBLACION_PIRAMIDE_URL_CSV);
-    $('#descargaJSON').attr('href', POBLACION_PIRAMIDE_URL);
+function insertaURLSAPI(urljson, urlcsv) {
+    if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
+        console.log('[piramide] [insertaURLSAPI]');
+    }
+
+    $('#urlAPI').attr('href', urljson);
+    $('#descargaCSV').attr('href', urlcsv);
+    $('#descargaJSON').attr('href', urljson);
     $('#urlAPIDoc').attr('href', DOC_API);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
@@ -344,20 +347,19 @@ function insertaURLSAPI(urlAPI,descargaCSV) {
 	Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
 */
 function capturaParametros() {
+    if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
+        console.log('[piramide] [capturaParametros]');
+    }
+
     if (getUrlVars()['cubo']) {
         paramCubo = getUrlVars()['cubo'];
-    } /*else {
-        paramCubo = 'edad-grupo-quinquenal';
-    }*/
+    } 
     if (getUrlVars()['periodo']) {
         paramPeriodo = getUrlVars()['periodo'];
     }
     if (getUrlVars()['titulo']) {
         paramTituloKey = getUrlVars()['titulo'];
         let paramTitulo = $.i18n(paramTituloKey);
-        if (paramPeriodo) {
-            paramTitulo = paramTitulo + ' ' + paramPeriodo;
-        }
         $('#tituloGrafico').html(decodeURI(paramTitulo));
     }
 
@@ -434,6 +436,10 @@ function capturaParametros() {
     if (getUrlVars()['groupBy']) {
         paramGroupBy = getUrlVars()['groupBy'];
     }
+    
+    if (getUrlVars()['nacionalidad']) {
+        paramNacionalidad = getUrlVars()['nacionalidad'];
+    }
 }
 
 /*
@@ -441,18 +447,16 @@ function capturaParametros() {
 */
 function pintaGrafico() {
     if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
-        console.log('pintaGraficoPiramide');
+        console.log('[piramide] [pintaGrafico]');
     }
 
     am4core.useTheme(am4themes_frozen);
-  
+    am4core.options.autoDispose = true;
+    
     let mainContainer = am4core.create('chartdiv', am4core.Container);
     mainContainer.width = am4core.percent(100);
     mainContainer.height = am4core.percent(100);
     mainContainer.layout = 'horizontal';
-
-    // chart.focusFilter.stroke = am4core.color("#0f0");
-    // chart.focusFilter.strokeWidth = 4;
     
     let maleChart = mainContainer.createChild(am4charts.XYChart);
     maleChart.width = am4core.percent(50);
@@ -520,6 +524,10 @@ function pintaGrafico() {
 	Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
+        console.log('[piramide] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
     let isVisible = $('#datos_tabla').is(':visible');
     if (isVisible) {
@@ -543,6 +551,10 @@ function compare(a, b) {
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
+        console.log('[piramide] [addFiltro] [paramValor] '+paramValor+' [campo] '+campo);
+    }
+
     if (!filtro) {
         filtro = filtro + '&where=(';
     } else {
@@ -564,15 +576,7 @@ function addFiltro(paramValor, campo) {
     }
     filtro = filtro + ')';
 
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
+    if (LOG_DEBUG_GRAFICO_PIRAMIDE) {
+        console.log("[piramide] [addFiltro] [filtro:" + filtro + "]");
     }
 }

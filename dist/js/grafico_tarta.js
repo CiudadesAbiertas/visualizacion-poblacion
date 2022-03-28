@@ -17,44 +17,47 @@ See the Licence for the specific language governing permissions and limitations 
 /*
 Algunas variables que se usan en este javascript se inicializan en ciudadesAbiertas.js
 */
-var paramEjeX;
-var paramEjeY;
-var paramMedidaInd;
-var paramMedidapor;
+let paramEjeX;
+let paramEjeY;
+let paramMedidaInd;
+let paramMedidapor;
 
-var paramCubo;
-var paramTituloKey;
-var paramIframe;
+let paramCubo;
+let paramTituloKey;
+let paramIframe;
 
-var paramOperacion;
+let paramOperacion;
 
-var paramMunicipio;
-var paramDistrito;
-var paramBarrio;
-var paramSeccionCensal;
-var paramPeriodo;
-var paramSexo;
-var paramEdad;
-var paramEdadQuinquenales;
-var paramNivelEstudio;
-var paramProcedencia;
-var paramPaisNacimiento;
-var paramNacionalidad;
+let paramMunicipio;
+let paramDistrito;
+let paramBarrio;
+let paramSeccionCensal;
+let paramPeriodo;
+let paramSexo;
+let paramEdad;
+let paramEdadQuinquenales;
+let paramNivelEstudio;
+let paramProcedencia;
+let paramPaisNacimiento;
+let paramNacionalidad;
 
-var filtro = '';
-var cuboEdades = [];
-var dimensionEtiquetas = {};
+let filtro = '';
+let cuboEdades = [];
+let dimensionEtiquetas = {};
 
-var dimension = '';
-var agrupador = '';
+let dimension = '';
+let agrupador = '';
+let medida = '';
 let periodos = [];
+//Vble para controlar el tamaño
+let tamanyFijotartas = $(document).height();
 
 /*
 	Función de inicialización del script
 */
 function inicializa() {
     if (LOG_DEBUG_GRAFICO_TARTAS) {
-        console.log('inicializa');
+        console.log('[tarta] [inicializa]');
     }
 
     inicializaMultidioma();
@@ -65,7 +68,7 @@ function inicializa() {
 */
 function inicializaMultidioma() {
     if (LOG_DEBUG_GRAFICO_TARTAS) {
-        console.log('inicializaMultidioma');
+        console.log('[tarta] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -99,7 +102,7 @@ function inicializaMultidioma() {
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_TARTAS;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_TARTAS;
 }
 
 /*
@@ -107,7 +110,7 @@ function inicializaMultidioma() {
 */
 function inicializaDatos() {
     if (LOG_DEBUG_GRAFICO_TARTAS) {
-        console.log('inicializaDatos');
+        console.log('[tarta] [inicializaDatos]');
     }
 
     insertaURLSAPI();
@@ -118,7 +121,7 @@ function inicializaDatos() {
     } else {
         dimension = paramEjeX;
     }
-    let medida = 'numeroPersonas';
+    medida = 'numeroPersonas';
     if (paramEjeY) {
         medida = paramEjeY;
     }
@@ -151,11 +154,7 @@ function inicializaDatos() {
     }
     if (paramPeriodo) {
         if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
@@ -179,6 +178,10 @@ function inicializaDatos() {
         addFiltro(paramPaisNacimiento, 'paisNacimiento');
     }
 
+    if(paramMunicipio) {
+        isFiltroMunicipio();
+    }
+    
     let url =
         POBLACION_URL_1 +
         paramCubo +
@@ -194,7 +197,7 @@ function inicializaDatos() {
         '&page=1&pageSize=100' +
         filtro;
     if (LOG_DEBUG_GRAFICO_TARTAS) {
-        console.log('[inicializaDatos] url:' + url);
+        console.log('[tarta] [inicializaDatos] url:' + url);
     }
     $('#urlAPI').attr('href', url);
     $('#descargaJSON').attr('href', url);
@@ -233,13 +236,17 @@ function inicializaDatos() {
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPI(url) {
+    if (LOG_DEBUG_GRAFICO_TARTAS) {
+        console.log('[tarta] [obtieneDatosAPI] url:' + url);
+    }
+
     let jqxhr = $.getJSON(url)
         .done(function (data) {
             let htmlContent =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
+                ETIQUETAS_TABLA.get(dimension) + 
                 '</th><th>' +
-                $.i18n('medida') +
+                ETIQUETAS_TABLA.get(medida) +
                 '</th></tr>';
             if (data.records) {
                 for (let i = 0; i < data.records.length; i++) {
@@ -293,6 +300,10 @@ function obtieneDatosAPI(url) {
 	Método que inserta URLs en el botón Acción
 */
 function insertaURLSAPI() {
+    if (LOG_DEBUG_GRAFICO_TARTAS) {
+        console.log('[tarta] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
@@ -303,7 +314,7 @@ function insertaURLSAPI() {
 */
 function capturaParam() {
     if (LOG_DEBUG_GRAFICO_TARTAS) {
-        console.log('capturaParams');
+        console.log('[tarta] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
@@ -349,9 +360,6 @@ function capturaParam() {
     if (getUrlVars()['titulo']) {
         paramTituloKey = getUrlVars()['titulo'];
         let paramTitulo = $.i18n(paramTituloKey);
-        if (paramPeriodo) {
-            paramTitulo = paramTitulo + ' ' + paramPeriodo;
-        }
         $('#tituloGrafico').html(decodeURI(paramTitulo));
     }
 
@@ -394,11 +402,12 @@ function capturaParam() {
 */
 function pintaGrafico() {
     if (LOG_DEBUG_GRAFICO_TARTAS) {
-        console.log('pintaGraficoTarta');
+        console.log('[tarta] [pintaGrafico]');
     }
 
     am4core.useTheme(am4themes_frozen);
-   
+    am4core.options.autoDispose = true;
+    
     let chart = am4core.create('chartdiv', am4charts.PieChart);
     chart.data = cuboEdades;
     chart.language.locale = am4lang_es_ES;
@@ -413,8 +422,6 @@ function pintaGrafico() {
     pieSeries.labels.template.disabled = false;
     pieSeries.ticks.template.disabled = false;
 
-
-
     chart.legend = new am4charts.Legend();
     chart.legend.position = 'right';
     chart.legend.labels.template.maxWidth = 120;
@@ -424,13 +431,14 @@ function pintaGrafico() {
     $('.modal').modal('hide');
 }
 
-//Vble para controlar el tamaño
-let tamanyFijotartas = $(document).height();
-
 /*
 	Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_TARTAS) {
+        console.log('[tarta] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
 
     let isVisible = $('#datos_tabla').is(':visible');
@@ -447,6 +455,10 @@ function mostrarDatos() {
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_TARTAS) {
+        console.log('[tarta] [addFiltro] [paramValor] '+paramValor+' [campo] '+campo);
+    }
+
     if (!filtro) {
         filtro = filtro + "&where=(";
     } else {
@@ -469,14 +481,6 @@ function addFiltro(paramValor, campo) {
     filtro = filtro + ")";
 
     if (LOG_DEBUG_GRAFICO_TARTAS) {
-        console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
+        console.log("[tarta] [addFiltro] [filtro:" + filtro + "]");
     }
 }

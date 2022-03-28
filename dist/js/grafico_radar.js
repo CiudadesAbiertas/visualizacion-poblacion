@@ -17,71 +17,97 @@ See the Licence for the specific language governing permissions and limitations 
 /*
 Algunas variables que se usan en este javascript se inicializan en ciudadesAbiertas.js
 */
-var paramEjeX1;
-var paramEjeX2;
-var paramEjeY;
-var paramMedidaInd;
-var paramMedidapor;
+let paramEjeX1;
+let paramEjeX2;
+let paramEjeY;
+let paramMedidaInd;
+let paramMedidapor;
 
-var paramCubo;
-var paramTituloKey;
-var paramIframe;
+let paramCubo;
+let paramTituloKey;
+let paramIframe;
 
-var paramOperacion;
+let paramOperacion;
 
-var paramMunicipio;
-var paramDistrito;
-var paramBarrio;
-var paramSeccionCensal;
-var paramPeriodo;
-var paramTipoGrafico;
-var paramIndicadores;
-var paramPaisProcedencia;
-var paramProvinciaProcedencia;
-var paramMunicipioProcedencia;
+let paramMunicipio;
+let paramDistrito;
+let paramBarrio;
+let paramSeccionCensal;
+let paramPeriodo;
+let paramTipoGrafico;
+let paramIndicadores;
+let paramPaisProcedencia;
+let paramProvinciaProcedencia;
+let paramMunicipioProcedencia;
 
-var valor1Dim1;
-var valor2Dim1;
-var valor3Dim1;
-var valor4Dim1;
-var valor5Dim1;
+let valor1Dim1;
+let valor2Dim1;
+let valor3Dim1;
+let valor4Dim1;
+let valor5Dim1;
+let valor6Dim1;
+let valor7Dim1;
+let valor8Dim1;
 
-var valor1Dim2;
-var valor2Dim2;
-var valor3Dim2;
-var valor4Dim2;
-var valor5Dim2;
+let valor1Dim2;
+let valor2Dim2;
+let valor3Dim2;
+let valor4Dim2;
+let valor5Dim2;
+let valor6Dim2;
+let valor7Dim2;
+let valor8Dim2;
 
-var filtro = '';
+let filtro = '';
 
+let dimensionEtiquetas = {};
 
-var dimensionEtiquetas = {};
+let dimension1 = '';
+let dimension1_1 = '';
+let dimension1_2 = '';
+let dimension2 = '';
+let agrupador = '';
 
-var dimension1 = '';
-var dimension1_1 = '';
-var dimension1_2 = '';
-var dimension2 = '';
-var agrupador = '';
-
-var chart;
-var xAxis;
+let chart;
+let xAxis;
 let medidas;
 
-var medida1 = {};
-var medida2 = {};
-var medida3 = {};
-var medida4 = {};
-var medida5 = {};
+let medida1 = {};
+let medida2 = {};
+let medida3 = {};
+let medida4 = {};
+let medida5 = {};
+let medida6 = {};
+let medida7 = {};
+let medida8 = {};
+let medida9 = {};
+let medida10 = {};
+let medida11 = {};
+let medida12 = {};
+let medida13 = {};
 let datos = [];
 let series = [];
 let periodos = [];
+
+let linea1 = [];
+let linea2 = [];
+let linea3 = [];
+let linea4 = [];
+let linea5 = [];
+let linea6 = [];
+let linea7 = [];
+let linea8 = [];
+//Vble para controlar el tamaño
+let tamanyFijobarras = $(document).height();
+
+let valorMaximo = 0;
 
 /*
 	Función de inicialización del script
 */
 function inicializa() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializa');
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [inicializa]');
     }
 
     inicializaMultidioma();
@@ -91,8 +117,8 @@ function inicializa() {
 	Función para inicializar el multidioma
 */
 function inicializaMultidioma() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaMultidioma');
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -126,15 +152,15 @@ function inicializaMultidioma() {
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_BARRAS;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_RADAR;
 }
 
 /*
 	Función que invoca a todas las funciones que se realizan al inicializar el script
 */
 function inicializaDatos() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaDatos');
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [inicializaDatos]');
     }
 
     insertaURLSAPI();
@@ -143,9 +169,9 @@ function inicializaDatos() {
     if (paramEjeX1) {
         dimension1 = paramEjeX1;
     } 
-    if (paramEjeX2) {
+    /*if (paramEjeX2) {
         dimension2 = paramEjeX2;
-    } 
+    } */
 
     let paramMedidas = '';
     if (paramEjeY) {
@@ -166,26 +192,26 @@ function inicializaDatos() {
 
     if (paramPeriodo) {
         if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
     }
     if (paramMunicipio) {
-        addFiltro(paramMunicipio, 'municipioId');
+        addFiltro(paramMunicipio, 'municipioId'); 
+        dimension2 = 'municipioTitle';
     }
     if (paramDistrito) {
         addFiltro(paramDistrito, 'distritoId');
+        dimension2 = 'distritoTitle';
     }
     if (paramBarrio) {
         addFiltro(paramBarrio, 'barrioId');
+        dimension2 = 'barrioTitle';
     }
     if (paramSeccionCensal) {
         addFiltro(paramSeccionCensal, 'seccionCensalId');
+        dimension2 = 'seccionCensalTitle';
     }
     if (paramPaisProcedencia) {
         addFiltro(paramPaisProcedencia, 'paisProcedencia');
@@ -197,6 +223,9 @@ function inicializaDatos() {
         addFiltro(paramMunicipioProcedencia, 'municipioProcedencia');
     }
     
+    if(paramMunicipio) {
+        isFiltroMunicipio();
+    }
     
     let numMedidas = 0;
     if(paramMedidas.indexOf(',') != -1) {
@@ -206,7 +235,6 @@ function inicializaDatos() {
         numMedidas = 1;
     }
 
-    pintaGrafico();
     let medida;
     let d;
     for (d = 0; d < numMedidas; d++) {
@@ -233,7 +261,7 @@ function inicializaDatos() {
             medida +
             "&page=1&pageSize=100" +
             filtro;
-        if (LOG_DEBUG_GRAFICO_BARRAS) {
+        if (LOG_DEBUG_GRAFICO_RADAR) {
             console.log("[inicializaDatos] url:" + url);
         }
         $("#urlAPI").attr("href", url);
@@ -265,17 +293,36 @@ function inicializaDatos() {
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPINueva(url,d) {
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [obtieneDatosAPINueva] [url] '+url+' d '+d);
+    }
 
     if(d==0) {
-        medida1['nombre'] = medidas[d];
+        medida1['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
     }else if(d==1) {
-        medida2['nombre'] = medidas[d];
+        medida2['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
     }else if(d==2) {
-        medida3['nombre'] = medidas[d];
+        medida3['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
     }else if(d==3) {
-        medida4['nombre'] = medidas[d];
+        medida4['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
     }else if(d==4) {
-        medida5['nombre'] = medidas[d];
+        medida5['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
+    }else if(d==5) {
+        medida6['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
+    }else if(d==6) {
+        medida7['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
+    }else if(d==7) {
+        medida8['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
+    }else if(d==8) {
+        medida9['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
+    }else if(d==9) {
+        medida10['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
+    }else if(d==10) {
+        medida11['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
+    }else if(d==11) {
+        medida12['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
+    }else if(d==12) {
+        medida13['nombre'] = ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[d]);
     }
     
     let jqxhr = $.getJSON(url)
@@ -286,13 +333,18 @@ function obtieneDatosAPINueva(url,d) {
                     if(d==0) {
                         if(data.records[i][agrupador]) {
                             medida1[data.records[i][dimension2]] = data.records[i][agrupador];
-                            
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             medida1[data.records[i][dimension2]] = 0;
                         }
                     }else if(d==1) {
                         if(data.records[i][agrupador]) {
                             medida2[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             medida2[data.records[i][dimension2]] = 0;
                         }
@@ -300,22 +352,104 @@ function obtieneDatosAPINueva(url,d) {
                     }else if(d==2) {
                         if(data.records[i][agrupador]) {
                             medida3[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             medida3[data.records[i][dimension2]] = 0;
                         }
                     }else if(d==3) {
                         if(data.records[i][agrupador]) {
                             medida4[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             medida4[data.records[i][dimension2]] = 0;
                         }
                     }else if(d==4) {
                         if(data.records[i][agrupador]) {
                             medida5[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             medida5[data.records[i][dimension2]] = 0;
                         }
+                    }else if(d==5) {
+                        if(data.records[i][agrupador]) {
+                            medida6[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            medida6[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==6) {
+                        if(data.records[i][agrupador]) {
+                            medida7[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            medida7[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==7) {
+                        if(data.records[i][agrupador]) {
+                            medida8[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            medida8[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==8) {
+                        if(data.records[i][agrupador]) {
+                            medida9[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            medida9[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==9) {
+                        if(data.records[i][agrupador]) {
+                            medida10[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            medida10[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==10) {
+                        if(data.records[i][agrupador]) {
+                            medida11[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            medida11[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==11) {
+                        if(data.records[i][agrupador]) {
+                            medida12[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            medida12[data.records[i][dimension2]] = 0;
+                        }
+                    }else if(d==12) {
+                        if(data.records[i][agrupador]) {
+                            medida13[data.records[i][dimension2]] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            medida13[data.records[i][dimension2]] = 0;
+                        }
                     }
+                    
                     if(series.indexOf(data.records[i][dimension2])==-1) {
                         series.push(data.records[i][dimension2]);
                     }
@@ -330,6 +464,22 @@ function obtieneDatosAPINueva(url,d) {
                     datos.push(medida4);
                 }else if(d==4) {
                     datos.push(medida5);
+                }else if(d==5) {
+                    datos.push(medida6);
+                }else if(d==6) {
+                    datos.push(medida7);
+                }else if(d==7) {
+                    datos.push(medida8);
+                }else if(d==8) {
+                    datos.push(medida9);
+                }else if(d==9) {
+                    datos.push(medida10);
+                }else if(d==10) {
+                    datos.push(medida11);
+                }else if(d==11) {
+                    datos.push(medida12);
+                }else if(d==12) {
+                    datos.push(medida13);
                 }
             }
             if (data.next) {
@@ -337,6 +487,7 @@ function obtieneDatosAPINueva(url,d) {
             }
         })
         .always(function () {
+            pintaGrafico();
             if(medidas.length==d+1){
                 let htmlContentCabecera =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
@@ -368,6 +519,9 @@ function obtieneDatosAPINueva(url,d) {
 }
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPI(url,medida) {
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [obtieneDatosAPI] [url] '+url+' medida '+medida);
+    }
 
     let jqxhr = $.getJSON(url)
         .done(function (data) {
@@ -378,6 +532,9 @@ function obtieneDatosAPI(url,medida) {
                     let muestra3;
                     let muestra4;
                     let muestra5;
+                    let muestra6;
+                    let muestra7;
+                    let muestra8;
                     
                     if(data.records[i][dimension1_1]==valor1Dim1) {
                         muestra1 = {
@@ -386,6 +543,9 @@ function obtieneDatosAPI(url,medida) {
                             ejeY : data.records[i][agrupador]
                         };
                         muestra1[medida] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
                         linea1.push(muestra1);
                     }else if(data.records[i][dimension1_1]==valor2Dim1) {
                         muestra2 = {
@@ -394,6 +554,9 @@ function obtieneDatosAPI(url,medida) {
                             ejeY : data.records[i][agrupador]
                         };
                         muestra2[medida] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
                         linea2.push(muestra2);
                     }else if(data.records[i][dimension1_1]==valor3Dim1) {
                         muestra3 = {
@@ -402,6 +565,9 @@ function obtieneDatosAPI(url,medida) {
                             ejeY : data.records[i][agrupador]
                         };
                         muestra3[medida] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
                         linea3.push(muestra3);
                     }else if(data.records[i][dimension1_1]==valor4Dim1) {
                         muestra4 = {
@@ -410,27 +576,61 @@ function obtieneDatosAPI(url,medida) {
                             ejeY : data.records[i][agrupador]
                         };
                         muestra4[medida] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
                         linea4.push(muestra4);
-                    }else if(data.records[i][dimension1_1]==valor3Dim1) {
+                    }else if(data.records[i][dimension1_1]==valor5Dim1) {
                         muestra5 = {
                             valor : data.records[i][dimension1_2],
                             ejeX : data.records[i][dimension2],
                             ejeY : data.records[i][agrupador]
                         };
                         muestra5[medida] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
                         linea5.push(muestra5);
+                    }else if(data.records[i][dimension1_1]==valor6Dim1) {
+                        muestra6 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            ejeY : data.records[i][agrupador]
+                        };
+                        muestra6[medida] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
+                        linea6.push(muestra6);
+                    }else if(data.records[i][dimension1_1]==valor7Dim1) {
+                        muestra7 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            ejeY : data.records[i][agrupador]
+                        };
+                        muestra7[medida] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
+                        linea7.push(muestra7);
+                    }else if(data.records[i][dimension1_1]==valor8Dim1) {
+                        muestra8 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            ejeY : data.records[i][agrupador]
+                        };
+                        muestra8[medida] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
+                        linea8.push(muestra8);
                     }
                     
                 }
             }
             if (data.next) {
                 obtieneDatosAPI(data.next);
-            } /*else {
-                pintaGrafico();
-                createSeries(lineaEdades0004[0].edad,lineaEdades0004);
-                createSeries(lineaEdades0509[0].edad,lineaEdades0509);
-                
-            }*/
+            } 
         })
         .always(function () {
             linea1.sort( compare );
@@ -544,7 +744,7 @@ function obtieneDatosAPI(url,medida) {
             htmlContent = htmlContent + '</table></div></div>';
             $('#datos_tabla').html(htmlContent);
 
-            
+            pintaGrafico();
             if(linea1.length) {
                 createSeries(linea1[0].valor + ' ' + medida,linea1,medida);
             }
@@ -560,12 +760,24 @@ function obtieneDatosAPI(url,medida) {
             if(linea5.length) {
                 createSeries(linea5[0].valor + ' ' + medida,linea5,medida);
             }
+            if(linea6.length) {
+                createSeries(linea6[0].valor + ' ' + medida,linea6,medida);
+            }
+            if(linea7.length) {
+                createSeries(linea7[0].valor + ' ' + medida,linea7,medida);
+            }
+            if(linea8.length) {
+                createSeries(linea8[0].valor + ' ' + medida,linea8,medida);
+            }
 
             linea1 = [];
             linea2 = [];
             linea3 = [];
             linea4 = [];
             linea5 = [];
+            linea6 = [];
+            linea7 = [];
+            linea8 = [];
 
             $('.modal').modal('hide');
         });
@@ -585,6 +797,10 @@ function compare(a, b) {
 	Método que inserta URLs en el botón Acción
 */
 function insertaURLSAPI() {
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
@@ -594,8 +810,8 @@ function insertaURLSAPI() {
 	Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
 */
 function capturaParam() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('capturaParams');
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
@@ -684,12 +900,13 @@ function capturaParam() {
 }
 
 function pintaGrafico() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('pintaGraficoBarras');
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [pintaGrafico]');
     }
 
     am4core.useTheme(am4themes_frozen);
-  
+    am4core.options.autoDispose = true;
+    
     chart = am4core.create('chartdiv', am4charts.RadarChart);
     chart.language.locale = am4lang_es_ES;
     chart.svgContainer.htmlElement.style.height = '800';
@@ -699,53 +916,40 @@ function pintaGrafico() {
     
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = 'nombre';
-    // categoryAxis.renderer.grid.template.location = 0;
-    // categoryAxis.renderer.minGridDistance = 1;
 
-    var valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
-
-    // let label = categoryAxis.renderer.labels.template;
-    // label.truncate = true;
-    // label.maxWidth = 100;
-    // label.tooltipText = '{ejeX}';
-
-    // var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
-    // yAxis.min = 0;
+    let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    valueAxis.max = (valorMaximo); 
     
-    // chart.legend = new am4charts.Legend();
-
-    // chart.scrollbarX = new am4core.Scrollbar();
-    // chart.scrollbarX.parent = chart.bottomAxesContainer;
+    chart.legend = new am4charts.Legend();
 
 }
 
 function createSeries(name, data, valueY) {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('createSeries');
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [createSeries] [name] '+name+' [valueY] '+valueY);
     }
 
     chart.data = data;
 
-    var series = chart.series.push(new am4charts.RadarSeries());
+    let series = chart.series.push(new am4charts.RadarSeries());
     series.dataFields.valueY = valueY;
     series.dataFields.categoryX = "nombre";
     series.name = name;
     series.strokeWidth = 3;
     series.zIndex = 2;
-    // series.columns.template.tooltipText = "{name}\nIndicador: {categoryX}\nValor: {valueY}";
 
     return series;
 
 }
 
-
-
-//Vble para controlar el tamaño
-let tamanyFijobarras = $(document).height();
 /*
 	Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
 
     let isVisible = $('#datos_tabla').is(':visible');
@@ -759,9 +963,13 @@ function mostrarDatos() {
             $('#' + paramIframe, window.parent.document).height(tamanyFijobarras);
         }
     }
-}
+} //iframeRadar
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log('[radar] [addFiltro] [paramValor] '+paramValor+' [campo] '+campo);
+    }
+
     if (!filtro) {
         filtro = filtro + '&where=(';
     } else {
@@ -777,7 +985,7 @@ function addFiltro(paramValor, campo) {
             } else {
                 filtro = filtro + "'";
             }
-            if(campo=='refPeriod') {
+            if(campo=='barrioId') { //municipioId distritoId barrioId seccionCensalId
                 if(h==0) {
                     valor1Dim2 = params[h];
                 }else if(h==1) {
@@ -788,7 +996,14 @@ function addFiltro(paramValor, campo) {
                     valor4Dim2 = params[h];
                 }else if(h==4) {
                     valor5Dim2 = params[h];
+                }else if(h==5) {
+                    valor5Dim2 = params[h];
+                }else if(h==6) {
+                    valor5Dim2 = params[h];
+                }else if(h==7) {
+                    valor5Dim2 = params[h];
                 }
+                
             }else {
                 if(h==0) {
                     valor1Dim1 = params[h];
@@ -799,6 +1014,12 @@ function addFiltro(paramValor, campo) {
                 }else if(h==3) {
                     valor4Dim1 = params[h];
                 }else if(h==4) {
+                    valor5Dim1 = params[h];
+                }else if(h==5) {
+                    valor5Dim1 = params[h];
+                }else if(h==6) {
+                    valor5Dim1 = params[h];
+                }else if(h==7) {
                     valor5Dim1 = params[h];
                 }
             }
@@ -815,15 +1036,7 @@ function addFiltro(paramValor, campo) {
     }
     filtro = filtro + ')';
 
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
+    if (LOG_DEBUG_GRAFICO_RADAR) {
+        console.log("[radar] [addFiltro] [filtro:" + filtro + "]");
     }
 }

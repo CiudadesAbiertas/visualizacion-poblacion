@@ -17,67 +17,84 @@ See the Licence for the specific language governing permissions and limitations 
 /*
 Algunas variables que se usan en este javascript se inicializan en ciudadesAbiertas.js
 */
-var paramEjeX1;
-var paramEjeX2;
-var paramEjeY;
-var paramMedidaInd;
-var paramMedidapor;
+let paramEjeX1;
+let paramEjeX2;
+let paramEjeY;
+let paramMedidaInd;
+let paramMedidapor;
 
-var paramCubo;
-var paramTituloKey;
-var paramIframe;
+let paramCubo;
+let paramTituloKey;
+let paramIframe;
 
-var paramOperacion;
+let paramOperacion;
 
-var paramMunicipio;
-var paramDistrito;
-var paramBarrio;
-var paramSeccionCensal;
-var paramPeriodo;
-var paramTipoGrafico;
-var paramIndicadores;
-var paramPaisProcedencia;
-var paramProvinciaProcedencia;
-var paramMunicipioProcedencia;
+let paramMunicipio;
+let paramDistrito;
+let paramBarrio;
+let paramSeccionCensal;
+let paramPeriodo;
+let paramTipoGrafico;
+let paramIndicadores;
+let paramPaisProcedencia;
+let paramProvinciaProcedencia;
+let paramMunicipioProcedencia;
 
-var valor1Dim1;
-var valor2Dim1;
-var valor3Dim1;
-var valor4Dim1;
-var valor5Dim1;
+let valor1Dim1;
+let valor2Dim1;
+let valor3Dim1;
+let valor4Dim1;
+let valor5Dim1;
+let valor6Dim1;
+let valor7Dim1;
+let valor8Dim1;
+let valor9Dim1;
+let valor10Dim1;
+let valor11Dim1;
 
-var valor1Dim2;
-var valor2Dim2;
-var valor3Dim2;
-var valor4Dim2;
-var valor5Dim2;
+let valor1Dim2;
+let valor2Dim2;
+let valor3Dim2;
+let valor4Dim2;
+let valor5Dim2;
 
-var filtro = '';
-var linea1 = [];
-var linea2 = [];
-var linea3 = [];
-var linea4 = [];
-var linea5 = [];
+let filtro = '';
+let linea1 = [];
+let linea2 = [];
+let linea3 = [];
+let linea4 = [];
+let linea5 = [];
+let linea6 = [];
+let linea7 = [];
+let linea8 = [];
+let linea9 = [];
+let linea10 = [];
+let linea11 = [];
 
-var dimensionEtiquetas = {};
+let dimensionEtiquetas = {};
 
-var dimension1 = '';
-var dimension1_1 = '';
-var dimension1_2 = '';
-var dimension2 = '';
-var agrupador = '';
+let dimension1 = '';
+let dimension1_1 = '';
+let dimension1_2 = '';
+let dimension2 = '';
+let agrupador = '';
 
-var chart;
-var xAxis;
+let chart;
+let xAxis;
 let medidas;
 let periodos = [];
+
+let valorMaximo = 0;
+
+//Vble para controlar el tamaño
+let tamanyFijobarras = $(document).height();
 
 /*
 	Función de inicialización del script
 */
 function inicializa() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializa');
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [inicializa]');
     }
 
     inicializaMultidioma();
@@ -87,8 +104,8 @@ function inicializa() {
 	Función para inicializar el multidioma
 */
 function inicializaMultidioma() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaMultidioma');
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -122,15 +139,15 @@ function inicializaMultidioma() {
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_BARRAS;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS;
 }
 
 /*
 	Función que invoca a todas las funciones que se realizan al inicializar el script
 */
 function inicializaDatos() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaDatos');
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [inicializaDatos]');
     }
 
     insertaURLSAPI();
@@ -162,11 +179,7 @@ function inicializaDatos() {
 
     if (paramPeriodo) {
         if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
@@ -193,6 +206,9 @@ function inicializaDatos() {
         addFiltro(paramMunicipioProcedencia, 'municipioProcedencia');
     }
     
+    if(paramMunicipio) {
+        isFiltroMunicipio();
+    }
     
     let numMedidas = 0;
     if(paramMedidas.indexOf(',') != -1) {
@@ -202,8 +218,9 @@ function inicializaDatos() {
         numMedidas = 1;
     }
 
-    pintaGrafico();
     let medida;
+    let url;
+    let urlcsv;
     let d;
     for (d = 0; d < numMedidas; d++) {
         if(paramMedidas.indexOf(',') == -1) {
@@ -256,20 +273,16 @@ function inicializaDatos() {
         obtieneDatosAPI(url,medida,d,numMedidas);
     }
     
-
 }
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPI(url,medida,d,numMedidas) {
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [obtieneDatosAPI] [url] '+ url +' [medida] '+ ' [d] '+d+ ' [numMedidas] '+numMedidas);
+    }
 
     let jqxhr = $.getJSON(url)
         .done(function (data) {
-            let htmlContent =
-                "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
-                '</th><th>' +
-                $.i18n('medida') +
-                '</th></tr>';
             if (data.records) {
                 for (let i = 0; i < data.records.length; i++) {                 
                     let muestra1;
@@ -277,15 +290,25 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                     let muestra3;
                     let muestra4;
                     let muestra5;
+                    let muestra6;
+                    let muestra7;
+                    let muestra8;
+                    let muestra9;
+                    let muestra10;
+                    let muestra11;
                     
                     if(data.records[i][dimension1_1]==valor1Dim1) {
                         muestra1 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
                         };
                         if(data.records[i][agrupador]) {
                             muestra1[medida] = data.records[i][agrupador];
                             muestra1['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             muestra1[medida] = 0;
                             muestra1['ejeY'] = 0;
@@ -295,11 +318,15 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                     }else if(data.records[i][dimension1_1]==valor2Dim1) {
                         muestra2 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
                         };
                         if(data.records[i][agrupador]) {
                             muestra2[medida] = data.records[i][agrupador];
                             muestra2['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             muestra2[medida] = 0;
                             muestra2['ejeY'] = 0;
@@ -308,11 +335,15 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                     }else if(data.records[i][dimension1_1]==valor3Dim1) {
                         muestra3 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
                         };
                         if(data.records[i][agrupador]) {
                             muestra3[medida] = data.records[i][agrupador];
                             muestra3['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             muestra3[medida] = 0;
                             muestra3['ejeY'] = 0;
@@ -321,57 +352,172 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                     }else if(data.records[i][dimension1_1]==valor4Dim1) {
                         muestra4 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
                         };
                         if(data.records[i][agrupador]) {
                             muestra4[medida] = data.records[i][agrupador];
                             muestra4['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             muestra4[medida] = 0;
                             muestra4['ejeY'] = 0;
                         }
                         linea4.push(muestra4);
-                    }else if(data.records[i][dimension1_1]==valor3Dim1) {
+                    }else if(data.records[i][dimension1_1]==valor5Dim1) {
                         muestra5 = {
                             valor : data.records[i][dimension1_2],
-                            ejeX : data.records[i][dimension2]
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
                         };
                         
                         if(data.records[i][agrupador]) {
                             muestra5[medida] = data.records[i][agrupador];
                             muestra5['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
                         }else{
                             muestra5[medida] = 0;
                             muestra5['ejeY'] = 0;
                         }
                         linea5.push(muestra5);
+                    }else if(data.records[i][dimension1_1]==valor6Dim1) {
+                        muestra6 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
+                        };
+                        
+                        if(data.records[i][agrupador]) {
+                            muestra6[medida] = data.records[i][agrupador];
+                            muestra6['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            muestra6[medida] = 0;
+                            muestra6['ejeY'] = 0;
+                        }
+                        linea6.push(muestra6);
+                    }else if(data.records[i][dimension1_1]==valor7Dim1) {
+                        muestra7 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
+                        };
+                        
+                        if(data.records[i][agrupador]) {
+                            muestra7[medida] = data.records[i][agrupador];
+                            muestra7['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            muestra7[medida] = 0;
+                            muestra7['ejeY'] = 0;
+                        }
+                        linea7.push(muestra7);
+                    }else if(data.records[i][dimension1_1]==valor8Dim1) {
+                        muestra8 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
+                        };
+                        
+                        if(data.records[i][agrupador]) {
+                            muestra8[medida] = data.records[i][agrupador];
+                            muestra8['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            muestra8['ejeY'] = 0;
+                            muestra8[medida] = 0;
+                        }
+                        linea8.push(muestra8);
+                    }else if(data.records[i][dimension1_1]==valor9Dim1) {
+                        muestra9 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
+                        };
+                        
+                        if(data.records[i][agrupador]) {
+                            muestra9[medida] = data.records[i][agrupador];
+                            muestra9['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            muestra9['ejeY'] = 0;
+                            muestra9[medida] = 0;
+                        }
+                        linea9.push(muestra9);
+                    }else if(data.records[i][dimension1_1]==valor10Dim1) {
+                        muestra10 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
+                        };
+                        
+                        if(data.records[i][agrupador]) {
+                            muestra10[medida] = data.records[i][agrupador];
+                            muestra10['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            muestra10[medida] = 0;
+                            muestra10['ejeY'] = 0;
+                        }
+                        linea10.push(muestra10);
+                    }else if(data.records[i][dimension1_1]==valor11Dim1) {
+                        muestra11 = {
+                            valor : data.records[i][dimension1_2],
+                            ejeX : data.records[i][dimension2],
+                            medida : medida
+                        };
+                        
+                        if(data.records[i][agrupador]) {
+                            muestra11[medida] = data.records[i][agrupador];
+                            muestra11['ejeY'] = data.records[i][agrupador];
+                            if(valorMaximo < data.records[i][agrupador]) {
+                                valorMaximo = data.records[i][agrupador];
+                            }
+                        }else{
+                            muestra11[medida] = 0;
+                            muestra11['ejeY'] = 0;
+                        }
+                        linea11.push(muestra11);
                     }
                     
                 }
             }
             if (data.next) {
                 obtieneDatosAPI(data.next);
-            } /*else {
+            } else {
                 pintaGrafico();
-                createSeries(lineaEdades0004[0].edad,lineaEdades0004);
-                createSeries(lineaEdades0509[0].edad,lineaEdades0509);
-                
-            }*/
+            }
         })
         .always(function () {
             if(numMedidas==1 || medidas.length==d+1){
                 linea1.sort( compare );
                 let htmlContent =
                     "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                    $.i18n('dimension1') +
+                    ETIQUETAS_TABLA.get(dimension1_2) + 
                     '</th><th>' +
-                    $.i18n('dimension2') +
+                    ETIQUETAS_TABLA.get(dimension2) +
                     '</th><th>' +
-                    $.i18n('medida') +
+                    'Medida' +
+                    '</th><th>' +
+                    'Valor' +
                     '</th></tr>';
                 let j;
                 for(j=0;j<linea1.length;j++){
-                    muestra = linea1[j];
+                    let muestra = linea1[j];
                     let numeralEjeY = numeral(muestra.ejeY);
                     htmlContent =
                         htmlContent +
@@ -383,7 +529,10 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                         muestra.ejeX.toString() +
                         '</td>' +
                         '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
                         '</td>' +
                         '</tr>';
                 }
@@ -391,7 +540,7 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
 
                 linea2.sort( compare );
                 for(j=0;j<linea2.length;j++){
-                    muestra = linea2[j];
+                    let muestra = linea2[j];
                     let numeralEjeY = numeral(muestra.ejeY);
                     htmlContent =
                         htmlContent +
@@ -403,7 +552,10 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                         muestra.ejeX.toString() +
                         '</td>' +
                         '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
                         '</td>' +
                         '</tr>';
                 }
@@ -411,7 +563,7 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
 
                 linea3.sort( compare );
                 for(j=0;j<linea3.length;j++){
-                    muestra = linea3[j];
+                    let muestra = linea3[j];
                     let numeralEjeY = numeral(muestra.ejeY);
                     htmlContent =
                         htmlContent +
@@ -423,7 +575,10 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                         muestra.ejeX.toString() +
                         '</td>' +
                         '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
                         '</td>' +
                         '</tr>';
                 }
@@ -431,7 +586,7 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
 
                 linea4.sort( compare );
                 for(j=0;j<linea4.length;j++){
-                    muestra = linea4[j];
+                    let muestra = linea4[j];
                     let numeralEjeY = numeral(muestra.ejeY);
                     htmlContent =
                         htmlContent +
@@ -443,7 +598,10 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                         muestra.ejeX.toString() +
                         '</td>' +
                         '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
                         '</td>' +
                         '</tr>';
                 }
@@ -451,7 +609,7 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
 
                 linea5.sort( compare );
                 for(j=0;j<linea5.length;j++){
-                    muestra = linea5[j];
+                    let muestra = linea5[j];
                     let numeralEjeY = numeral(muestra.ejeY);
                     htmlContent =
                         htmlContent +
@@ -463,7 +621,142 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                         muestra.ejeX.toString() +
                         '</td>' +
                         '<td>' +
-                        numeralEjeY.format(numFormatoSinDecimales) +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
+                        '</td>' +
+                        '</tr>';
+                }
+
+                linea6.sort( compare );
+                for(j=0;j<linea6.length;j++){
+                    let muestra = linea6[j];
+                    let numeralEjeY = numeral(muestra.ejeY);
+                    htmlContent =
+                        htmlContent +
+                        '<tr>' +
+                        '<td>' +
+                        muestra.valor.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.ejeX.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
+                        '</td>' +
+                        '</tr>';
+                }
+
+                linea7.sort( compare );
+                for(j=0;j<linea7.length;j++){
+                    let muestra = linea7[j];
+                    let numeralEjeY = numeral(muestra.ejeY);
+                    htmlContent =
+                        htmlContent +
+                        '<tr>' +
+                        '<td>' +
+                        muestra.valor.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.ejeX.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
+                        '</td>' +
+                        '</tr>';
+                }
+
+                linea8.sort( compare );
+                for(j=0;j<linea8.length;j++){
+                    let muestra = linea8[j];
+                    let numeralEjeY = numeral(muestra.ejeY);
+                    htmlContent =
+                        htmlContent +
+                        '<tr>' +
+                        '<td>' +
+                        muestra.valor.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.ejeX.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
+                        '</td>' +
+                        '</tr>';
+                }
+
+                linea9.sort( compare );
+                for(j=0;j<linea9.length;j++){
+                    let muestra = linea9[j];
+                    let numeralEjeY = numeral(muestra.ejeY);
+                    htmlContent =
+                        htmlContent +
+                        '<tr>' +
+                        '<td>' +
+                        muestra.valor.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.ejeX.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
+                        '</td>' +
+                        '</tr>';
+                }
+
+                linea10.sort( compare );
+                for(j=0;j<linea10.length;j++){
+                    let muestra = linea10[j];
+                    let numeralEjeY = numeral(muestra.ejeY);
+                    htmlContent =
+                        htmlContent +
+                        '<tr>' +
+                        '<td>' +
+                        muestra.valor.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.ejeX.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
+                        '</td>' +
+                        '</tr>';
+                }
+
+                linea11.sort( compare );
+                for(j=0;j<linea11.length;j++){
+                    let muestra = linea11[j];
+                    let numeralEjeY = numeral(muestra.ejeY);
+                    htmlContent =
+                        htmlContent +
+                        '<tr>' +
+                        '<td>' +
+                        muestra.valor.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.ejeX.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
                         '</td>' +
                         '</tr>';
                 }
@@ -476,46 +769,74 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                     for(a=0;a<medidas.length;a++) {
                         
                         if(linea1.length) {
-                            createSeries(linea1[0].valor + ' ' + medidas[a],linea1,medidas[a]);
+                            createSeries(linea1[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea1,medidas[a]);
                         }
                         if(linea2.length) {
-                            createSeries(linea2[0].valor + ' ' + medidas[a],linea2,medidas[a]);
+                            createSeries(linea2[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea2,medidas[a]);
                         }
                         if(linea3.length) {
-                            createSeries(linea3[0].valor + ' ' + medidas[a],linea3,medidas[a]);
+                            createSeries(linea3[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea3,medidas[a]);
                         }
                         if(linea4.length) {
-                            createSeries(linea4[0].valor + ' ' + medidas[a],linea4,medidas[a]);
+                            createSeries(linea4[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea4,medidas[a]);
                         }
                         if(linea5.length) {
-                            createSeries(linea5[0].valor + ' ' + medidas[a],linea5,medidas[a]);
+                            createSeries(linea5[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea5,medidas[a]);
+                        }
+                        if(linea6.length) {
+                            createSeries(linea6[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea6,medidas[a]);
+                        }
+                        if(linea7.length) {
+                            createSeries(linea7[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea7,medidas[a]);
+                        }
+                        if(linea8.length) {
+                            createSeries(linea8[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea8,medidas[a]);
+                        }
+                        if(linea9.length) {
+                            createSeries(linea9[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea9,medidas[a]);
+                        }
+                        if(linea10.length) {
+                            createSeries(linea10[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea10,medidas[a]);
+                        }
+                        if(linea11.length) {
+                            createSeries(linea11[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea11,medidas[a]);
                         }
                     }
                 } else {
                     if(linea1.length) {
-                        createSeries(linea1[0].valor + ' ' + medida,linea1,medida);
+                        createSeries(linea1[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea1,medida);
                     }
                     if(linea2.length) {
-                        createSeries(linea2[0].valor + ' ' + medida,linea2,medida);
+                        createSeries(linea2[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea2,medida);
                     }
                     if(linea3.length) {
-                        createSeries(linea3[0].valor + ' ' + medida,linea3,medida);
+                        createSeries(linea3[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea3,medida);
                     }
                     if(linea4.length) {
-                        createSeries(linea4[0].valor + ' ' + medida,linea4,medida);
+                        createSeries(linea4[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea4,medida);
                     }
                     if(linea5.length) {
-                        createSeries(linea5[0].valor + ' ' + medida,linea5,medida);
+                        createSeries(linea5[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea5,medida);
+                    }
+                    if(linea6.length) {
+                        createSeries(linea6[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea6,medida);
+                    }
+                    if(linea7.length) {
+                        createSeries(linea7[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea7,medida);
+                    }
+                    if(linea8.length) {
+                        createSeries(linea8[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea8,medida);
+                    }
+                    if(linea9.length) {
+                        createSeries(linea9[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea9,medida);
+                    }
+                    if(linea10.length) {
+                        createSeries(linea10[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea10,medida);
+                    }
+                    if(linea11.length) {
+                        createSeries(linea11[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea11,medida);
                     }
                 }
-                
-                
-
-                // linea1 = [];
-                // linea2 = [];
-                // linea3 = [];
-                // linea4 = [];
-                // linea5 = [];
 
                 $('.modal').modal('hide');
             }
@@ -535,8 +856,14 @@ function compare(a, b) {
 /*
 	Método que inserta URLs en el botón Acción
 */
-function insertaURLSAPI() {
+function insertaURLSAPI(urljson, urlcsv) {
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
+    $('#descargaCSV').attr('href', urlcsv);
+    $('#descargaJSON').attr('href', urljson);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
 }
@@ -545,8 +872,8 @@ function insertaURLSAPI() {
 	Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
 */
 function capturaParam() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('capturaParams');
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
@@ -635,15 +962,16 @@ function capturaParam() {
 }
 
 function pintaGrafico() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('pintaGraficoBarras');
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [pintaGrafico]');
     }
 
     am4core.useTheme(am4themes_frozen);
-  
+    am4core.options.autoDispose = true;
+    
     chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.language.locale = am4lang_es_ES;
-    chart.svgContainer.htmlElement.style.height = '800';
+    chart.svgContainer.htmlElement.style.height = '800'
 
     chart.focusFilter.stroke = am4core.color("#0f0");
     chart.focusFilter.strokeWidth = 4;
@@ -658,29 +986,29 @@ function pintaGrafico() {
     label.maxWidth = 100;
     label.tooltipText = '{ejeX}';
 
-    var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    let yAxis = chart.yAxes.push(new am4charts.ValueAxis());
     yAxis.min = 0;
-    
-    // chart.legend = new am4charts.Legend();
-    // chart.legend.position = "bottom";
-	// chart.legend.valign = "center";
-	// chart.legend.maxWidth = 800;
-	// chart.legend.maxHeight = 400;
-	// chart.legend.scrollable = true;
-	// chart.legend.itemContainers.template.paddingTop = 5;
-	// chart.legend.itemContainers.template.paddingBottom = 5;
+    yAxis.max = (valorMaximo); 
 
     chart.scrollbarX = new am4core.Scrollbar();
     chart.scrollbarX.parent = chart.bottomAxesContainer;
 
+    chart.legend = new am4charts.Legend();
+    chart.legend.position = 'right';
+    chart.legend.labels.template.maxWidth = 80;
+	chart.legend.scrollable = true;
+    chart.legend.labels.template.truncate = false;   
+    chart.legend.itemContainers.template.tooltipText = '{name}';
+
 }
 
 function createSeries(name, data, medida) {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('createSeries');
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [createSeries] [name] '+ name + ' [medida] '+medida);
     }
 
     chart.data = data;
+    chart.cursor = new am4charts.XYCursor();
     let series;
     if(!medida) {
         medida = 'ejeY';
@@ -702,20 +1030,20 @@ function createSeries(name, data, medida) {
         series.data = data;
         series.tooltipText = name+' - {categoryX} : [bold]{valueY}[/]';
         series.strokeWidth = 3;
+        series.bullets.push(new am4charts.CircleBullet());
     }
-
     return series;
 
 }
 
-
-
-//Vble para controlar el tamaño
-let tamanyFijobarras = $(document).height();
 /*
 	Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log('[comparador_territorios] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
 
     let isVisible = $('#datos_tabla').is(':visible');
@@ -732,6 +1060,14 @@ function mostrarDatos() {
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_COMPARADOR_TERRITORIOS) {
+        console.log(
+            '[addFiltro] [paramValor:' +
+                paramValor +
+                '] [campo:' +
+                campo
+        );
+    }
     if (!filtro) {
         filtro = filtro + '&where=(';
     } else {
@@ -785,15 +1121,5 @@ function addFiltro(paramValor, campo) {
     }
     filtro = filtro + ')';
 
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
-    }
+    
 }

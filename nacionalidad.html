@@ -70,10 +70,10 @@ See the Licence for the specific language governing permissions and limitations 
 			</div>
 			<div class="row" id="capaNacionalidad" tabindex="0" role="tabpanel" > 			
 				<div  class="col-xs-12 col-sm-12 col-md-3 filtro">
-						<form>
+						<div>
                             <div class="col-sm-12 form-group ">
                                 <div class="col-sm-5 form-group">
-                                    <label class="home-header_title" data-i18n="filtros">Filtros</label>
+                                    <span class="home-header_title" data-i18n="filtros">Filtros</span>
                                 </div>
                                 <div class="col-sm-7 form-group text-right">
 									<div class="formBotones">
@@ -93,60 +93,71 @@ See the Licence for the specific language governing permissions and limitations 
 
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapseTerritorio" data-toggle="collapse">
-                                    <span  class="label_ner" data-i18n="territorio"></span>
+                                    <span  class="label_ner" data-i18n="territorio">territorio</span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
                             <div id="collapseTerritorio" class="col-sm-12 form-group collapse in">
                                 <div id="selectTerritorio">
                                     <div class="radio" id="radioMunicipio">
-                                        <label><input type="radio" name="optradio" checked onclick="aplicaFiltro('municipio')">Municipio</label>
-                                        <div class="" id="selectMunicipioNac">
-                                            <div class="text-right">
-                                                <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectMunicipioNac')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                                <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectMunicipioNac')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                        <fieldset>
+                                            <legend></legend>
+                                            <label for="radioOptMunicipio"><input id="radioOptMunicipio" type="radio" name="optradio" checked onclick="seleccionTerritorio('municipio')" aria-label="Municipio">Municipio</label>
+                                            <div class="" id="selectMunicipioNac">
+                                                <div class="text-right">
+                                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectMunicipioNac')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectMunicipioNac')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </fieldset>  
                                     </div>
                                     <div class="radio" id="radioDistrito">
-                                        <label><input type="radio" name="optradio" onclick="aplicaFiltro('distrito')">Distrito</label>
-                                        
-                                        <div class="despla" id="selectDistritoNac">
-                                            <div class="text-right">
-                                                <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectDistritoNac')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                                <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectDistritoNac')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                        <fieldset>
+                                            <legend></legend>
+                                            <label for="radioOptDistrito"><input id="radioOptDistrito" type="radio" name="optradio" onclick="seleccionTerritorio('distrito')"  aria-label="Distrito">Distrito</label>
+                                            <div class="despla" id="selectDistritoNac">
+                                                <div class="text-right">
+                                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectDistritoNac')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectDistritoNac')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </fieldset>                                        
                                     </div>
                                     <div class="radio" id="radioBarrio">
-                                        <label><input type="radio" name="optradio" onclick="aplicaFiltro('barrio')">Barrio</label>
-                                        <div class="despla" id="selectBarrioNac">
-                                            <div class="text-right">
-                                                <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectBarrioNac')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                                <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectBarrioNac')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                        <fieldset>
+                                            <legend></legend>
+                                            <label for="radioOptBarrio"><input id="radioOptBarrio" type="radio" name="optradio" onclick="seleccionTerritorio('barrio')" aria-label="Barrio">Barrio</label>
+                                            <div class="despla" id="selectBarrioNac">
+                                                <div class="text-right">
+                                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectBarrioNac')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectBarrioNac')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </fieldset>
                                     </div>
                                     <div class="radio" id="radioSeccionCensal">
-                                        <label><input type="radio" name="optradio" onclick="aplicaFiltro('seccion_censal')">Seccion censal</label>
-                                        <div class="despla" id="selectDistritoSCNac">
-                                            <div class="checkbox">
-                                                <span class="text_small txOscuro" data-i18n="selectDistritoSC"></span>
+                                        <fieldset>
+                                            <legend></legend>
+                                            <label for="radioOptSeccion"><input id="radioOptSeccion" type="radio" name="optradio" onclick="seleccionTerritorio('seccion_censal')" aria-label="Seccion censal">Seccion censal</label>
+                                            <div class="despla" id="selectDistritoSCNac">
+                                                <div class="checkbox">
+                                                    <span class="text_small txOscuro" data-i18n="selectDistritoSC"></span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="checkbox2 despla" id="selectSeccionCensalNac">
-                                            <div class="text-right">
-                                                <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectSeccionCensalNac')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                                <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectSeccionCensalNac')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                            <div class="checkbox2 despla" id="selectSeccionCensalNac">
+                                                <div class="text-right">
+                                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectSeccionCensalNac')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectSeccionCensalNac')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                                </div>
                                             </div>
-                                        </div>
-                                    </div>									
+                                        </fieldset>
+                                    </div>
                                 </div>
                             </div>
 							
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapsePeriodo" data-toggle="collapse">
-                                    <span  class="label_ner" data-i18n="periodo"></span>
+                                    <span  class="label_ner" data-i18n="periodo">periodo</span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
@@ -160,7 +171,7 @@ See the Licence for the specific language governing permissions and limitations 
 							
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapseNacionalidad" data-toggle="collapse">
-                                    <span  class="label_ner" data-i18n="nacionalidad"></span>
+                                    <span  class="label_ner" data-i18n="nacionalidad">nacionalidad</span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
@@ -174,7 +185,7 @@ See the Licence for the specific language governing permissions and limitations 
 							
                             <div class="col-sm-12 form-group filtros">
                                 <a href="#collapseSexo" data-toggle="collapse">
-                                    <span  class="label_ner" data-i18n="sexo"></span>
+                                    <span  class="label_ner" data-i18n="sexo">sexo</span>
                                     <i class="fa fa-angle-down"></i>
                                 </a>
                             </div>
@@ -217,7 +228,7 @@ See the Licence for the specific language governing permissions and limitations 
 								</div>
                             </div>
 
-						</form>
+						</div>
 				</div>
 				<!-- Graficos -->
 				<div class="col-xs-12 col-sm-12 col-md-9">
@@ -234,18 +245,21 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="panel panel-default">
                                         <div class="panel-heading">Criterios seleccionados:</div>
                                         <div class="panel-body despla">
-                                            <p id='pcriterioTerritorio' style="display: none;"><label class="label_ner">Territorio:</label><span id="criterioTerritorio"></span></p>
-                                            <p id='pcriterioNacionalidad' style="display: none;"><label class="label_ner">Nacionalidad:</label><span id="criterioNacionalidad"></span></p>
-                                            <p id='pcriterioPeriodo' style="display: none;"><label class="label_ner">Periodo:</label><span id="criterioPeriodo"></span></p>
-                                            <p id='pcriterioEdadQuinquenales' style="display: none;"><label class="label_ner">Edad quinquenales:</label><span id="criterioEdadQuinquenales"></span></p>
-                                            <p id='pcriterioSexo' style="display: none;"><label class="label_ner">Sexo:</label><span id="criterioSexo"></span></p>
+                                            <p id='pcriterioTerritorio' style="display: none;"><span class="label_ner">Territorio:</span><span id="criterioTerritorio"></span></p>
+                                            <p id='pcriterioNacionalidad' style="display: none;"><span class="label_ner">Nacionalidad:</span><span id="criterioNacionalidad"></span></p>
+                                            <p id='pcriterioPeriodo' style="display: none;"><span class="label_ner">Periodo:</span><span id="criterioPeriodo"></span></p>
+                                            <p id='pcriterioEdadQuinquenales' style="display: none;"><span class="label_ner">Edad quinquenales:</span><span id="criterioEdadQuinquenales"></span></p>
+                                            <p id='pcriterioSexo' style="display: none;"><span class="label_ner">Sexo:</span><span id="criterioSexo"></span></p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-4">
                                     <div class="panel panel-default">
-                                        <div class="fondo_gris"><p class="ind1" id="indicadores1"></p></div>
-                                        <!--  <div class=""><p class="ind2" id="indicadores2">Dato 2</p></div>-->
+                                        <!-- <div class="panel-heading">Indicadores:</div>-->
+                                        <div class="panel-body">
+                                            <p class="ind1" id="indicadores1"></p>
+                                            <!-- <p class="ind2" id="indicadores2">Dato 2</p> -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -279,7 +293,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoPiramide embed-responsive-item" id="iframeGraficoPiramide"  src="grafico_piramide.html?titulo=Nacionallidad y Sexo&territorio=barrio&ejeY=nacionalidad%20as%20nacionalidad%2Csex%20as%20sex&ejeX=numeroPersonas&groupBy=nacionalidad,sex&iframe=iframeGraficoPiramide&cubo=nacionalidad" title="Bloque para el gráfico de barras por nacionalidad"></iframe>
+                                                <iframe class="graficoPiramide embed-responsive-item" id="iframeGraficoPiramide"  src="grafico_piramide.html?titulo=personas_nacionalidad_sexo&territorio=barrio&ejeY=nacionalidad%20as%20nacionalidad%2Csex%20as%20sex&ejeX=numeroPersonas&groupBy=nacionalidad,sex&iframe=iframeGraficoPiramide&cubo=nacionalidad" title="Bloque para el gráfico de barras por nacionalidad"></iframe>
                                             </article>
                                         </div>
                                     </div>
@@ -291,7 +305,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoPiramide embed-responsive-item" id="iframeGraficoPiramide"  src="grafico_piramide.html?titulo=piramide_poblacion&territorio=barrio&ejeY=edadGruposQuinquenales%20as%20grupoquinquenal%2Csex%20as%20sex&ejeX=numeroPersonas&groupBy=edadGruposQuinquenales,sex&iframe=iframeGraficoPiramide&cubo=nacionalidad" title="Bloque para el gráfico de barras por nacionalidad"></iframe>
+                                                <iframe class="graficoPiramide embed-responsive-item" id="iframeGraficoPiramide2"  src="grafico_piramide.html?titulo=piramide_poblacion&territorio=barrio&ejeY=edadGruposQuinquenales%20as%20grupoquinquenal%2Csex%20as%20sex&ejeX=numeroPersonas&groupBy=edadGruposQuinquenales,sex&iframe=iframeGraficoPiramide2&cubo=nacionalidad" title="Bloque para el gráfico de barras por nacionalidad"></iframe>
                                             </article>
                                         </div>
                                     </div>
@@ -319,22 +333,22 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="panel panel-default">
                                         <div class="panel-heading">Criterios seleccionados:</div>
                                         <div class="panel-body despla">
-                                            <p id='pcriterioTerritorio2' style="display: none;"><label class="label_ner">Territorio:</label><span id="criterioTerritorio2"></span></p>
-                                            <p id='pcriterioNacionalidad2' style="display: none;"><label class="label_ner">Nacionalidad:</label><span id="criterioNacionalidad2"></span></p>
-                                            <p id='pcriterioPeriodo2' style="display: none;"><label class="label_ner">Periodo:</label><span id="criterioPeriodo2"></span></p>
-                                            <p id='pcriterioEdadQuinquenales2' style="display: none;"><label class="label_ner">Edad quinquenales:</label><span id="criterioEdadQuinquenales2"></span></p>
-                                            <p id='pcriterioSexo2' style="display: none;"><label class="label_ner">Sexo:</label><span id="criterioSexo2"></span></p>
+                                            <p id='pcriterioTerritorio2' style="display: none;"><span class="label_ner">Territorio:</span><span id="criterioTerritorio2"></span></p>
+                                            <p id='pcriterioNacionalidad2' style="display: none;"><span class="label_ner">Nacionalidad:</span><span id="criterioNacionalidad2"></span></p>
+                                            <p id='pcriterioPeriodo2' style="display: none;"><span class="label_ner">Periodo:</span><span id="criterioPeriodo2"></span></p>
+                                            <p id='pcriterioEdadQuinquenales2' style="display: none;"><span class="label_ner">Edad quinquenales:</span><span id="criterioEdadQuinquenales2"></span></p>
+                                            <p id='pcriterioSexo2' style="display: none;"><span class="label_ner">Sexo:</span><span id="criterioSexo2"></span></p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="tab-content row" >
+                            <div class="tab-content row" id="capaGraficoMapaComp">
                                 <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoMapa embed-responsive-item" id="iframeGraficoMapa2"  src="grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&cuboId=poblacionPorNacionalidad" title="Bloque para el mapa del cubo de edad por nacionalidad"></iframe>
+                                                <iframe class="graficoMapa embed-responsive-item" id="iframeGraficoMapaComp"  src="grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapaComp&cuboId=poblacionPorNacionalidad" title="Bloque para el mapa del cubo de edad por nacionalidad"></iframe>
                                             </article>
                                         </div>
                                     </div>
@@ -346,7 +360,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeComparadorTerritorio2"  src="grafico_comparador_territorios.html?lang=es&titulo=Personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=nacionalidad&tipoGrafico=barras" title="Bloque para el gráfico de barras del cubo"></iframe>
+                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeComparadorTerritorio2"  src="grafico_comparador_territorios.html?lang=es&titulo=personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=nacionalidad&tipoGrafico=barras&iframe=iframeComparadorTerritorio2" title="Bloque para el gráfico de barras del cubo"></iframe>
                                             </article>
                                         </div>
                                     </div>
@@ -358,7 +372,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeComparadorTerritorio"  src="grafico_comparador_territorios.html?lang=es&titulo=Personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=nacionalidad&tipoGrafico=lineas" title="Bloque para el gráfico de barras del cubo"></iframe>
+                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeComparadorTerritorio"  src="grafico_comparador_territorios.html?lang=es&titulo=personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=nacionalidad&tipoGrafico=lineas&iframe=iframeComparadorTerritorio" title="Bloque para el gráfico de barras del cubo"></iframe>
                                             </article>
                                         </div>
                                     </div>

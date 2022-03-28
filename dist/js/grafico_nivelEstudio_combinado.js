@@ -17,66 +17,69 @@ See the Licence for the specific language governing permissions and limitations 
 /*
 Algunas variables que se usan en este javascript se inicializan en ciudadesAbiertas.js
 */
-var paramEjeX1;
-var paramEjeX2;
-var paramEjeY;
-var paramMedidaInd;
-var paramMedidapor;
+let paramEjeX1;
+let paramEjeX2;
+let paramEjeY;
+let paramMedidaInd;
+let paramMedidapor;
 
-var paramCubo;
-var paramTituloKey;
-var paramIframe;
+let paramCubo;
+let paramTituloKey;
+let paramIframe;
 
-var paramOperacion;
+let paramOperacion;
 
-var paramMunicipio;
-var paramDistrito;
-var paramBarrio;
-var paramSeccionCensal;
-var paramPeriodo;
-var paramSexo;
-var paramEdad;
-var paramEdadQuinquenales;
-var paramNivelEstudio;
-var paramProcedencia;
-var paramPaisNacimiento;
-var paramNacionalidad;
+let paramMunicipio;
+let paramDistrito;
+let paramBarrio;
+let paramSeccionCensal;
+let paramPeriodo;
+let paramSexo;
+let paramEdad;
+let paramEdadQuinquenales;
+let paramNivelEstudio;
+let paramProcedencia;
+let paramPaisNacimiento;
+let paramNacionalidad;
 
-var filtro = '';
-var lineaNiveles00 = [];
-var lineaNiveles10 = [];
-var lineaNiveles20 = [];
-var lineaNiveles21 = [];
-var lineaNiveles22 = [];
-var lineaNiveles30 = [];
-var lineaNiveles31 = [];
-var lineaNiveles32 = [];
-var lineaNiveles40 = [];
-var lineaNiveles41 = [];
-var lineaNiveles42 = [];
-var lineaNiveles43 = [];
-var lineaNiveles44 = [];
-var lineaNiveles45 = [];
-var lineaNiveles46 = [];
-var lineaNiveles47 = [];
-var lineaNiveles48 = [];
-var lineaNiveles99 = [];
-var dimensionEtiquetas = {};
+let filtro = '';
+let lineaNiveles00 = [];
+let lineaNiveles10 = [];
+let lineaNiveles20 = [];
+let lineaNiveles21 = [];
+let lineaNiveles22 = [];
+let lineaNiveles30 = [];
+let lineaNiveles31 = [];
+let lineaNiveles32 = [];
+let lineaNiveles40 = [];
+let lineaNiveles41 = [];
+let lineaNiveles42 = [];
+let lineaNiveles43 = [];
+let lineaNiveles44 = [];
+let lineaNiveles45 = [];
+let lineaNiveles46 = [];
+let lineaNiveles47 = [];
+let lineaNiveles48 = [];
+let lineaNiveles99 = [];
+let dimensionEtiquetas = {};
 
-var dimension1 = '';
-var dimension2 = '';
-var agrupador = '';
+let dimension1 = '';
+let dimension2 = '';
+let agrupador = '';
+let medida = '';
 
-var chart;
-var xAxis;
+let chart;
+let xAxis;
 let periodos = [];
+//Vble para controlar el tamaño
+let tamanyFijobarras = $(document).height();
 
 /*
 	Función de inicialización del script
 */
 function inicializa() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializa');
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [inicializa]');
     }
 
     inicializaMultidioma();
@@ -86,8 +89,8 @@ function inicializa() {
 	Función para inicializar el multidioma
 */
 function inicializaMultidioma() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaMultidioma');
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -121,15 +124,15 @@ function inicializaMultidioma() {
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_BARRAS;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO;
 }
 
 /*
 	Función que invoca a todas las funciones que se realizan al inicializar el script
 */
 function inicializaDatos() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaDatos');
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [inicializaDatos]');
     }
 
     insertaURLSAPI();
@@ -143,7 +146,7 @@ function inicializaDatos() {
     } else {
         dimension2 = paramEjeX2;
     }
-    let medida = 'numeroPersonas';
+    medida = 'numeroPersonas';
     if (paramEjeY) {
         medida = paramEjeY;
     }
@@ -175,11 +178,7 @@ function inicializaDatos() {
     }
     if (paramPeriodo) {
         if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
@@ -203,6 +202,10 @@ function inicializaDatos() {
         addFiltro(paramPaisNacimiento, 'paisNacimiento');
     }
 
+    if(paramMunicipio) {
+        isFiltroMunicipio();
+    }
+
     let url =
         POBLACION_URL_1 +
         paramCubo +
@@ -221,8 +224,8 @@ function inicializaDatos() {
         medida +
         '&page=1&pageSize=100' +
         filtro;
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('[inicializaDatos] url:' + url);
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [inicializaDatos] [url] ' + url);
     }
     $('#urlAPI').attr('href', url);
     $('#descargaJSON').attr('href', url);
@@ -277,14 +280,12 @@ function inicializaDatos() {
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPI(url) {
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [obtieneDatosAPI] [URL] '+url);
+    }
+
     let jqxhr = $.getJSON(url)
         .done(function (data) {
-            let htmlContent =
-                "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
-                '</th><th>' +
-                $.i18n('medida') +
-                '</th></tr>';
             if (data.records) {
                 for (let i = 0; i < data.records.length; i++) {                 
                     let muestra00;
@@ -574,22 +575,17 @@ function obtieneDatosAPI(url) {
             }
             if (data.next) {
                 obtieneDatosAPI(data.next);
-            } /*else {
-                pintaGrafico();
-                createSeries(lineaNiveles0004[0].nivel,lineaNiveles0004);
-                createSeries(lineaNiveles0509[0].nivel,lineaNiveles0509);
-                
-            }*/
+            }
         })
         .always(function () {
             lineaNiveles00.sort( compare );
             let htmlContent =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension1') +
+                ETIQUETAS_TABLA.get(dimension1) +
                 '</th><th>' +
-                $.i18n('dimension2') +
+                ETIQUETAS_TABLA.get(dimension2) +
                 '</th><th>' +
-                $.i18n('medida') +
+                ETIQUETAS_TABLA.get(medida) +
                 '</th></tr>';
             let j;
             for(j=0;j<lineaNiveles00.length;j++){
@@ -1030,6 +1026,10 @@ function compare(a, b) {
 	Método que inserta URLs en el botón Acción
 */
 function insertaURLSAPI() {
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
@@ -1039,8 +1039,8 @@ function insertaURLSAPI() {
 	Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
 */
 function capturaParam() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('capturaParams');
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
@@ -1131,12 +1131,13 @@ function capturaParam() {
 }
 
 function pintaGrafico() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('pintaGraficoBarras');
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [pintaGrafico]');
     }
 
     am4core.useTheme(am4themes_frozen);
-  
+    am4core.options.autoDispose = true;
+    
     chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.language.locale = am4lang_es_ES;
     chart.svgContainer.htmlElement.style.height = '800';
@@ -1154,7 +1155,7 @@ function pintaGrafico() {
     label.maxWidth = 100;
     label.tooltipText = '{ejeX}';
 
-    var yAxis = chart.yAxes.push(new am4charts.ValueAxis());
+    let yAxis = chart.yAxes.push(new am4charts.ValueAxis());
     yAxis.min = 0;
 
     chart.cursor = new am4charts.XYCursor();
@@ -1167,11 +1168,14 @@ function pintaGrafico() {
     chart.legend.labels.template.maxWidth = 80;
 	chart.legend.scrollable = true;
     chart.legend.labels.template.truncate = false;   
-    chart.legend.itemContainers.template.tooltipText = '{category}';
+    chart.legend.itemContainers.template.tooltipText = '{name}';
 
 }
 
 function createSeries(name, data) {
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [createSeries] [name] '+name);
+    }
 
     chart.data = data;
     let series = chart.series.push(new am4charts.ColumnSeries());
@@ -1185,14 +1189,14 @@ function createSeries(name, data) {
 
 }
 
-
-
-//Vble para controlar el tamaño
-let tamanyFijobarras = $(document).height();
 /*
 	Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
 
     let isVisible = $('#datos_tabla').is(':visible');
@@ -1209,6 +1213,10 @@ function mostrarDatos() {
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
+        console.log('[nivelEstudio_combinado] [addFiltro] [paramValor] '+paramValor+' [campo] '+campo);
+    }
+
     if (!filtro) {
         filtro = filtro + '&where=(';
     } else {
@@ -1229,16 +1237,16 @@ function addFiltro(paramValor, campo) {
         filtro = filtro + campo + "='" + paramValor + "'";
     }
     filtro = filtro + ')';
-
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
+    
+    if (LOG_DEBUG_GRAFICO_NIVEL_ESTUDIO_COMBINADO) {
         console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
+          "[nivelEstudio_combinado] [addFiltro] [paramValor:" +
+            paramValor +
+            "] [campo:" +
+            campo +
+            "] [filtro:" +
+            filtro +
+            "]"
         );
     }
 }

@@ -70,20 +70,20 @@ See the Licence for the specific language governing permissions and limitations 
 			</div>
 			<div class="row" id="capaEdadSimple" tabindex="0" role="tabpanel" > 			
 				<div  class="col-xs-12 col-sm-12 col-md-3 filtro">
-						<form>
+						<div>
                             <div class="col-sm-12 form-group ">
                                 <div class="col-sm-5 form-group">
-                                    <label class="home-header_title" data-i18n="filtros">Filtros</label>
+                                    <span class="home-header_title" data-i18n="filtros">Filtros</span>
                                 </div>
                                 <div class="col-sm-7 form-group text-right">
 									<div class="formBotones">
-										<button type="button" class="btn btn-primary bot-filtrar"  onclick="aplicaFiltro()">
+										<button name="buscar" type="button" class="btn btn-primary bot-filtrar"  onclick="aplicaFiltro()">
 											<span class="fa fa-search "></span>
 											<span data-i18n="buscar"></span>
 										</button>
 									</div>
 									<div class="formBotones">
-										<button type="button" class="btn secondary bot-filtrar"  onclick="quitaSeleccionTodos();">
+										<button name="limpiar" type="button" class="btn secondary bot-filtrar"  onclick="quitaSeleccionTodos();">
 											<span class="fa fa-trash"></span>
 											<span  data-i18n="limpiar"></span>
 										</button>
@@ -92,97 +92,108 @@ See the Licence for the specific language governing permissions and limitations 
                             </div>
 
                             <div class="col-sm-12 form-group filtros">
-                                <a href="#collapseTerritorio" data-toggle="collapse">
-                                    <span  class="label_ner" data-i18n="territorio"></span>
-                                    <i class="fa fa-angle-down"></i>
+                                <a title="territorio" href="#collapseTerritorio" data-toggle="collapse">
+                                    <span  class="label_ner" data-i18n="territorio">Territorio</span>
+                                    <em class="fa fa-angle-down"></em>
                                 </a>
                             </div>
                             <div id="collapseTerritorio" class="col-sm-12 form-group collapse in">
                                 <div id="selectTerritorio">
                                     <div class="radio" id="radioMunicipio">
-                                        <label><input type="radio" name="optradio" checked onclick="aplicaFiltro('municipio')">Municipio</label>
-                                        <div class="" id="selectMunicipioEdad">
-                                            <div class="text-right">
-                                                <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectMunicipioEdad')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                                <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectMunicipioEdad')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                        <fieldset>
+                                            <legend></legend>
+                                            <label for="radioOptMunicipio"><input id="radioOptMunicipio" type="radio" name="optradio" checked onclick="seleccionTerritorio('municipio')" aria-label="Municipio">Municipio</label>
+                                            <div class="" id="selectMunicipioEdad">
+                                                <div class="text-right">
+                                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectMunicipioEdad')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectMunicipioEdad')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </fieldset>  
                                     </div>
                                     <div class="radio" id="radioDistrito">
-                                        <label><input type="radio" name="optradio" onclick="aplicaFiltro('distrito')">Distrito</label>
-                                        
-                                        <div class="despla" id="selectDistritoEdad">
-                                            <div class="text-right">
-                                                <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectDistritoEdad')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                                <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectDistritoEdad')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                        <fieldset>
+                                            <legend></legend>
+                                            <label for="radioOptDistrito"><input id="radioOptDistrito" type="radio" name="optradio" onclick="seleccionTerritorio('distrito')"  aria-label="Distrito">Distrito</label>
+                                            <div class="despla" id="selectDistritoEdad">
+                                                <div class="text-right">
+                                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectDistritoEdad')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectDistritoEdad')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </fieldset>                                        
                                     </div>
                                     <div class="radio" id="radioBarrio">
-                                        <label><input type="radio" name="optradio" onclick="aplicaFiltro('barrio')">Barrio</label>
-                                        <div class="despla" id="selectBarrioEdad">
-                                            <div class="text-right">
-                                                <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectBarrioEdad')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                                <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectBarrioEdad')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                        <fieldset>
+                                            <legend></legend>
+                                            <label for="radioOptBarrio"><input id="radioOptBarrio" type="radio" name="optradio" onclick="seleccionTerritorio('barrio')" aria-label="Barrio">Barrio</label>
+                                            <div class="despla" id="selectBarrioEdad">
+                                                <div class="text-right">
+                                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectBarrioEdad')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectBarrioEdad')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </fieldset>
                                     </div>
                                     <div class="radio" id="radioSeccionCensal">
-                                        <label><input type="radio" name="optradio" onclick="aplicaFiltro('seccion_censal')">Seccion censal</label>
-                                        <div class="despla" id="selectDistritoSCEdad">
-                                            <div class="checkbox">
-                                                <span class="text_small txOscuro" data-i18n="selectDistritoSC"></span>
+                                        <fieldset>
+                                            <legend></legend>
+                                            <label for="radioOptSeccion"><input id="radioOptSeccion" type="radio" name="optradio" onclick="seleccionTerritorio('seccion_censal')" aria-label="Seccion censal">Seccion censal</label>
+                                            <div class="despla" id="selectDistritoSCEdad">
+                                                <div class="checkbox">
+                                                    <span class="text_small txOscuro" data-i18n="selectDistritoSC"></span>
+                                                </div>
                                             </div>
-                                        </div>
-                                        <div class="checkbox2 despla" id="selectSeccionCensalEdad">
-                                            <div class="text-right">
-                                                <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectSeccionCensalEdad')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                                <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectSeccionCensalEdad')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                            <div class="checkbox2 despla" id="selectSeccionCensalEdad">
+                                                <div class="text-right">
+                                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectSeccionCensalEdad')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectSeccionCensalEdad')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </fieldset>
                                     </div>
                                 </div>
                             </div>
 
                             <div class="col-sm-12 form-group filtros">
-                                <a href="#collapsePeriodo" data-toggle="collapse">
-                                    <span  class="label_ner" data-i18n="periodo"></span>
-                                    <i class="fa fa-angle-down"></i>
+                                <a title="periodo" href="#collapsePeriodo" data-toggle="collapse">
+                                    <span  class="label_ner" data-i18n="periodo">Periodo</span>
+                                    <em class="fa fa-angle-down"></em>
                                 </a>
                             </div>
                            <div id="collapsePeriodo" class="col-sm-12 form-group collapse in">
                                 <div class="text-right">
-                                    <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectPeriodoEdad')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                    <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectPeriodoEdad')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectPeriodoEdad')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectPeriodoEdad')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
                                     </div>
                                     <div id="selectPeriodoEdad" class="despla"></div>
                             </div>
 							
 							
                             <div class="col-sm-12 form-group filtros">
-                                <a href="#collapseEdadSimmple" data-toggle="collapse">
-                                    <span  class="label_ner" data-i18n="edad_simple"></span>
-                                    <i class="fa fa-angle-down"></i>
+                                <a title="edad simple" href="#collapseEdadSimmple" data-toggle="collapse">
+                                    <span  class="label_ner" data-i18n="edad_simple">Edad simple</span>
+                                    <em class="fa fa-angle-down"></em>
                                 </a>
                             </div>
                             <div id="collapseEdadSimmple" class="col-sm-12 form-group collapse">
                                 <div class="text-right">
-                                    <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectEdadSimpleEdad')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                    <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectEdadSimpleEdad')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectEdadSimpleEdad')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectEdadSimpleEdad')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
                                     </div>
                                     <div id="selectEdadSimpleEdad" class="despla"></div>
                             </div>
 
                             <div class="col-sm-12 form-group filtros">
-                                <a href="#collapseSexo" data-toggle="collapse">
-                                    <span  class="label_ner" data-i18n="sexo"></span>
-                                    <i class="fa fa-angle-down"></i>
+                                <a title="sexo" href="#collapseSexo" data-toggle="collapse">
+                                    <span  class="label_ner" data-i18n="sexo">Sexo</span>
+                                    <em class="fa fa-angle-down"></em>
                                 </a>
                             </div>
                             <div id="collapseSexo" class="col-sm-12 form-group collapse">
                                 <div class="text-right">
-                                    <button type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectSexoEdad')"><i class="fa fa-check"></i><span class="text_small txOscuro" data-i18n="todas"></span></button>
-                                    <button type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectSexoEdad')"><i class="fa fa-times"></i><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
+                                    <button name="todas" type="button" class="btn btn-link bot_t_n" onclick="selececionarTodo('selectSexoEdad')"><em class="fa fa-check"></em><span class="text_small txOscuro" data-i18n="todas"></span></button>
+                                    <button name="ninguna" type="button" class="btn btn-link bot_t_n"  onclick="quitarSeleccion('selectSexoEdad')"><em class="fa fa-times"></em><span class="text_small txOscuro" data-i18n="ninguna"></span></button>
                                     </div>
                                     <div id="selectSexoEdad" class="despla"></div>
                             </div>
@@ -190,27 +201,27 @@ See the Licence for the specific language governing permissions and limitations 
 
                             <div class="col-sm-12 form-group filtros">
 								<div class="formBotones">
-									<button type="button" class="btn btn-primary bot-filtrar"  onclick="aplicaFiltro()">
+									<button name="buscar" type="button" class="btn btn-primary bot-filtrar"  onclick="aplicaFiltro()">
 										<span class="fa fa-search "></span>
 										<span data-i18n="buscar"></span>
 									</button>
 								</div>
 								<div class="formBotones">
-									<button type="button" class="btn secondary bot-filtrar"  onclick="quitaSeleccionTodos();">
+									<button name="limpiar" type="button" class="btn secondary bot-filtrar"  onclick="quitaSeleccionTodos();">
 										<span class="fa fa-trash"></span>
 										<span  data-i18n="limpiar"></span>
 									</button>
 								</div>
                             </div>
 
-						</form>
+						</div>
 				</div>
 				<!-- Graficos -->
 				<div class="col-xs-12 col-sm-12 col-md-9">
 
                     <ul class="nav nav-tabs" style="display: none">
-                        <li id="liTerritorio" class="liPestana active"><a id="aTerritorio" class="titPestana" data-toggle="tab" href="#territorio">Territorio</a></li>
-                        <li class="liPestana"><a class="titPestana" data-toggle="tab" href="#comparativa">Comparativa</a></li>
+                        <li id="liTerritorio" class="liPestana active"><a title="Territorio" id="aTerritorio" class="titPestana" data-toggle="tab" href="#territorio">Territorio</a></li>
+                        <li class="liPestana"><a title="Comparativa" class="titPestana" data-toggle="tab" href="#comparativa">Comparativa</a></li>
                     </ul>
 
                     <div class="tab-content">
@@ -221,17 +232,20 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="panel panel-default">
                                         <div class="panel-heading">Criterios seleccionados:</div>
                                         <div class="panel-body despla">
-                                            <p id='pcriterioTerritorio' style="display: none;"><label class="label_ner">Territorio:</label><span id="criterioTerritorio"></span></p>
-                                            <p id='pcriterioPeriodo' style="display: none;"><label class="label_ner">Periodo:</label><span id="criterioPeriodo"></span></p>
-                                            <p id='pcriterioEdad' style="display: none;"><label class="label_ner"> Edad:</label><span id="criterioEdad"></span></p>
-                                            <p id='pcriterioSexo' style="display: none;"><label class="label_ner">Sexo:</label><span id="criterioSexo"></span></p>
+                                            <p id='pcriterioTerritorio' style="display: none;"><span class="label_ner">Territorio:</span><span id="criterioTerritorio"></span></p>
+                                            <p id='pcriterioPeriodo' style="display: none;"><span class="label_ner">Periodo:</span><span id="criterioPeriodo"></span></p>
+                                            <p id='pcriterioEdad' style="display: none;"><span class="label_ner"> Edad:</span><span id="criterioEdad"></span></p>
+                                            <p id='pcriterioSexo' style="display: none;"><span class="label_ner">Sexo:</span><span id="criterioSexo"></span></p>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-xs-12 col-sm-12 col-md-4">
                                     <div class="panel panel-default">
-                                        <div class="fondo_gris"><p class="ind1" id="indicadores1"></p></div>
-                                        <!--  <div class=""><p class="ind2" id="indicadores2">Dato 2</p></div>-->
+                                        <!-- <div class="panel-heading">Indicadores:</div>-->
+                                        <div class="panel-body">
+                                            <p class="ind1" id="indicadores1"></p>
+                                            <!-- <p class="ind2" id="indicadores2">Dato 2</p> -->
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -281,21 +295,21 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="panel panel-default">
                                         <div class="panel-heading">Criterios seleccionados:</div>
                                         <div class="panel-body despla">
-                                            <p id='pcriterioTerritorio2' style="display: none;"><label class="label_ner">Territorio:</label><span id="criterioTerritorio2"></span></p>
-                                            <p id='pcriterioPeriodo2' style="display: none;"><label class="label_ner">Periodo:</label><span id="criterioPeriodo2"></span></p>
-                                            <p id='pcriterioEdad2' style="display: none;"><label class="label_ner">Edad:</label><span id="criterioEdad2"></span></p>
-                                            <p id='pcriterioSexo2' style="display: none;"><label class="label_ner">Sexo:</label><span id="criterioSexo2"></span></p>
+                                            <p id='pcriterioTerritorio2' style="display: none;"><span class="label_ner">Territorio:</span><span id="criterioTerritorio2"></span></p>
+                                            <p id='pcriterioPeriodo2' style="display: none;"><span class="label_ner">Periodo:</span><span id="criterioPeriodo2"></span></p>
+                                            <p id='pcriterioEdad2' style="display: none;"><span class="label_ner">Edad:</span><span id="criterioEdad2"></span></p>
+                                            <p id='pcriterioSexo2' style="display: none;"><span class="label_ner">Sexo:</span><span id="criterioSexo2"></span></p>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="tab-content row" >
+                            <div class="tab-content row" id="capaGraficoMapaComp">
                                 <div class="tab-pane fade  in active"  role="tabpanel" >
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoMapa embed-responsive-item" id="iframeGraficoMapa2"  src="grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&cuboId=poblacionPorEdadSimple" title="Bloque para el mapa de edad simple"></iframe>
+                                                <iframe class="graficoMapa embed-responsive-item" id="iframeGraficoMapaComp"  src="grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapaComp&cuboId=poblacionPorEdadSimple" title="Bloque para el mapa de edad simple"></iframe>
                                             </article>
                                         </div>
                                     </div>
@@ -334,7 +348,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeComparadorTerritorio2"  src="grafico_comparador_territorios.html?lang=es&titulo=Personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=edad&tipoGrafico=barras" title="Bloque para el gráfico de barras del cubo"></iframe>
+                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeComparadorTerritorio2"  src="grafico_comparador_territorios.html?lang=es&titulo=personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=edad&tipoGrafico=barras&iframe=iframeComparadorTerritorio2" title="Bloque para el gráfico de barras del cubo"></iframe>
                                             </article>
                                         </div>
                                     </div>
@@ -346,7 +360,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoCombinado" id="iframeComparadorTerritorio"  src="grafico_comparador_territorios.html?lang=es&titulo=Personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=edad&tipoGrafico=lineas" title="Bloque para el gráfico de barras del cubo"></iframe>
+                                                <iframe class="graficoCombinado" id="iframeComparadorTerritorio"  src="grafico_comparador_territorios.html?lang=es&titulo=personas_territorio&operacion=SUM&ejeX2=refPeriod&ejeY=numeroPersonas&municipio=28006&cubo=edad&tipoGrafico=lineas&iframe=iframeComparadorTerritorio" title="Bloque para el gráfico de barras del cubo"></iframe>
                                             </article>
                                         </div>
                                     </div>
@@ -358,7 +372,7 @@ See the Licence for the specific language governing permissions and limitations 
                                     <div class="row">
                                         <div class="col-xs-12">
                                             <article>
-                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeGraficoSexoCombinado"  src="grafico_combinado_lineas.html?lang=es&ejeX1=refPeriod&ejeX2=sex&titulo=personas_anyo_sexo&iframe=iframeGraficoLinea&cubo=edad" title="Bloque para el gráfico personas año"></iframe>
+                                                <iframe class="graficoCombinado embed-responsive-item" id="iframeGraficoSexoCombinado"  src="grafico_combinado_lineas.html?lang=es&ejeX1=refPeriod&ejeX2=sex&titulo=personas_anyo_sexo&iframe=iframeGraficoSexoCombinado&cubo=edad" title="Bloque para el gráfico personas año"></iframe>
                                             </article>
                                         </div>
                                     </div>

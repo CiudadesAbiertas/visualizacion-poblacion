@@ -81,22 +81,19 @@ See the Licence for the specific language governing permissions and limitations 
 			<div  class="row" id="capaInicio" tabindex="0" role="tabpanel" > 				
 				<!-- Graficos -->
 
-				<div class="col-xs-12 col-sm-12 col-md-12">
-					<iframe class="embed-responsive-item" src="grafico_mapa.html?territorio=barrio&titulo=personas_barrio&iframe=iframeGraficoMapa&cuboId=poblacionPorEdadGruposQuinquenales&periodo=ultimo&&barrio=28006011,28006012,28006013,28006014,28006015" height=450 frameborder="0" style="width: 100% !important"></iframe>
-  				</div>  
-				
+				<div class="col-xs-12 col-sm-12 col-md-12">	
+						<iframe class="embed-responsive-item" src="http://localhost/10%20Poblacion2/grafico_mapa.html?territorio=barrio&titulo=personas_barrio&iframe=iframeGraficoMapaComp&cuboId=poblacionPorEdadGruposQuinquenales&&&&&periodo=2020&barrio=28006011,28006012,28006013,28006014,28006015" height=430 frameborder="0" width="100%"></iframe>
+  				</div>	
 				<div class="col-xs-12 col-sm-12 col-md-12">
 					<div class="div-mitad"> 
-						<iframe class="embed-responsive-item" src="grafico_barras.html?ejeX=paisNacimiento&titulo=personas_paisnacimiento&iframe=iframeGraficoBarras&cubo=pais-nacimiento&periodo=ultimo&municipio=28006" height=350 frameborder="0" style="width: 100% !important"></iframe>
+						<iframe class="embed-responsive-item" src="grafico_barras.html?lang=es&titulo=personas_anyo&iframe=iframeGraficoBarras&cubo=edad-grupo-quinquenal&periodo=2020,2019,2018,2017,2016,2015,2014,2013,2012,2011&&&municipio=28006" height=350 frameborder="0" width="100%"></iframe>
 					</div>	                  
 					<div class="div-mitad">	
-						<iframe class="embed-responsive-item" src="grafico_tarta.html?lang=es&ejeX=sex&titulo=personas_sexo&iframe=iframeGraficoTarta&cubo=edad-grupo-quinquenal&periodo=ultimo&municipio=28006" height=350 frameborder="0" style="width: 100% !important"></iframe>					
+						<iframe class="embed-responsive-item" src="https://alzir.dia.fi.upm.es/visualizacionPoblacion/grafico_tarta.html?lang=es&ejeX=sex&titulo=personas_sexo&iframe=iframeGraficoTarta&cubo=edad-grupo-quinquenal&periodo=2020&municipio=28006" height=350 frameborder="0" width="100%"></iframe>			
 					</div>
-
   				</div>   
-
 				<div class="col-xs-12 col-sm-12 col-md-12">				
-					<iframe class='embed-responsive-item' src='grafico_piramide.html?titulo=piramide_poblacion&territorio=barrio&ejeY=edadGruposQuinquenales%20as%20grupoquinquenal%2Csex%20as%20sex&ejeX=numeroPersonas&groupBy=edadGruposQuinquenales,sex&iframe=iframeGraficoPiramide&cubo=edad-grupo-quinquenal&periodo=ultimo&municipio=28006' height=650 frameborder='0' style="width: 100% !important"></iframe>
+					<iframe class="graficoPiramide embed-responsive-item" id="iframeGraficoPiramide"  src="grafico_piramide.html?titulo=piramide_poblacion&territorio=barrio&ejeY=edadGruposQuinquenales as grupoquinquenal%2Csex as sex&ejeX=numeroPersonas&groupBy=edadGruposQuinquenales,sex&iframe=iframeGraficoPiramide&cubo=edad-grupo-quinquenal" title="Bloque para el gráfico de barras del cubo"height=650 frameborder='0' width='100%'></iframe>
   				</div>  	
 
 			</div>

@@ -17,60 +17,64 @@ See the Licence for the specific language governing permissions and limitations 
 /*
 Algunas variables que se usan en este javascript se inicializan en ciudadesAbiertas.js
 */
-var paramEjeX1;
-var paramEjeX2;
-var paramEjeY;
-var paramMedidaInd;
-var paramMedidapor;
+let paramEjeX1;
+let paramEjeX2;
+let paramEjeY;
+let paramMedidaInd;
+let paramMedidapor;
 
-var paramCubo;
-var paramTituloKey;
-var paramIframe;
+let paramCubo;
+let paramTituloKey;
+let paramIframe;
 
-var paramOperacion;
+let paramOperacion;
 
-var paramMunicipio;
-var paramDistrito;
-var paramBarrio;
-var paramSeccionCensal;
-var paramPeriodo;
-var paramSexo;
-var paramEdad;
-var paramEdadQuinquenales;
-var paramNivelEstudio;
-var paramProcedencia;
-var paramPaisNacimiento;
-var paramNacionalidad;
+let paramMunicipio;
+let paramDistrito;
+let paramBarrio;
+let paramSeccionCensal;
+let paramPeriodo;
+let paramSexo;
+let paramEdad;
+let paramEdadQuinquenales;
+let paramNivelEstudio;
+let paramProcedencia;
+let paramPaisNacimiento;
+let paramNacionalidad;
 
-var filtro = '';
-var cuboEdadesMujeres = [];
-var cuboEdadesHombres = [];
-var dimensionEtiquetas = {};
+let filtro = '';
+let cuboEdadesMujeres = [];
+let cuboEdadesHombres = [];
+let dimensionEtiquetas = {};
 
-var dimension1 = '';
-var dimension2 = '';
-var agrupador = '';
+let dimension1 = '';
+let dimension2 = '';
+let agrupador = '';
+let medida = '';
 
-var chart;
+let chart;
 let periodos = [];
 
+//Vble para controlar el tamaño
+let tamanyFijobarras = $(document).height();
+
 /*
-	Función de inicialización del script
+    Función de inicialización del script
 */
 function inicializa() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializa');
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [inicializa]');
     }
 
     inicializaMultidioma();
 }
 
 /* 
-	Función para inicializar el multidioma
+    Función para inicializar el multidioma
 */
 function inicializaMultidioma() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaMultidioma');
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -96,28 +100,25 @@ function inicializaMultidioma() {
                 $('html').i18n();
                 capturaParam();
                 periodo = paramPeriodo;
-                if(paramPeriodo=='ultimo') {
-                    dameUltimoPeriodo(paramCubo,periodos);
-                }else {
+                if (paramPeriodo == 'ultimo') {
+                    dameUltimoPeriodo(paramCubo, periodos);
+                } else {
                     inicializaDatos();
                 }
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_BARRAS;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_COMBINADO_LINEAS;
 }
 
 /*
-	Función que invoca a todas las funciones que se realizan al inicializar el script
+    Función que invoca a todas las funciones que se realizan al inicializar el script
 */
 function inicializaDatos() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaDatos');
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [inicializaDatos]');
     }
 
-    // $('#urlAPIDoc').attr('href', DOC_API);
-    
-    insertaURLSAPI();
     modificaTaskMaster('iframeGraficoBarras');
 
     if (!paramEjeX1) {
@@ -127,18 +128,18 @@ function inicializaDatos() {
     }
     if (paramEjeX2) {
         dimension2 = paramEjeX2;
-    } 
-    let medida = 'numeroPersonas';
+    }
+    medida = 'numeroPersonas';
     if (paramEjeY) {
         medida = paramEjeY;
     }
-    
+
     if (paramMedidaInd) {
         medida = paramMedidaInd;
-    } 
+    }
 
     if (paramMedidapor) {
-        medida = paramMedidapor; 
+        medida = paramMedidapor;
     }
     if (!paramOperacion) {
         agrupador = 'SUM';
@@ -162,12 +163,8 @@ function inicializaDatos() {
         addFiltro(paramSexo, 'sex');
     }
     if (paramPeriodo) {
-        if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
+        if (paramPeriodo == 'ultimo') {
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
@@ -191,6 +188,10 @@ function inicializaDatos() {
         addFiltro(paramPaisNacimiento, 'paisNacimiento');
     }
 
+    if (paramMunicipio) {
+        isFiltroMunicipio();
+    }
+
     let url =
         POBLACION_URL_1 +
         paramCubo +
@@ -209,63 +210,64 @@ function inicializaDatos() {
         medida +
         '&page=1&pageSize=100' +
         filtro;
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('[inicializaDatos] url:' + url);
-    }
     $('#urlAPI').attr('href', url);
     $('#descargaJSON').attr('href', url);
-    $('#descargaCSV').attr(
-        'href',
+    let urlcsv =
         POBLACION_URL_1 +
-            paramCubo +
-            POBLACION_URL_2_CSV+
-            '?dimension=' +
-            dimension1 +
-            ' as ' +
-            dimension1 +
-            ',' +
-            dimension2 +
-            ' as ' +
-            dimension2 +
-            '&group=' +
-            agrupador +
-            '&measure=' +
-            medida +
-            '&page=1&pageSize=100' +
-            filtro
-    );
+        paramCubo +
+        POBLACION_URL_2_CSV +
+        '?dimension=' +
+        dimension1 +
+        ' as ' +
+        dimension1 +
+        ',' +
+        dimension2 +
+        ' as ' +
+        dimension2 +
+        '&group=' +
+        agrupador +
+        '&measure=' +
+        medida +
+        '&page=1&pageSize=100' +
+        filtro;
+    $('#descargaCSV').attr('href', urlcsv);
 
-    if(DIMENSION_CON_ETIQUETA.indexOf(paramEjeX1)!=-1){
+    if (DIMENSION_CON_ETIQUETA.indexOf(paramEjeX1) != -1) {
         dimensionEtiquetas = dimensionEtiquetas;
-        if(paramEjeX1=='sex') {
-            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX1=='edadGruposQuinquenales') {
-            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX1=='nacionalidad') {
-            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX1=='tipoNivelEstudio') {
-            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        if (paramEjeX1 == 'sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX1 == 'edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX1 == 'nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX1 == 'tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas, dimensionEtiquetas);
         }
     }
 
-    if(DIMENSION_CON_ETIQUETA.indexOf(paramEjeX2)!=-1){
+    if (DIMENSION_CON_ETIQUETA.indexOf(paramEjeX2) != -1) {
         dimensionEtiquetas = dimensionEtiquetas;
-        if(paramEjeX2=='sex') {
-            VALORES_SEXO.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX2=='edadGruposQuinquenales') {
-            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX2=='nacionalidad') {
-            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas,dimensionEtiquetas);
-        }else if(paramEjeX2=='tipoNivelEstudio') {
-            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas,dimensionEtiquetas);
+        if (paramEjeX2 == 'sex') {
+            VALORES_SEXO.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX2 == 'edadGruposQuinquenales') {
+            VALORES_EDAD_QUINQUENAL.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX2 == 'nacionalidad') {
+            VALORES_NACIONALIDAD.forEach(obtenerEtiquetas, dimensionEtiquetas);
+        } else if (paramEjeX2 == 'tipoNivelEstudio') {
+            VALORES_NIVEL_ESTUDIOS.forEach(obtenerEtiquetas, dimensionEtiquetas);
         }
     }
-    
+
     obtieneDatosAPI(url);
+    insertaURLSAPI(url,urlcsv);
 }
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPI(url) {
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [obtieneDatosAPI] [url] ' + url);
+    }
+
     let jqxhr = $.getJSON(url)
         .done(function (data) {
             if (data.records) {
@@ -273,75 +275,75 @@ function obtieneDatosAPI(url) {
                     let ejeY = data.records[i][agrupador];
                     // ejeY = numeral(ejeY);
 
-                    if(data.records[i][dimension2] == 'sex-M') {
+                    if (data.records[i][dimension2] == 'sex-M') {
                         let muestra;
                         if (dimensionEtiquetas[data.records[i][dimension2]]) {
                             muestra = {
-                                ejeX : data.records[i][dimension1],
-                                ejeX2 : dimensionEtiquetas[data.records[i][dimension2]],
-                                ejeY : data.records[i][agrupador]
+                                ejeX: data.records[i][dimension1],
+                                ejeX2: dimensionEtiquetas[data.records[i][dimension2]],
+                                ejeY: data.records[i][agrupador]
                             };
                         } else {
                             muestra = {
-                                ejeX : data.records[i][dimension1],
-                                ejeX2 : data.records[i][dimension2],
-                                ejeY : data.records[i][agrupador]
+                                ejeX: data.records[i][dimension1],
+                                ejeX2: data.records[i][dimension2],
+                                ejeY: data.records[i][agrupador]
                             };
                         }
                         cuboEdadesHombres.push(muestra);
-                    } else if(data.records[i][dimension2] == 'sex-F') {
+                    } else if (data.records[i][dimension2] == 'sex-F') {
                         let muestra;
                         if (dimensionEtiquetas[data.records[i][dimension2]]) {
                             muestra = {
-                                ejeX : data.records[i][dimension1],
-                                ejeX2 : dimensionEtiquetas[data.records[i][dimension2]],
-                                ejeY : data.records[i][agrupador]
+                                ejeX: data.records[i][dimension1],
+                                ejeX2: dimensionEtiquetas[data.records[i][dimension2]],
+                                ejeY: data.records[i][agrupador]
                             };
                         } else {
                             muestra = {
-                                ejeX : data.records[i][dimension1],
-                                ejeX2 : data.records[i][dimension2],
-                                ejeY : data.records[i][agrupador]
+                                ejeX: data.records[i][dimension1],
+                                ejeX2: data.records[i][dimension2],
+                                ejeY: data.records[i][agrupador]
                             };
                         }
                         cuboEdadesMujeres.push(muestra);
                     }
-                    
+
                 }
 
-                if(!cuboEdadesHombres.length) {
+                if (!cuboEdadesHombres.length) {
                     let eje = dimensionEtiquetas['sex-M'];
-                    if(!eje) {
+                    if (!eje) {
                         eje = 'sex-M';
                     }
-                    
+
                     let l;
-                    for(l=0;l<cuboEdadesMujeres.length;l++) {
+                    for (l = 0; l < cuboEdadesMujeres.length; l++) {
                         muestra = {
-                            ejeX : cuboEdadesMujeres[l].ejeX,
-                            ejeX2 : eje,
-                            ejeY : 1
+                            ejeX: cuboEdadesMujeres[l].ejeX,
+                            ejeX2: eje,
+                            ejeY: 1
                         };
                         cuboEdadesHombres.push(muestra);
                     }
                 }
-                if(!cuboEdadesMujeres.length) {
+                if (!cuboEdadesMujeres.length) {
                     let eje = dimensionEtiquetas['sex-F'];
-                    if(!eje) {
+                    if (!eje) {
                         eje = 'sex-F';
                     }
                     muestra = {
-                        ejeX : data.records[i][dimension1],
-                        ejeX2 : eje,
-                        ejeY : 0
+                        ejeX: data.records[i][dimension1],
+                        ejeX2: eje,
+                        ejeY: 0
                     };
                     cuboEdadesMujeres.push(muestra);
                     let o;
-                    for(o=0;o<cuboEdadesHombres.length;o++) {
+                    for (o = 0; o < cuboEdadesHombres.length; o++) {
                         muestra = {
-                            ejeX : cuboEdadesMujeres[o].ejeX,
-                            ejeX2 : eje,
-                            ejeY : 1
+                            ejeX: cuboEdadesMujeres[o].ejeX,
+                            ejeX2: eje,
+                            ejeY: 1
                         };
                         cuboEdadesMujeres.push(muestra);
                     }
@@ -350,21 +352,21 @@ function obtieneDatosAPI(url) {
             }
             if (data.next) {
                 obtieneDatosAPI(data.next);
-            } 
+            }
         })
         .always(function () {
-            cuboEdadesMujeres.sort( compare );
-            cuboEdadesHombres.sort( compare );
+            cuboEdadesMujeres.sort(compare);
+            cuboEdadesHombres.sort(compare);
             let htmlContent =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension1') +
+                ETIQUETAS_TABLA.get(dimension1) +
                 '</th><th>' +
-				$.i18n('dimension2') +
+                ETIQUETAS_TABLA.get('sex') +
                 '</th><th>' +
-                $.i18n('medida') +
+                ETIQUETAS_TABLA.get(medida) +
                 '</th></tr>';
             let j;
-            for(j=0;j<cuboEdadesMujeres.length;j++){
+            for (j = 0; j < cuboEdadesMujeres.length; j++) {
                 muestra = cuboEdadesMujeres[j];
                 htmlContent =
                     htmlContent +
@@ -380,7 +382,7 @@ function obtieneDatosAPI(url) {
                     '</td>' +
                     '</tr>';
             }
-            for(j=0;j<cuboEdadesHombres.length;j++){
+            for (j = 0; j < cuboEdadesHombres.length; j++) {
                 muestra = cuboEdadesHombres[j];
                 htmlContent =
                     htmlContent +
@@ -400,8 +402,8 @@ function obtieneDatosAPI(url) {
             $('#datos_tabla').html(htmlContent);
 
             pintaGrafico();
-            createSeries(cuboEdadesMujeres[0].ejeX2 , cuboEdadesMujeres);
-            createSeries(cuboEdadesHombres[0].ejeX2 , cuboEdadesHombres);
+            createSeries(cuboEdadesMujeres[0].ejeX2, cuboEdadesMujeres);
+            createSeries(cuboEdadesHombres[0].ejeX2, cuboEdadesHombres);
 
             $('.modal').modal('hide');
         });
@@ -418,25 +420,31 @@ function compare(a, b) {
 }
 
 /*
-	Método que inserta URLs en el botón Acción
+    Método que inserta URLs en el botón Acción
 */
-function insertaURLSAPI() {
+function insertaURLSAPI(urljson, urlcsv) {
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
+    $('#descargaCSV').attr('href', urlcsv);
+    $('#descargaJSON').attr('href', urljson);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
 }
 
 /*
-	Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
+    Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
 */
 function capturaParam() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('capturaParams');
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
         paramCubo = getUrlVars()['cubo'];
-    } 
+    }
 
     if (getUrlVars()['iframe']) {
         paramIframe = getUrlVars()['iframe'];
@@ -481,9 +489,6 @@ function capturaParam() {
     if (getUrlVars()['titulo']) {
         paramTituloKey = getUrlVars()['titulo'];
         let paramTitulo = $.i18n(paramTituloKey);
-        if (paramPeriodo) {
-            paramTitulo = paramTitulo + ' ' + paramPeriodo;
-        }
         $('#tituloGrafico').html(decodeURI(paramTitulo));
     }
 
@@ -522,21 +527,22 @@ function capturaParam() {
 }
 
 /*
-	Función para crear el gráfico 
+    Función para crear el gráfico 
 */
 function pintaGrafico() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('pintaGraficoLineas');
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [pintaGrafico]');
     }
 
     am4core.useTheme(am4themes_frozen);
-  
+    am4core.options.autoDispose = true;
+
     chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.language.locale = am4lang_es_ES;
 
     chart.focusFilter.stroke = am4core.color("#0f0");
     chart.focusFilter.strokeWidth = 4;
-    
+
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = 'ejeX';
     categoryAxis.renderer.grid.template.location = 0;
@@ -565,12 +571,14 @@ function pintaGrafico() {
     valueAxis.min = 0;
 
     chart.cursor = new am4charts.XYCursor();
-
     chart.scrollbarX = new am4core.Scrollbar();
     chart.scrollbarX.parent = chart.bottomAxesContainer;
 }
 
 function createSeries(name, data) {
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [createSeries] [name] ' + name);
+    }
 
     chart.data = data;
     let series = chart.series.push(new am4charts.LineSeries());
@@ -578,23 +586,25 @@ function createSeries(name, data) {
     series.dataFields.categoryX = 'ejeX';
     series.name = name;
     series.data = data;
-    series.tooltipText = name+' - {categoryX} : [bold]{valueY}[/]';
+    series.tooltipText = name + ' - {categoryX} : [bold]{valueY}[/]';
     series.strokeWidth = 3;
+    series.bullets.push(new am4charts.CircleBullet());
 
-    if(name == 'Female') { 
+    if (name == 'Female') {
         series.fill = chart.colors.getIndex(4);
     }
 
     return series;
 }
 
-//Vble para controlar el tamaño
-let tamanyFijobarras = $(document).height();
-
 /*
-	Método que muestra u oculta la tabla con datos debajo de la visualización
+    Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log('[combinado_lineas] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
 
     let isVisible = $('#datos_tabla').is(':visible');
@@ -611,6 +621,17 @@ function mostrarDatos() {
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_COMBINADO_LINEAS) {
+        console.log(
+            '[addFiltro] [paramValor:' +
+            paramValor +
+            '] [campo:' +
+            campo +
+            '] [filtro:' +
+            filtro +
+            ']'
+        );
+    }
     if (!filtro) {
         filtro = filtro + '&where=(';
     } else {
@@ -632,15 +653,5 @@ function addFiltro(paramValor, campo) {
     }
     filtro = filtro + ")";
 
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
-    }
+
 }

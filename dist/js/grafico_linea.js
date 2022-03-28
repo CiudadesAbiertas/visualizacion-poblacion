@@ -17,47 +17,51 @@ See the Licence for the specific language governing permissions and limitations 
 /*
 Algunas variables que se usan en este javascript se inicializan en ciudadesAbiertas.js
 */
-var paramEjeX;
-var paramEjeY;
-var paramMedidaInd;
-var paramMedidapor;
+let paramEjeX;
+let paramEjeY;
+let paramMedidaInd;
+let paramMedidapor;
 
-var paramCubo;
-var paramTituloKey;
-var paramIframe;
+let paramCubo;
+let paramTituloKey;
+let paramIframe;
 
-var paramOperacion;
+let paramOperacion;
 
-var paramMunicipio;
-var paramDistrito;
-var paramBarrio;
-var paramSeccionCensal;
-var paramPeriodo;
-var paramSexo;
-var paramEdad;
-var paramEdadQuinquenales;
-var paramNivelEstudio;
-var paramProcedencia;
-var paramPaisNacimiento;
-var paramNacionalidad;
-var paramPaisProcedencia;
-var paramProvinciaProcedencia;
-var paramMunicipioProcedencia;
+let paramMunicipio;
+let paramDistrito;
+let paramBarrio;
+let paramSeccionCensal;
+let paramPeriodo;
+let paramSexo;
+let paramEdad;
+let paramEdadQuinquenales;
+let paramNivelEstudio;
+let paramProcedencia;
+let paramPaisNacimiento;
+let paramNacionalidad;
+let paramPaisProcedencia;
+let paramProvinciaProcedencia;
+let paramMunicipioProcedencia;
 
-var filtro = '';
-var cuboEdades = [];
-var dimensionEtiquetas = {};
+let filtro = '';
+let cuboEdades = [];
+let dimensionEtiquetas = {};
 
-var dimension = '';
-var agrupador = '';
+let dimension = '';
+let agrupador = '';
 let periodos = [];
+let medida = '';
+
+//Vble para controlar el tamaño
+let tamanyFijobarras = $(document).height();
 
 /*
 	Función de inicialización del script
 */
 function inicializa() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializa');
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [inicializa]');
     }
 
     inicializaMultidioma();
@@ -67,8 +71,8 @@ function inicializa() {
 	Función para inicializar el multidioma
 */
 function inicializaMultidioma() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaMultidioma');
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [inicializaMultidioma]');
     }
 
     let langUrl = sessionStorage.getItem('lang');
@@ -102,15 +106,15 @@ function inicializaMultidioma() {
             });
     });
 
-    $.i18n.debug = LOG_DEBUG_GRAFICO_BARRAS;
+    // $.i18n.debug = LOG_DEBUG_GRAFICO_LINEA;
 }
 
 /*
 	Función que invoca a todas las funciones que se realizan al inicializar el script
 */
 function inicializaDatos() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('inicializaDatos');
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [inicializaDatos]');
     }
 
     insertaURLSAPI();
@@ -121,7 +125,7 @@ function inicializaDatos() {
     } else {
         dimension = paramEjeX;
     }
-    let medida = 'numeroPersonas';
+    medida = 'numeroPersonas';
     if (paramEjeY) {
         medida = paramEjeY;
     }
@@ -154,11 +158,11 @@ function inicializaDatos() {
     }
     if (paramPeriodo) {
         if(paramPeriodo=='ultimo') {
-            paramPeriodo = periodos[0];
+            // paramPeriodo = periodos[0];
             let paramTitulo = $.i18n(paramTituloKey);
-            if (paramPeriodo) {
-                paramTitulo = paramTitulo + ' ' + paramPeriodo;
-            }
+            // if (paramPeriodo) {
+            //     paramTitulo = paramTitulo + ' ' + paramPeriodo;
+            // }
             $('#tituloGrafico').html(decodeURI(paramTitulo));
         }
         addFiltro(paramPeriodo, 'refPeriod');
@@ -191,6 +195,10 @@ function inicializaDatos() {
         addFiltro(paramMunicipioProcedencia, 'municipioProcedencia');
     }
 
+    if(paramMunicipio) {
+        isFiltroMunicipio();
+    }
+    
     let url =
         POBLACION_URL_1 +
         paramCubo +
@@ -205,7 +213,7 @@ function inicializaDatos() {
         medida +
         '&page=1&pageSize=100' +
         filtro;
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
+    if (LOG_DEBUG_GRAFICO_LINEA) {
         console.log('[inicializaDatos] url:' + url);
     }
     $('#urlAPI').attr('href', url);
@@ -245,6 +253,10 @@ function inicializaDatos() {
 
 /* Método que obtiene los datos de la URL que se pasa como parámetros insertandonos el una variable */
 function obtieneDatosAPI(url) {
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [obtieneDatosAPI] [URL] '+url);
+    }
+
     let jqxhr = $.getJSON(url)
         .done(function (data) {
             if (data.records) {
@@ -274,9 +286,9 @@ function obtieneDatosAPI(url) {
             cuboEdades.sort( compare );
             let htmlContent =
                 "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
-                $.i18n('dimension') +
+                ETIQUETAS_TABLA.get(dimension) + 
                 '</th><th>' +
-                $.i18n('medida') +
+                ETIQUETAS_TABLA.get(medida) + 
                 '</th></tr>';
             let j;
             for(j=0;j<cuboEdades.length;j++){
@@ -312,6 +324,10 @@ function compare(a, b) {
 	Método que inserta URLs en el botón Acción
 */
 function insertaURLSAPI() {
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [insertaURLSAPI]');
+    }
+
     $('#urlAPIDoc').attr('href', DOC_API);
     $('#maximizar').attr('href', window.location.href);
     $('#maximizar').attr('target', '_blank');
@@ -321,8 +337,8 @@ function insertaURLSAPI() {
 	Función que comprueba y captura si se han pasado parámetros a la web, en caso de haberlos ejecutará una búsqueda con ellos.
 */
 function capturaParam() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('capturaParams');
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [capturaParam]');
     }
 
     if (getUrlVars()['cubo']) {
@@ -368,9 +384,6 @@ function capturaParam() {
     if (getUrlVars()['titulo']) {
         paramTituloKey = getUrlVars()['titulo'];
         let paramTitulo = $.i18n(paramTituloKey);
-        if (paramPeriodo) {
-            paramTitulo = paramTitulo + ' ' + paramPeriodo;
-        }
         $('#tituloGrafico').html(decodeURI(paramTitulo));
     }
 
@@ -421,18 +434,20 @@ function capturaParam() {
 	Función para crear el gráfico 
 */
 function pintaGrafico() {
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log('pintaGraficoLineas');
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [pintaGrafico]');
     }
 
     am4core.useTheme(am4themes_frozen);
- 
+    am4core.options.autoDispose = true;
+    
     let chart = am4core.create('chartdiv', am4charts.XYChart);
     chart.data = cuboEdades;
     chart.language.locale = am4lang_es_ES;
 
     chart.focusFilter.stroke = am4core.color("#0f0");
     chart.focusFilter.strokeWidth = 4;
+    chart.cursor = new am4charts.XYCursor();
     
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = 'ejeX';
@@ -466,17 +481,20 @@ function pintaGrafico() {
     series.dataFields.categoryX = 'ejeX';
     series.name = 'Cubo';
     series.strokeWidth = 3;
+	series.bullets.push(new am4charts.CircleBullet());
 
     $('.modal').modal('hide');
 }
 
-//Vble para controlar el tamaño
-let tamanyFijobarras = $(document).height();
 
 /*
 	Método que muestra u oculta la tabla con datos debajo de la visualización
 */
 function mostrarDatos() {
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [mostrarDatos]');
+    }
+
     $('#datos_tabla').toggle();
 
     let isVisible = $('#datos_tabla').is(':visible');
@@ -493,6 +511,10 @@ function mostrarDatos() {
 }
 
 function addFiltro(paramValor, campo) {
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log('[linea] [addFiltro] [paramValor] '+paramValor+' [campo] '+campo);
+    }
+
     if (!filtro) {
         filtro = filtro + '&where=(';
     } else {
@@ -514,15 +536,7 @@ function addFiltro(paramValor, campo) {
     }
     filtro = filtro + ")";
 
-    if (LOG_DEBUG_GRAFICO_BARRAS) {
-        console.log(
-            '[addFiltro] [paramValor:' +
-                paramValor +
-                '] [campo:' +
-                campo +
-                '] [filtro:' +
-                filtro +
-                ']'
-        );
+    if (LOG_DEBUG_GRAFICO_LINEA) {
+        console.log(" [filtro:" + filtro + "]");
     }
 }

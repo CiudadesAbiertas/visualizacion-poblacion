@@ -15,7 +15,7 @@ See the Licence for the specific language governing permissions and limitations 
 
 .despla {
 	overflow-y: auto;
-    max-height: 130px;
+	max-height: 202px;
 }
 
 .chartdivGrafico {
@@ -224,5 +224,13 @@ tr.shown td.details-control {
     color: #000;
     padding-top: 13px;
     font-size: 1.3em;
+}
+
+fieldset {
+	background-color: #FAF8F5; 
+    padding: 0;
+    margin: 0;
+    border: 0;
+    min-width: 0;
 }
 
