@@ -378,7 +378,7 @@ function loadDataTable() {
         console.log('[tabla] [loadDataTable] [urlDatos:' + urlDatos + ']');
     }
 
-    let jqxhr = $.getJSON(
+    /*let jqxhr = $.getJSON(
         dameURL(
             urlDatos
         )
@@ -394,22 +394,23 @@ function loadDataTable() {
             table.clear().draw();
             if(data.records) {
                 var result = [];
-
+                let count = 0;
                 for(var i in data.records) {
-                    result.push([i, data.records [i]]);
+                    let row = data.records [i];
+                    result[count] = [];
+                    for(var j in row) {
+                        result[count].push(row [j]);
+                    }
+                    count=count+1;
                 }
-                
 
                 table.rows.add(result).draw();
             }
             
-        })
-        .always(function () {
-            // sessionStorage.setItem('dsdEdadQuinquenales', dsdEdadQuinquenales);
-        });
+        });*/
 
-    // let table = $('#tablaBuscador').DataTable();
-    // table.ajax.url(dameURL(urlDatos)).load(null, false);
+    let table = $('#tablaBuscador').DataTable();
+    table.ajax.url(dameURL(urlDatos)).load(null, false);
 }
 
 /**
@@ -551,7 +552,13 @@ function preparaTablaCubo() {
                 data.recordsTotal = total;
                 data.recordsFiltered = total;
 
-                return data.records;
+                let return_data;
+				if (data.records) {
+                    return_data = data.records;
+                } else {
+                    return_data = new Array();
+                } 
+                return return_data;
             },
             data: function (d) {
                 let actualPage;
@@ -577,8 +584,6 @@ function preparaTablaCubo() {
                         newD.sort = '-'+dataColumnaSeleccionada;
                     }
                 }
-                console.log('newD.page '+newD.page);
-                console.log('newD.sort '+newD.sort);
                 return newD;
             },
         },
