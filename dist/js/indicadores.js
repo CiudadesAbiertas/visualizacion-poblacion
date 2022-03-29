@@ -50,7 +50,7 @@ function aplicaFiltro() {
 
     //Cambiamos el parametro territorio par que los mapas se pinten correctamente
     if (cambioTerritorio) {
-        aplicaFiltroTerritorio(cambioTerritorio, arrayIframesMapas);
+        aplicaFiltroTerritorio(cambioTerritorio, arrayIframesMapas, true);
         cambioTerritorio = '';
     }
 
@@ -58,17 +58,9 @@ function aplicaFiltro() {
     $('#criterioPeriodo').html('');
     $('#criterioIndicadores').html('');
 
-    $('#criterioTerritorio2').html('');
-    $('#criterioPeriodo2').html('');
-    $('#criterioIndicadores2').html('');
-
     $('#pcriterioTerritorio').hide();
     $('#pcriterioPeriodo').hide();
     $('#pcriterioIndicadores').hide();
-
-    $('#pcriterioTerritorio2').hide();
-    $('#pcriterioPeriodo2').hide();
-    $('#pcriterioIndicadores2').hide();
 
     let medidaInd = dameMedida('selectIndicesInd');
     let medidaPor = dameMedida('selectPorcentajesInd');

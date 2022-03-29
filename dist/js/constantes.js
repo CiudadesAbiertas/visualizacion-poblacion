@@ -51,7 +51,7 @@ const REGISTRO_TABLA_GRAFICOS = 500;
 
 
 /* Dominio de la API */
-const URL_API = 'https://api.ciudades-abiertas.es/';
+const URL_API = "https://alzir.dia.fi.upm.es/OpenCitiesAPI";
 /* URL de la documentación de la API */
 const DOC_API = URL_API + '/swagger/index.html';
 

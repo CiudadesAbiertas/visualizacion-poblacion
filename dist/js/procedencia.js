@@ -67,14 +67,6 @@ function aplicaFiltro() {
     $('#criterioNivelEstudio').html('');
     $('#criterioEdadQuinquenales').html('');
 
-    $('#criterioTerritorio2').html('');
-    $('#criterioPaisPro2').html('');
-    $('#criterioProvPro2').html('');
-    $('#criterioMunPro2').html('');
-    $('#criterioPeriodo2').html('');
-    $('#criterioNivelEstudio2').html('');
-    $('#criterioEdadQuinquenales2').html('');
-
     $('#pcriterioTerritorio').hide();
     $('#pcriterioPaisPro').hide();
     $('#pcriterioProvPro').hide();
@@ -82,14 +74,6 @@ function aplicaFiltro() {
     $('#pcriterioPeriodo').hide();
     $('#pcriterioNivelEstudio').hide();
     $('#pcriterioEdadQuinquenales').hide();
-
-    $('#pcriterioTerritorio2').hide();
-    $('#pcriterioPaisPro2').hide();
-    $('#pcriterioProvPro2').hide();
-    $('#pcriterioMunPro2').hide();
-    $('#pcriterioPeriodo2').hide();
-    $('#pcriterioNivelEstudio2').hide();
-    $('#pcriterioEdadQuinquenales2').hide();
 
     filtro = '';
     let filtroAux = '';

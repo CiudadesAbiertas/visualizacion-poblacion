@@ -63,23 +63,11 @@ function aplicaFiltro() {
     $('#criterioEdad').html('');
     $('#criterioSexo').html('');
 
-    $('#criterioTerritorio2').html('');
-    $('#criterioNivelEstudio2').html('');
-    $('#criterioPeriodo2').html('');
-    $('#criterioEdad2').html('');
-    $('#criterioSexo2').html('');
-
     $('#pcriterioTerritorio').hide();
     $('#pcriterioNivelEstudio').hide();
     $('#pcriterioPeriodo').hide();
     $('#pcriterioEdad').hide();
     $('#pcriterioSexo').hide();
-
-    $('#pcriterioTerritorio2').hide();
-    $('#pcriterioNivelEstudio2').hide();
-    $('#pcriterioPeriodo2').hide();
-    $('#pcriterioEdad2').hide();
-    $('#pcriterioSexo2').hide();
 
     filtro = '';
     let filtroAux = '';

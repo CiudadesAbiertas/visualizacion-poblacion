@@ -64,23 +64,11 @@ function aplicaFiltro() {
     $('#criterioEdadQuinquenales').html('');
     $('#criterioSexo').html('');
 
-    $('#criterioTerritorio2').html('');
-    $('#criterioNacionalidad2').html('');
-    $('#criterioPeriodo2').html('');
-    $('#criterioEdadQuinquenales2').html('');
-    $('#criterioSexo2').html('');
-
     $('#pcriterioTerritorio').hide();
     $('#pcriterioNacionalidad').hide();
     $('#pcriterioPeriodo').hide();
     $('#pcriterioEdadQuinquenales').hide();
     $('#pcriterioSexo').hide();
-
-    $('#pcriterioTerritorio2').hide();
-    $('#pcriterioNacionalidad2').hide();
-    $('#pcriterioPeriodo2').hide();
-    $('#pcriterioEdadQuinquenales2').hide();
-    $('#pcriterioSexo2').hide();
 
     filtro = '';
     let filtroAux = '';

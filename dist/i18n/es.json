@@ -129,5 +129,20 @@
     "indices" : "Índices y Tasas",
     "porcentajes" : "Porcentajes",
     "modificar_tabla" : "Modificar tabla",
-    "descargar" : "DESCARGAR"
+    "descargar" : "DESCARGAR",
+    "criterios_seleccionador:" : "Criterios seleccionados:",
+    "territorio:" : "Territorio:",
+    "periodo:" : "Periodo:",
+    "edad_quinquenales:" : "Edad quinquenales:",
+    "sexo:" : "Sexo:",
+    "personas" : "personas",
+    "edad:" : "Edad:",
+    "nacionalidad:" : "Nacionalidad:",
+    "nivel_estudio:" : "Nivel de estudio:",
+    "pais_procedencia:" : "Pais de procedencia:",
+    "provincia_procedencia:" : "Provincia de procedencia:",
+    "municipio_procedencia:" : "Municipio de procedencia:",
+    "nacimiento:" : "Nacimiento:",
+    "indicadores:" : "Indicadores:",
+    "valor_indicador:" : "Valor del indicador:"
 }

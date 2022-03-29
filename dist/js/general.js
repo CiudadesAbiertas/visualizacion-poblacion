@@ -189,10 +189,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioTerritorio').append(' ' + etiqueta);
-                                $('#criterioTerritorio2').append(' ' + etiqueta);
                             }
                             $('#pcriterioTerritorio').show();
-                            $('#pcriterioTerritorio2').show();
                         }
 
 
@@ -210,12 +208,10 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                 } // selectDistritoSCEdad
                                 if (elementoId.indexOf('selectDistritoSC') == -1) {
                                     $('#criterioTerritorio').append(' ' + etiqueta);
-                                    $('#criterioTerritorio2').append(' ' + etiqueta);
                                 }
                             }
                             if (elementoId.indexOf('selectDistritoSC') == -1) {
                                 $('#pcriterioTerritorio').show();
-                                $('#pcriterioTerritorio2').show();
                             }
                         }
 
@@ -233,10 +229,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioTerritorio').append(' ' + etiqueta);
-                                $('#criterioTerritorio2').append(' ' + etiqueta);
                             }
                             $('#pcriterioTerritorio').show();
-                            $('#pcriterioTerritorio2').show();
                         }
 
 
@@ -253,10 +247,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioTerritorio').append(' ' + etiqueta);
-                                $('#criterioTerritorio2').append(' ' + etiqueta);
                             }
                             $('#pcriterioTerritorio').show();
-                            $('#pcriterioTerritorio2').show();
                         }
 
 
@@ -273,10 +265,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioPeriodo').append(' ' + etiqueta);
-                                $('#criterioPeriodo2').append(' ' + etiqueta);
                             }
                             $('#pcriterioPeriodo').show();
-                            $('#pcriterioPeriodo2').show();
                         }
 
 
@@ -293,10 +283,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioEdadQuinquenales').append(' ' + etiqueta);
-                                $('#criterioEdadQuinquenales2').append(' ' + etiqueta);
                             }
                             $('#pcriterioEdadQuinquenales').show();
-                            $('#pcriterioEdadQuinquenales2').show();
                         }
                     }
                     if (campo == 'sexo') {
@@ -311,10 +299,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioSexo').append(' ' + etiqueta);
-                                $('#criterioSexo2').append(' ' + etiqueta);
                             }
                             $('#pcriterioSexo').show();
-                            $('#pcriterioSexo2').show();
                         }
                     }
                     if (campo == 'edad') {
@@ -329,10 +315,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioEdad').append(' ' + etiqueta);
-                                $('#criterioEdad2').append(' ' + etiqueta);
                             }
                             $('#pcriterioEdad').show();
-                            $('#pcriterioEdad2').show();
                         }
                     }
                     if (campo == 'edadSimple') {
@@ -347,10 +331,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioEdad').append(' ' + etiqueta);
-                                $('#criterioEdad2').append(' ' + etiqueta);
                             }
                             $('#pcriterioEdad').show();
-                            $('#pcriterioEdad2').show();
                         }
                     }
                     if (campo == 'medidaInd') {
@@ -365,10 +347,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioIndicadores').append(' ' + etiqueta);
-                                $('#criterioIndicadores2').append(' ' + etiqueta);
                             }
                             $('#pcriterioIndicadores').show();
-                            $('#pcriterioIndicadores2').show();
                         }
                     }
                     if (campo == 'medidaPor') {
@@ -383,10 +363,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioIndicadores').append(' ' + etiqueta);
-                                $('#criterioIndicadores2').append(' ' + etiqueta);
                             }
                             $('#pcriterioIndicadores').show();
-                            $('#pcriterioIndicadores2').show();
                         }
                     }
                     if (campo == 'paisProcedencia') {
@@ -401,10 +379,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioPaisPro').append(' ' + etiqueta);
-                                $('#criterioPaisPro2').append(' ' + etiqueta);
                             }
                             $('#pcriterioPaisPro').show();
-                            $('#pcriterioPaisPro2').show();
                         }
                     }
                     if (campo == 'provinciaProcedencia') {
@@ -419,10 +395,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioProvPro').append(' ' + etiqueta);
-                                $('#criterioProvPro2').append(' ' + etiqueta);
                             }
                             $('#pcriterioProvPro').show();
-                            $('#pcriterioProvPro2').show();
                         }
                     }
                     if (campo == 'municipioProcedencia') {
@@ -437,10 +411,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioMunPro').append(' ' + etiqueta);
-                                $('#criterioMunPro2').append(' ' + etiqueta);
                             }
                             $('#pcriterioMunPro').show();
-                            $('#pcriterioMunPro2').show();
                         }
                     }
                     if (campo == 'nivelEstudio') {
@@ -455,10 +427,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioNivelEstudio').append(' ' + etiqueta);
-                                $('#criterioNivelEstudio2').append(' ' + etiqueta);
                             }
                             $('#pcriterioNivelEstudio').show();
-                            $('#pcriterioNivelEstudio2').show();
                         }
                     }
                     if (campo == 'paisNacimiento') {
@@ -473,10 +443,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioPaisNac').append(' ' + etiqueta);
-                                $('#criterioPaisNac2').append(' ' + etiqueta);
                             }
                             $('#pcriterioPaisNac').show();
-                            $('#pcriterioPaisNac2').show();
                         }
                     }
 
@@ -492,10 +460,8 @@ function aplicaFiltroElementGlobal(elementoId, campo, arrayIframes, tipoCombo) {
                                     etiqueta = etiqueta + ',';
                                 }
                                 $('#criterioNacionalidad').append(' ' + etiqueta);
-                                $('#criterioNacionalidad2').append(' ' + etiqueta);
                             }
                             $('#pcriterioNacionalidad').show();
-                            $('#pcriterioNacionalidad2').show();
                         }
                     }
                 }
@@ -973,56 +939,38 @@ function changeSeleccionMultiplebySession(selectorId, arrayComponente, tipoCombo
             checked = 'checked';
             if (selectorId == 'selectMunicipio') {
                 $('#criterioTerritorio').append(' ' + componente.title);
-                $('#criterioTerritorio2').append(' ' + componente.title);
                 $('#pcriterioTerritorio').show();
-                $('#pcriterioTerritorio2').show();
             }
             if (selectorId == 'selectDistrito') {
                 $('#criterioTerritorio').append(' ' + componente.title);
-                $('#criterioTerritorio2').append(' ' + componente.title);
                 $('#pcriterioTerritorio').show();
-                $('#pcriterioTerritorio2').show();
             }
             if (selectorId == 'selectBarrio') {
                 $('#criterioTerritorio').append(' ' + componente.title);
-                $('#criterioTerritorio2').append(' ' + componente.title);
                 $('#pcriterioTerritorio').show();
-                $('#pcriterioTerritorio2').show();
             }
             if (selectorId == 'selectSeccionCensal') {
                 $('#criterioTerritorio').append(' ' + componente.title);
-                $('#criterioTerritorio2').append(' ' + componente.title);
                 $('#pcriterioTerritorio').show();
-                $('#pcriterioTerritorio2').show();
             }
             if (selectorId == 'selectPeriodo') {
                 $('#criterioPeriodo').append(' ' + componente.title);
-                $('#criterioPeriodo2').append(' ' + componente.title);
                 $('#pcriterioPeriodo').show();
-                $('#pcriterioPeriodo2').show();
             }
             if (selectorId == 'selectEdadQuinquenales') {
                 $('#criterioEdadQuinquenales').append(' ' + componente.title);
-                $('#criterioEdadQuinquenales2').append(' ' + componente.title);
-                $('#pcriterioEdadQuinquenales').show();
                 $('#pcriterioEdadQuinquenales').show();
             }
             if (selectorId == 'selectSexo') {
                 $('#criterioSexo').append(' ' + componente.title);
-                $('#criterioSexo2').append(' ' + componente.title);
-                $('#pcriterioSexo').show();
                 $('#pcriterioSexo').show();
             }
             if (selectorId == 'selectEdad') {
                 $('#criterioEdad').append(' ' + componente.title);
-                $('#criterioEdad2').append(' ' + componente.title);
                 $('#pcriterioEdad').show();
-                $('#pcriterioEdad2').show();
             }
             if (selectorId == 'nacionalidad') {
                 $('#criterioNacionalidad').append(' ' + componente.title);
-                $('#criterioNacionalidad').append(' ' + componente.title);
-                $('#pcriterioNacionalidad').show();
                 $('#pcriterioNacionalidad').show();
             }
         }
@@ -1421,7 +1369,7 @@ function inicializaFiltros(filtroSlider) {
  * aplicaFiltroTerritorio
  * Funcion para aplicar lógica al slider de territorio
  */
-function aplicaFiltroTerritorio(territorio, arrayIframes) {
+function aplicaFiltroTerritorio(territorio, arrayIframes, indicador) {
     if (LOG_DEBUG_COMUN) {
         console.log('[general] [aplicaFiltroTerritorio] [territorio] ' + territorio);
     }
@@ -1436,26 +1384,32 @@ function aplicaFiltroTerritorio(territorio, arrayIframes) {
         if (LOG_DEBUG_COMUN) {
             console.log('[aplicaFiltroTerritorio] [paramCuboId:' + paramCuboId + ']');
         }
+        let titulo;
+        if(indicador) {
+            titulo = 'indicador_';
+        } else {
+            titulo = 'personas_';
+        }
 
         if (iframe == 'iframeGraficoMapa') {
             if (territorio == 'municipio') {
                 url =
-                    'grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapa&' +
+                    'grafico_mapa.html?territorio=municipio&titulo='+titulo+'municipio&iframe=iframeGraficoMapa&' +
                     paramCuboId;
                 $('#' + iframe).attr('src', url);
             } else if (territorio == 'distrito') {
                 url =
-                    'grafico_mapa.html?territorio=distrito&titulo=personas_distrito&iframe=iframeGraficoMapa&' +
+                    'grafico_mapa.html?territorio=distrito&titulo='+titulo+'distrito&iframe=iframeGraficoMapa&' +
                     paramCuboId;
                 $('#' + iframe).attr('src', url);
             } else if (territorio == 'barrio') {
                 url =
-                    'grafico_mapa.html?territorio=barrio&titulo=personas_barrio&iframe=iframeGraficoMapa&' +
+                    'grafico_mapa.html?territorio=barrio&titulo='+titulo+'barrio&iframe=iframeGraficoMapa&' +
                     paramCuboId;
                 $('#' + iframe).attr('src', url);
             } else if (territorio == 'seccion_censal') {
                 url =
-                    'grafico_mapa.html?territorio=seccion-censal&titulo=personas_seccion_censal' +
+                    'grafico_mapa.html?territorio=seccion-censal&titulo='+titulo+'seccion_censal' +
                     '&iframe=iframeGraficoMapa&' +
                     paramCuboId;
                 $('#' + iframe).attr('src', url);
@@ -1467,22 +1421,22 @@ function aplicaFiltroTerritorio(territorio, arrayIframes) {
         } else if (iframe == 'iframeGraficoMapaComp') {
             if (territorio == 'municipio') {
                 url =
-                    'grafico_mapa.html?territorio=municipio&titulo=personas_municipio&iframe=iframeGraficoMapaComp&' +
+                    'grafico_mapa.html?territorio=municipio&titulo='+titulo+'municipio&iframe=iframeGraficoMapaComp&' +
                     paramCuboId;
                 $('#' + iframe).attr('src', url);
             } else if (territorio == 'distrito') {
                 url =
-                    'grafico_mapa.html?territorio=distrito&titulo=personas_distrito&iframe=iframeGraficoMapaComp&' +
+                    'grafico_mapa.html?territorio=distrito&titulo='+titulo+'distrito&iframe=iframeGraficoMapaComp&' +
                     paramCuboId;
                 $('#' + iframe).attr('src', url);
             } else if (territorio == 'barrio') {
                 url =
-                    'grafico_mapa.html?territorio=barrio&titulo=personas_barrio&iframe=iframeGraficoMapaComp&' +
+                    'grafico_mapa.html?territorio=barrio&titulo='+titulo+'barrio&iframe=iframeGraficoMapaComp&' +
                     paramCuboId;
                 $('#' + iframe).attr('src', url);
             } else if (territorio == 'seccion_censal') {
                 url =
-                    'grafico_mapa.html?territorio=seccion-censal&titulo=personas_seccion_censal' +
+                    'grafico_mapa.html?territorio=seccion-censal&titulo='+titulo+'seccion_censal' +
                     '&iframe=iframeGraficoMapaComp&' +
                     paramCuboId;
                 $('#' + iframe).attr('src', url);
@@ -1571,6 +1525,7 @@ function indicadores(url1, filtro1, indicadores) {
     $.getJSON(url)
         .done(function (data) {
             let suma = 0;
+            let i18nPersonas = $.i18n('personas');
             if (data.records) {
                 let i;
                 for (i = 0; i < data.records.length; i++) {
@@ -1578,15 +1533,16 @@ function indicadores(url1, filtro1, indicadores) {
 
                 }
                 let numeralSuma = numeral(suma);
+                
                 if (!indicadores) {
-                    $('#indicadores1').html(numeralSuma.format(numFormatoSinDecimales) + ' personas');
+                    $('#indicadores1').html(numeralSuma.format(numFormatoSinDecimales) + ' '+i18nPersonas);
                 } else {
                     $('#indicadores1').html(numeralSuma.format(numFormato));
                 }
 
             } else {
                 if (!indicadores) {
-                    $('#indicadores1').html('0 personas');
+                    $('#indicadores1').html('0 '+i18nPersonas);
                 } else {
                     $('#indicadores1').html('0');
                 }
