@@ -39,6 +39,13 @@ let paramIndicadores;
 let paramPaisProcedencia;
 let paramProvinciaProcedencia;
 let paramMunicipioProcedencia;
+let paramSexo;
+let paramEdad;
+let paramEdadQuinquenales;
+let paramNivelEstudio;
+let paramProcedencia;
+let paramPaisNacimiento;
+let paramNacionalidad;
 
 let valor1Dim1;
 let valor2Dim1;
@@ -58,7 +65,11 @@ let valor3Dim2;
 let valor4Dim2;
 let valor5Dim2;
 
+let valoresDim2 = [];
+let valoresDim1 = [];
+
 let filtro = '';
+let lineas = new Map();
 let linea1 = [];
 let linea2 = [];
 let linea3 = [];
@@ -205,7 +216,27 @@ function inicializaDatos() {
     if (paramMunicipioProcedencia) {
         addFiltro(paramMunicipioProcedencia, 'municipioProcedencia');
     }
-    
+    if (paramNacionalidad) {
+        addFiltro(paramNacionalidad, 'nacionalidad');
+    }
+    if (paramEdad) {
+        addFiltro(paramEdad, 'age');
+    }
+    if (paramEdadQuinquenales) {
+        addFiltro(paramEdadQuinquenales, 'edadGruposQuinquenales');
+    }
+    if (paramNivelEstudio) {
+        addFiltro(paramNivelEstudio, 'tipoNivelEstudio');
+    }
+    if (paramSexo) {
+        addFiltro(paramSexo, 'sex');
+    }
+    if (paramPaisNacimiento) {
+        addFiltro(paramPaisNacimiento, 'paisNacimiento');
+    }
+    if (paramProcedencia) {
+        addFiltro(paramProcedencia, 'procedencia');
+    }
     if(paramMunicipio) {
         isFiltroMunicipio();
     }
@@ -219,8 +250,6 @@ function inicializaDatos() {
     }
 
     let medida;
-    let url;
-    let urlcsv;
     let d;
     for (d = 0; d < numMedidas; d++) {
         if(paramMedidas.indexOf(',') == -1) {
@@ -297,7 +326,35 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                     let muestra10;
                     let muestra11;
                     
-                    if(data.records[i][dimension1_1]==valor1Dim1) {
+                    let muestra;
+                    let linea;
+                    if(!lineas.get(data.records[i][dimension1_1])) {
+                        linea = [];
+                    } else {
+                        linea = lineas.get(data.records[i][dimension1_1]);
+                    }
+
+                    muestra = {
+                        valor : data.records[i][dimension1_2],
+                        ejeX : data.records[i][dimension2],
+                        medida : medida
+                    };
+                    if(data.records[i][agrupador]) {
+                        muestra[medida] = data.records[i][agrupador];
+                        muestra['ejeY'] = data.records[i][agrupador];
+                        if(valorMaximo < data.records[i][agrupador]) {
+                            valorMaximo = data.records[i][agrupador];
+                        }
+                    }else{
+                        muestra[medida] = 0;
+                        muestra['ejeY'] = 0;
+                    }
+                    
+                    linea.push(muestra);
+
+                    lineas.set(data.records[i][dimension1_1], linea);
+
+                    /*if(data.records[i][dimension1_1]==valor1Dim1) {
                         muestra1 = {
                             valor : data.records[i][dimension1_2],
                             ejeX : data.records[i][dimension2],
@@ -492,7 +549,7 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                             muestra11['ejeY'] = 0;
                         }
                         linea11.push(muestra11);
-                    }
+                    }*/
                     
                 }
             }
@@ -503,7 +560,64 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
             }
         })
         .always(function () {
-            if(numMedidas==1 || medidas.length==d+1){
+
+            let htmlContent =
+                    "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
+                    ETIQUETAS_TABLA.get(dimension1_2) + 
+                    '</th><th>' +
+                    ETIQUETAS_TABLA.get(dimension2) +
+                    '</th><th>' +
+                    'Medida' +
+                    '</th><th>' +
+                    'Valor' +
+                    '</th></tr>';
+                let j;
+            let l;
+            for(l=0;l<valoresDim1.length;l++) {
+                let valorDim1 = valoresDim1[l];
+                let linea = lineas.get(valorDim1);
+
+                linea.sort( compare );
+                let j;
+                for(j=0;j<linea.length;j++){
+                    let muestra = linea[j];
+                    let numeralEjeY = numeral(muestra.ejeY);
+                    htmlContent =
+                        htmlContent +
+                        '<tr>' +
+                        '<td>' +
+                        muestra.valor.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.ejeX.toString() +
+                        '</td>' +
+                        '<td>' +
+                        muestra.medida.toString() +
+                        '</td>' +
+                        '<td>' +
+                        numeralEjeY.format(numFormato) +
+                        '</td>' +
+                        '</tr>';
+                }
+                if(numMedidas!=1) {
+                    let a;
+                    for(a=0;a<medidas.length;a++) {
+                        
+                        if(linea.length) {
+                            createSeries(linea[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medidas[a]),linea,medidas[a]);
+                        }
+                    }
+                } else {
+                    if(linea.length) {
+                        createSeries(linea[0].valor + ' ' + ETIQUETAS_INDICES_PORCENTAJES_DSD.get(medida),linea,medida);
+                    }
+                }
+                $('#datos_tabla').html(htmlContent);
+            }
+            htmlContent = htmlContent + '</table></div></div>';
+            $('#datos_tabla').html(htmlContent);
+
+            /*if(numMedidas==1 || medidas.length==d+1){
                 linea1.sort( compare );
                 let htmlContent =
                     "<div class='row'><div class='col-md-12'><table style='width: 100%;'><tr><th>" +
@@ -839,7 +953,8 @@ function obtieneDatosAPI(url,medida,d,numMedidas) {
                 }
 
                 $('.modal').modal('hide');
-            }
+            }*/
+            $('.modal').modal('hide');
         });
 }
 
@@ -958,7 +1073,33 @@ function capturaParam() {
     if (getUrlVars()['municipioProcedencia']) {
         paramMunicipioProcedencia = getUrlVars()['municipioProcedencia'];
     }
-    
+    if (getUrlVars()['nacionalidad']) {
+        paramNacionalidad = getUrlVars()['nacionalidad'];
+    }
+
+    if (getUrlVars()['edadQuinquenales']) {
+        paramEdadQuinquenales = getUrlVars()['edadQuinquenales'];
+    }
+
+    if (getUrlVars()['nivelEstudio']) {
+        paramNivelEstudio = getUrlVars()['nivelEstudio'];
+    }
+
+    if (getUrlVars()['sexo']) {
+        paramSexo = getUrlVars()['sexo'];
+    }
+    if (getUrlVars()['edadSimple']) {
+        paramEdad = getUrlVars()['edadSimple'];
+    }
+    if (getUrlVars()['edad']) {
+        paramEdad = getUrlVars()['edad'];
+    }
+    if (getUrlVars()['paisNacimiento']) {
+        paramPaisNacimiento = getUrlVars()['paisNacimiento'];
+    }
+    if (getUrlVars()['procedencia']) {
+        paramProcedencia = getUrlVars()['procedencia'];
+    }
 }
 
 function pintaGrafico() {
@@ -1008,7 +1149,7 @@ function createSeries(name, data, medida) {
     }
 
     chart.data = data;
-    chart.cursor = new am4charts.XYCursor();
+    // chart.cursor = new am4charts.XYCursor();
     let series;
     if(!medida) {
         medida = 'ejeY';
@@ -1030,7 +1171,8 @@ function createSeries(name, data, medida) {
         series.data = data;
         series.tooltipText = name+' - {categoryX} : [bold]{valueY}[/]';
         series.strokeWidth = 3;
-        series.bullets.push(new am4charts.CircleBullet());
+        let bullet = series.bullets.push(new am4charts.CircleBullet());
+        bullet.tooltipText =  '{categoryX}: [bold]{valueY}[/]';
     }
     return series;
 
@@ -1073,8 +1215,19 @@ function addFiltro(paramValor, campo) {
     } else {
         filtro = filtro + ' and (';
     }
+    
+        
+    
     if (paramValor.includes(',')) {
         let params = paramValor.split(',');
+        if(campo!='age') {
+            if(campo=='refPeriod') {
+                valoresDim2 = params;
+            }else{
+                valoresDim1 = params; 
+            }
+        }
+        
         let h;
         for (h = 0; h < params.length; h++) {
             filtro = filtro + campo + "='" + params[h];
@@ -1083,39 +1236,44 @@ function addFiltro(paramValor, campo) {
             } else {
                 filtro = filtro + "'";
             }
-            if(campo=='refPeriod') {
-                if(h==0) {
-                    valor1Dim2 = params[h];
-                }else if(h==1) {
-                    valor2Dim2 = params[h];
-                }else if(h==2) {
-                    valor3Dim2 = params[h];
-                }else if(h==3) {
-                    valor4Dim2 = params[h];
-                }else if(h==4) {
-                    valor5Dim2 = params[h];
+            /*if(campo!='age') {
+                if(campo=='refPeriod') {
+                    if(h==0) {
+                        valor1Dim2 = params[h];
+                    }else if(h==1) {
+                        valor2Dim2 = params[h];
+                    }else if(h==2) {
+                        valor3Dim2 = params[h];
+                    }else if(h==3) {
+                        valor4Dim2 = params[h];
+                    }else if(h==4) {
+                        valor5Dim2 = params[h];
+                    }
+                }else {
+                    if(h==0) {
+                        valor1Dim1 = params[h];
+                    }else if(h==1) {
+                        valor2Dim1 = params[h];
+                    }else if(h==2) {
+                        valor3Dim1 = params[h];
+                    }else if(h==3) {
+                        valor4Dim1 = params[h];
+                    }else if(h==4) {
+                        valor5Dim1 = params[h];
+                    }
                 }
-            }else {
-                if(h==0) {
-                    valor1Dim1 = params[h];
-                }else if(h==1) {
-                    valor2Dim1 = params[h];
-                }else if(h==2) {
-                    valor3Dim1 = params[h];
-                }else if(h==3) {
-                    valor4Dim1 = params[h];
-                }else if(h==4) {
-                    valor5Dim1 = params[h];
-                }
-            }
-            
+            }*/
         }
     } else {
         filtro = filtro + campo + "='" + paramValor + "'";
-        if(campo=='refPeriod') {
-            valor1Dim2 = paramValor;
-        } else {
-            valor1Dim1 = paramValor;
+        if(campo!='age') {
+            if(campo=='refPeriod') {
+                valoresDim2[0] = paramValor;
+                // valor1Dim2 = paramValor;
+            } else {
+                valoresDim1[0] = paramValor;
+                // valor1Dim1 = paramValor;
+            }
         }
         
     }

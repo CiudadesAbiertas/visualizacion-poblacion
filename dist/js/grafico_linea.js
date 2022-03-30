@@ -44,6 +44,7 @@ let paramPaisProcedencia;
 let paramProvinciaProcedencia;
 let paramMunicipioProcedencia;
 
+
 let filtro = '';
 let cuboEdades = [];
 let dimensionEtiquetas = {};
@@ -447,7 +448,7 @@ function pintaGrafico() {
 
     chart.focusFilter.stroke = am4core.color("#0f0");
     chart.focusFilter.strokeWidth = 4;
-    chart.cursor = new am4charts.XYCursor();
+    // chart.cursor = new am4charts.XYCursor();
     
     let categoryAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     categoryAxis.dataFields.category = 'ejeX';
@@ -481,7 +482,8 @@ function pintaGrafico() {
     series.dataFields.categoryX = 'ejeX';
     series.name = 'Cubo';
     series.strokeWidth = 3;
-	series.bullets.push(new am4charts.CircleBullet());
+	let bullet = series.bullets.push(new am4charts.CircleBullet());
+    bullet.tooltipText =  '{categoryX}: [bold]{valueY}[/]';
 
     $('.modal').modal('hide');
 }

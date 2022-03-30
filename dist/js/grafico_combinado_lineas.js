@@ -588,7 +588,8 @@ function createSeries(name, data) {
     series.data = data;
     series.tooltipText = name + ' - {categoryX} : [bold]{valueY}[/]';
     series.strokeWidth = 3;
-    series.bullets.push(new am4charts.CircleBullet());
+    let bullet = series.bullets.push(new am4charts.CircleBullet());
+    bullet.tooltipText =  '{categoryX}: [bold]{valueY}[/]';
 
     if (name == 'Female') {
         series.fill = chart.colors.getIndex(4);
